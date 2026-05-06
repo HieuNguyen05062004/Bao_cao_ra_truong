@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Thư viện số</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/LibraryManagement.styles.css" asp-append-version="true" />
+    <style>
+        .sidebar { min-height: 100vh; background: #2c3e50; }
+        .sidebar .nav-link { color: #bdc3c7; padding: 10px 20px; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { color: #fff; background: rgba(255,255,255,0.1); border-radius: 5px; }
+        .sidebar .nav-link i { margin-right: 8px; }
+        .sidebar-brand { padding: 20px; color: #fff; font-size: 1.2rem; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .main-content { background: #f8f9fa; min-height: 100vh; }
+        .navbar-top { background: #fff; border-bottom: 1px solid #dee2e6; }
+        .card { border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-radius: 10px; }
+        .card-header { border-radius: 10px 10px 0 0 !important; }
+        .btn { border-radius: 6px; }
+        .table th { border-top: none; font-weight: 600; color: #495057; }
+        .sidebar-section { padding: 8px 20px; font-size: 0.75rem; text-transform: uppercase; color: #7f8c8d; letter-spacing: 1px; margin-top: 10px; }
+        .stat-card { border-left: 4px solid; }
+        .stat-card.primary { border-left-color: #3498db; }
+        .stat-card.success { border-left-color: #2ecc71; }
+        .stat-card.warning { border-left-color: #f39c12; }
+        .stat-card.danger { border-left-color: #e74c3c; }
+        .book-card:hover { transform: translateY(-3px); transition: all 0.2s; }
+    </style>
+</head>
+<body>
+<div class="d-flex">
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+    <div class="sidebar d-flex flex-column" style="width: 240px; min-width: 240px; position: sticky; top: 0; height: 100vh; overflow-y: auto;">
+        <div class="sidebar-brand">
+            <i class="bi bi-book-half"></i> Thư viện số
+        </div>
+        <nav class="flex-grow-1 pt-2">
+            <a class="nav-link d-flex align-items-center" asp-controller="Home" asp-action="Index">
+                <i class="bi bi-house me-2"></i> Trang chủ
+            </a>
+            <a class="nav-link d-flex align-items-center" asp-controller="Search" asp-action="Index">
+                <i class="bi bi-search me-2"></i> Tìm kiếm sách
+            </a>
+
+            @if (User.IsInRole("Reader"))
+            {
+                <div class="sidebar-section mt-3">Bạn đọc</div>
+                <a class="nav-link d-flex align-items-center" asp-controller="Borrow" asp-action="MyBorrows">
+                    <i class="bi bi-journal-bookmark me-2"></i> Sách đang mượn
+                </a>
+                <a class="nav-link d-flex align-items-center" asp-controller="Statistics" asp-action="Personal">
+                    <i class="bi bi-bar-chart me-2"></i> Thống kê cá nhân
+                </a>
+            }
+
+            @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+            {
+                <div class="sidebar-section mt-3">Quản lý thư viện</div>
+                <a class="nav-link d-flex align-items-center" asp-controller="Book" asp-action="Index">
+                    <i class="bi bi-journals me-2"></i> Quản lý sách
+                </a>
+                <a class="nav-link d-flex align-items-center" asp-controller="Category" asp-action="Index">
+                    <i class="bi bi-tags me-2"></i> Quản lý danh mục
+                </a>
+                <a class="nav-link d-flex align-items-center" asp-controller="Borrow" asp-action="Index">
+                    <i class="bi bi-arrow-left-right me-2"></i> Mượn/Trả sách
+                </a>
+                <a class="nav-link d-flex align-items-center" asp-controller="Borrow" asp-action="Overdue">
+                    <i class="bi bi-exclamation-triangle me-2"></i> Sách quá hạn
+                </a>
+                <a class="nav-link d-flex align-items-center" asp-controller="Statistics" asp-action="Index">
+                    <i class="bi bi-graph-up me-2"></i> Thống kê
+                </a>
+            }
+
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="sidebar-section mt-3">Hệ thống</div>
+                <a class="nav-link d-flex align-items-center" asp-controller="UserManagement" asp-action="Index">
+                    <i class="bi bi-people me-2"></i> Quản lý tài khoản
+                </a>
+            }
+        </nav>
+        <div class="border-top border-secondary p-3">
+            <div class="text-white-50 small mb-2">
+                <i class="bi bi-person-circle"></i> @User.Identity?.Name
+            </div>
+            <a asp-controller="Account" asp-action="Profile" class="btn btn-sm btn-outline-light w-100 mb-2">
+                <i class="bi bi-gear"></i> Tài khoản
+            </a>
+            <form asp-controller="Account" asp-action="Logout" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                    <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                </button>
+            </form>
+        </div>
+    </div>
+    }
+
+    <div class="flex-grow-1 main-content">
+        @if (User.Identity?.IsAuthenticated != true)
+        {
+        <nav class="navbar navbar-expand-lg navbar-top px-4 py-3">
+            <a class="navbar-brand fw-bold fs-5" asp-controller="Home" asp-action="Index">
+                <i class="bi bi-book-half text-primary me-2"></i>Thư viện số
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Search" asp-action="Index">Tìm kiếm</a></li>
+                </ul>
+                <ul class="navbar-nav gap-2">
+                    <li class="nav-item"><a class="btn btn-outline-primary" asp-controller="Account" asp-action="Login">Đăng nhập</a></li>
+                    <li class="nav-item"><a class="btn btn-primary" asp-controller="Account" asp-action="Register">Đăng ký</a></li>
+                </ul>
+            </div>
+        </nav>
+        }
+
+        <div class="p-4">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>@TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

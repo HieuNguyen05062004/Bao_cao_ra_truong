@@ -1,0 +1,60 @@
+@model Category
+@{
+    ViewData["Title"] = "Thêm danh mục";
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="fw-bold mb-0"><i class="bi bi-plus-circle me-2 text-primary"></i>Thêm danh mục mới</h4>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post" id="catForm">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label fw-semibold"></label>
+                        <input asp-for="Name" class="form-control" placeholder="Tên danh mục" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Mô tả danh mục..."></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-primary px-4" onclick="confirmAdd()">
+                            <i class="bi bi-plus-lg me-2"></i>Thêm
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">Bạn có chắc chắn muốn thêm danh mục này?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('catForm').submit()">Có, thêm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+    function confirmAdd() {
+        if (!document.getElementById('catForm').checkValidity()) { document.getElementById('catForm').reportValidity(); return; }
+        new bootstrap.Modal(document.getElementById('confirmModal')).show();
+    }
+    </script>
+}

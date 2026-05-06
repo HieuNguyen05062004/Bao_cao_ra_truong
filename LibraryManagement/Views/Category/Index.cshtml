@@ -1,0 +1,121 @@
+@model List<Category>
+@{
+    ViewData["Title"] = "Quản lý danh mục";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-tags me-2 text-primary"></i>Quản lý danh mục</h4>
+        <p class="text-muted mb-0">Tổng số: @Model.Count danh mục</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-2"></i>Thêm danh mục
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <form id="deleteForm" asp-action="DeleteMultiple" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="ids" id="selectedIds" />
+            <div class="d-flex align-items-center px-3 py-2 border-bottom bg-light">
+                <button type="button" class="btn btn-danger btn-sm me-2" id="deleteSelectedBtn" onclick="deleteSelected()" disabled>
+                    <i class="bi bi-trash me-1"></i>Xóa đã chọn
+                </button>
+                <span class="text-muted small" id="selectedCount">Chưa chọn mục nào</span>
+            </div>
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th width="40"><input type="checkbox" id="selectAll" onchange="toggleAll(this)" /></th>
+                        <th>Tên danh mục</th>
+                        <th>Mô tả</th>
+                        <th>Số lượng sách</th>
+                        <th width="150">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cat in Model)
+                    {
+                        <tr>
+                            <td><input type="checkbox" class="row-check" value="@cat.Id" onchange="updateSelection()" /></td>
+                            <td class="fw-semibold">@cat.Name</td>
+                            <td class="text-muted">@(cat.Description ?? "—")</td>
+                            <td><span class="badge bg-primary">@cat.Books.Count sách</span></td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a asp-action="Edit" asp-route-id="@cat.Id" class="btn btn-sm btn-outline-warning" title="Sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Xóa"
+                                            onclick="confirmDelete(@cat.Id, '@cat.Name.Replace("'", "\\'")')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </form>
+    </div>
+</div>
+
+<form id="deleteSingleForm" asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" id="deleteCatId" />
+</form>
+
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">Xóa danh mục <strong id="deleteCatName"></strong>?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger" onclick="document.getElementById('deleteSingleForm').submit()">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteMultiModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="deleteMultiMsg"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger" onclick="document.getElementById('deleteForm').submit()">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function toggleAll(cb) { document.querySelectorAll('.row-check').forEach(c => c.checked = cb.checked); updateSelection(); }
+function updateSelection() {
+    const cnt = document.querySelectorAll('.row-check:checked').length;
+    document.getElementById('deleteSelectedBtn').disabled = cnt === 0;
+    document.getElementById('selectedCount').textContent = cnt > 0 ? `Đã chọn ${cnt} mục` : 'Chưa chọn mục nào';
+}
+function deleteSelected() {
+    const ids = Array.from(document.querySelectorAll('.row-check:checked')).map(c => c.value);
+    document.getElementById('deleteMultiMsg').textContent = `Xóa ${ids.length} danh mục đã chọn?`;
+    document.getElementById('selectedIds').value = ids.join(',');
+    new bootstrap.Modal(document.getElementById('deleteMultiModal')).show();
+}
+function confirmDelete(id, name) {
+    document.getElementById('deleteCatId').value = id;
+    document.getElementById('deleteCatName').textContent = name;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
+}

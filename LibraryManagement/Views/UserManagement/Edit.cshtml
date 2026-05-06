@@ -1,0 +1,99 @@
+@model LibraryManagement.ViewModels.ProfileViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa tài khoản";
+    var userId = ViewBag.UserId as string;
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="fw-bold mb-0"><i class="bi bi-pencil me-2 text-warning"></i>Chỉnh sửa tài khoản</h4>
+</div>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-body p-4">
+                <form asp-action="Edit" asp-route-id="@userId" method="post" id="editForm">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Email</label>
+                        <input type="text" class="form-control" value="@Model.Email" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Vai trò mới</label>
+                        <select name="newRole" class="form-select">
+                            @foreach (var role in ViewBag.AllRoles as string[])
+                            {
+                                var isSelected = Model.Roles.Contains(role);
+                                var roleLabel = role == "Admin" ? "Quản trị viên" : role == "Staff" ? "Nhân viên" : "Bạn đọc";
+                                if (isSelected)
+                                {
+                                    <option value="@role" selected>@roleLabel</option>
+                                }
+                                else
+                                {
+                                    <option value="@role">@roleLabel</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FullName" class="form-label fw-semibold"></label>
+                            <input asp-for="FullName" class="form-control" />
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PhoneNumber" class="form-label fw-semibold"></label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DateOfBirth" class="form-label fw-semibold"></label>
+                            <input asp-for="DateOfBirth" class="form-control" type="date" />
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="Address" class="form-label fw-semibold"></label>
+                            <input asp-for="Address" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-warning px-4" onclick="confirmEdit()">
+                            <i class="bi bi-check-lg me-2"></i>Lưu thay đổi
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">Bạn có chắc chắn muốn lưu thay đổi?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-warning" onclick="document.getElementById('editForm').submit()">Có, lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+    function confirmEdit() {
+        if (!document.getElementById('editForm').checkValidity()) { document.getElementById('editForm').reportValidity(); return; }
+        new bootstrap.Modal(document.getElementById('confirmModal')).show();
+    }
+    </script>
+}

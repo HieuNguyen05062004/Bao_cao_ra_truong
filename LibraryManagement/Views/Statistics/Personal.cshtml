@@ -1,0 +1,159 @@
+@model PersonalStatisticsViewModel
+@{
+    ViewData["Title"] = "Thống kê cá nhân";
+}
+
+<div class="mb-4">
+    <h4 class="fw-bold mb-1"><i class="bi bi-person-lines-fill me-2 text-primary"></i>Thống kê cá nhân</h4>
+    <p class="text-muted mb-0">Lịch sử mượn/trả sách của bạn</p>
+</div>
+
+<!-- Summary -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card primary text-center">
+            <div class="card-body py-4">
+                <i class="bi bi-book text-primary" style="font-size:2rem;"></i>
+                <div class="display-6 fw-bold mt-1">@Model.TotalBorrowed</div>
+                <div class="text-muted small">Tổng lần mượn</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card warning text-center">
+            <div class="card-body py-4">
+                <i class="bi bi-journal-bookmark text-warning" style="font-size:2rem;"></i>
+                <div class="display-6 fw-bold mt-1">@Model.CurrentlyBorrowing</div>
+                <div class="text-muted small">Đang mượn</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card success text-center">
+            <div class="card-body py-4">
+                <i class="bi bi-check-circle text-success" style="font-size:2rem;"></i>
+                <div class="display-6 fw-bold mt-1">@Model.TotalReturned</div>
+                <div class="text-muted small">Đã trả</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card danger text-center">
+            <div class="card-body py-4">
+                <i class="bi bi-exclamation-triangle text-danger" style="font-size:2rem;"></i>
+                <div class="display-6 fw-bold mt-1">@Model.Overdue</div>
+                <div class="text-muted small">Quá hạn</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Currently borrowing -->
+@if (Model.CurrentBorrows.Any())
+{
+    <div class="card mb-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-journal-bookmark me-2 text-warning"></i>Đang mượn (@Model.CurrentBorrows.Count)</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Sách</th>
+                        <th>Ngày mượn</th>
+                        <th>Hạn trả</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model.CurrentBorrows)
+                    {
+                        var isOverdue = r.DueDate < DateTime.Today;
+                        <tr class="@(isOverdue ? "table-danger" : "")">
+                            <td>
+                                <div class="fw-semibold">@r.Book?.Title</div>
+                                <div class="text-muted small">@r.Book?.Author</div>
+                            </td>
+                            <td>@r.BorrowDate.ToString("dd/MM/yyyy")</td>
+                            <td class="@(isOverdue ? "text-danger fw-bold" : "")">
+                                @r.DueDate.ToString("dd/MM/yyyy")
+                                @if (isOverdue)
+                                {
+                                    <span class="badge bg-danger ms-1">+@(DateTime.Today - r.DueDate).Days ngày</span>
+                                }
+                            </td>
+                            <td>
+                                @if (isOverdue)
+                                {
+                                    <span class="badge bg-danger">Quá hạn</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-primary">Đang mượn</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<!-- History -->
+@if (Model.BorrowHistory.Any())
+{
+    <div class="card">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-clock-history me-2 text-secondary"></i>Lịch sử mượn/trả (@Model.BorrowHistory.Count)</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Sách</th>
+                        <th>Ngày mượn</th>
+                        <th>Ngày trả</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model.BorrowHistory)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">@r.Book?.Title</div>
+                                <div class="text-muted small">@r.Book?.Author</div>
+                            </td>
+                            <td>@r.BorrowDate.ToString("dd/MM/yyyy")</td>
+                            <td>@(r.ReturnDate?.ToString("dd/MM/yyyy") ?? "—")</td>
+                            <td>
+                                @if (r.Status == BorrowStatus.Returned)
+                                {
+                                    <span class="badge bg-success">Đã trả</span>
+                                }
+                                else if (r.Status == BorrowStatus.Overdue)
+                                {
+                                    <span class="badge bg-danger">Trả quá hạn</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@if (!Model.CurrentBorrows.Any() && !Model.BorrowHistory.Any())
+{
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-book text-muted" style="font-size:4rem;"></i>
+            <h5 class="mt-3 text-muted">Bạn chưa mượn sách nào</h5>
+            <a asp-controller="Search" asp-action="Index" class="btn btn-primary mt-2">
+                <i class="bi bi-search me-2"></i>Tìm kiếm sách
+            </a>
+        </div>
+    </div>
+}

@@ -1,0 +1,49 @@
+@model BorrowRecord
+@{
+    ViewData["Title"] = "Chi tiết mượn sách";
+    string GetStatusClass() {
+        if (Model.Status == BorrowStatus.Returned) return "success";
+        if (Model.Status == BorrowStatus.Overdue) return "danger";
+        return Model.DueDate < DateTime.Today ? "danger" : "primary";
+    }
+    string GetStatusLabel() {
+        if (Model.Status == BorrowStatus.Returned) return "Đã trả";
+        if (Model.Status == BorrowStatus.Overdue) return "Trả quá hạn";
+        return Model.DueDate < DateTime.Today ? "Quá hạn" : "Đang mượn";
+    }
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a class="btn btn-outline-secondary me-3" onclick="history.back()"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="fw-bold mb-0"><i class="bi bi-file-text me-2 text-primary"></i>Chi tiết mượn sách</h4>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">Thông tin mượn sách</h5>
+                <span class="badge bg-@GetStatusClass() fs-6 px-3">@GetStatusLabel()</span>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr><td class="fw-semibold text-muted w-40">Sách</td><td class="fw-bold">@Model.Book?.Title</td></tr>
+                    <tr><td class="fw-semibold text-muted">Tác giả</td><td>@Model.Book?.Author</td></tr>
+                    <tr><td class="fw-semibold text-muted">Danh mục</td><td>@Model.Book?.Category?.Name</td></tr>
+                    <tr><td class="fw-semibold text-muted">Bạn đọc</td><td>@Model.User?.FullName (@Model.User?.Email)</td></tr>
+                    <tr><td class="fw-semibold text-muted">Ngày mượn</td><td>@Model.BorrowDate.ToString("dd/MM/yyyy")</td></tr>
+                    <tr><td class="fw-semibold text-muted">Hạn trả</td><td>@Model.DueDate.ToString("dd/MM/yyyy")</td></tr>
+                    <tr><td class="fw-semibold text-muted">Ngày trả thực tế</td><td>@(Model.ReturnDate?.ToString("dd/MM/yyyy") ?? "—")</td></tr>
+                    @if (Model.ProcessedBy != null)
+                    {
+                        <tr><td class="fw-semibold text-muted">Nhân viên xử lý</td><td>@Model.ProcessedBy.FullName</td></tr>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <tr><td class="fw-semibold text-muted">Ghi chú</td><td>@Model.Notes</td></tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

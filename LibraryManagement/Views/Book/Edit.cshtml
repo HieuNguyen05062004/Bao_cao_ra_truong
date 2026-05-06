@@ -1,0 +1,111 @@
+@model Book
+@{
+    ViewData["Title"] = "Chỉnh sửa sách";
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i></a>
+    <div>
+        <h4 class="fw-bold mb-0"><i class="bi bi-pencil me-2 text-warning"></i>Chỉnh sửa sách</h4>
+        <small class="text-muted">ID: @Model.Id</small>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body p-4">
+                <form asp-action="Edit" method="post" asp-route-id="@Model.Id" id="editForm">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label asp-for="Title" class="form-label fw-semibold"></label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="CategoryId" class="form-label fw-semibold">Danh mục</label>
+                            <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select"></select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Author" class="form-label fw-semibold"></label>
+                            <input asp-for="Author" class="form-control" />
+                            <span asp-validation-for="Author" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Publisher" class="form-label fw-semibold"></label>
+                            <input asp-for="Publisher" class="form-control" />
+                            <span asp-validation-for="Publisher" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="PublishedYear" class="form-label fw-semibold"></label>
+                            <input asp-for="PublishedYear" class="form-control" type="number" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="ISBN" class="form-label fw-semibold"></label>
+                            <input asp-for="ISBN" class="form-control" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="TotalQuantity" class="form-label fw-semibold"></label>
+                            <input asp-for="TotalQuantity" class="form-control" type="number" min="0" />
+                            <div class="form-text">Hiện có: @Model.AvailableQuantity</div>
+                            <span asp-validation-for="TotalQuantity" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-warning px-4" onclick="confirmEdit()">
+                            <i class="bi bi-check-lg me-2"></i>Lưu thay đổi
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận cập nhật</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">Bạn có chắc chắn muốn lưu thay đổi này?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-warning" onclick="document.getElementById('editForm').submit()">
+                    <i class="bi bi-check-lg me-1"></i>Có, lưu thay đổi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+    function confirmEdit() {
+        if (!document.getElementById('editForm').checkValidity()) {
+            document.getElementById('editForm').reportValidity();
+            return;
+        }
+        new bootstrap.Modal(document.getElementById('confirmModal')).show();
+    }
+    </script>
+}
