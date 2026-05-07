@@ -1,7 +1,20 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "D:\\Quan_Ly_Thu_Vien\\Backend\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|d:\\quan_ly_thu_vien\\backend\\admin\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|solutionrelative:admin\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AE7EEA74-2FE0-136F-D797-854FD87E022A}|Client\\Client.csproj|d:\\quan_ly_thu_vien\\backend\\client\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{AE7EEA74-2FE0-136F-D797-854FD87E022A}|Client\\Client.csproj|solutionrelative:client\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|d:\\quan_ly_thu_vien\\backend\\admin\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|solutionrelative:admin\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,12 +22,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 3,
           "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:19:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
@@ -26,6 +35,45 @@
             {
               "$type": "Bookmark",
               "Name": "ST:32:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Program.cs",
+              "RelativeDocumentMoniker": "Admin\\Program.cs",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Program.cs*",
+              "RelativeToolTip": "Admin\\Program.cs*",
+              "ViewState": "AgIAAAcAAAAAAAAAAAAAACIAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T13:44:30.198Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\appsettings.json",
+              "RelativeDocumentMoniker": "Client\\appsettings.json",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\appsettings.json",
+              "RelativeToolTip": "Client\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-07T13:43:57.46Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\appsettings.json",
+              "RelativeDocumentMoniker": "Admin\\appsettings.json",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\appsettings.json*",
+              "RelativeToolTip": "Admin\\appsettings.json*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-07T13:39:24.845Z",
+              "EditorCaption": ""
             }
           ]
         }
