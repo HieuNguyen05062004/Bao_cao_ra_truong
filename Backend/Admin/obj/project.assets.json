@@ -1038,6 +1038,10 @@
       "Core.Shared/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "10.0.7",
+          "Microsoft.EntityFrameworkCore.SqlServer": "10.0.7"
+        },
         "compile": {
           "bin/placeholder/Core.Shared.dll": {}
         },
