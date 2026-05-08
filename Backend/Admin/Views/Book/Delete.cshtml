@@ -1,0 +1,77 @@
+@using Core.Shared.Entities
+@model Book
+
+@{
+    ViewData["Title"] = "Xóa sách";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-trash-alt"></i> Xóa sách
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model != null)
+                    {
+                        <div class="alert alert-warning mb-4">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Chú ý:</strong> Hành động này không thể hoàn tác. Vui lòng xác nhận trước khi xóa.
+                        </div>
+
+                        <div class="mb-4">
+                            <h6 class="mb-3">Bạn có chắc chắn muốn xóa sách sau không?</h6>
+
+                            <div class="card bg-light mb-3">
+                                <div class="card-body">
+                                    <div class="row mb-2">
+                                        <div class="col-md-4"><strong>Mã sách:</strong></div>
+                                        <div class="col-md-8">@Model.BookId</div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-4"><strong>Tên sách:</strong></div>
+                                        <div class="col-md-8">@Model.Title</div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-4"><strong>Tác giả:</strong></div>
+                                        <div class="col-md-8">@(Model.Author ?? "-")</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4"><strong>Số lượng:</strong></div>
+                                        <div class="col-md-8">@Model.Quantity</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form method="post" action="@Url.Action("DeleteConfirmed")">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.BookId">
+
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a href="@Url.Action("Index")" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Hủy
+                                </a>
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash-alt"></i> Xác nhận xóa
+                                </button>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i> Không tìm thấy sách cần xóa
+                        </div>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,139 @@
+@using Admin.ViewModels
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model BookViewModel
+
+@{
+    ViewData["Title"] = "Sửa thông tin sách";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit"></i> Sửa thông tin sách
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form method="post" action="@Url.Action("Edit")">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="BookId" class="form-label">
+                                    Mã sách <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="BookId" class="form-control" readonly>
+                                <small class="text-muted">Mã sách không thể thay đổi</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Title" class="form-label">
+                                    Tên sách <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Title" class="form-control" placeholder="Nhập tên sách">
+                                <span asp-validation-for="Title" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Author" class="form-label">
+                                    Tác giả
+                                </label>
+                                <input asp-for="Author" class="form-control" placeholder="Nhập tên tác giả">
+                                <span asp-validation-for="Author" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Publisher" class="form-label">
+                                    Nhà xuất bản
+                                </label>
+                                <input asp-for="Publisher" class="form-control" placeholder="Nhập tên nhà xuất bản">
+                                <span asp-validation-for="Publisher" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label asp-for="PublishYear" class="form-label">
+                                    Năm xuất bản
+                                </label>
+                                <input asp-for="PublishYear" type="number" class="form-control" min="1000" max="2100">
+                                <span asp-validation-for="PublishYear" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="CategoryId" class="form-label">
+                                    Thể loại
+                                </label>
+                                <select asp-for="CategoryId" class="form-select">
+                                    <option value="">-- Chọn thể loại --</option>
+                                    @if (ViewBag.Categories != null)
+                                    {
+                                        @foreach (SelectListItem item in ViewBag.Categories)
+                                        {
+                                            if (item.Selected)
+                                            {
+                                                <option value="@item.Value" selected>@item.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Value">@item.Text</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Quantity" class="form-label">
+                                    Số lượng <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Quantity" type="number" class="form-control" min="0">
+                                <span asp-validation-for="Quantity" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Status" class="form-label">
+                                    Tình trạng
+                                </label>
+                                <input asp-for="Status" class="form-control" placeholder="Có thể mượn">
+                                <span asp-validation-for="Status" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ImageUrl" class="form-label">
+                                    URL hình ảnh
+                                </label>
+                                <input asp-for="ImageUrl" class="form-control" placeholder="https://...">
+                                <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="@Url.Action("Index")" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Hủy
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-save"></i> Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,115 @@
+@using Core.Shared.Entities
+@model Book
+
+@{
+    ViewData["Title"] = "Chi tiết sách";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-book"></i> Chi tiết sách
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model != null)
+                    {
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                                {
+                                    <img src="@Model.ImageUrl" alt="@Model.Title" class="img-fluid rounded" style="max-height: 300px;">
+                                }
+                                else
+                                {
+                                    <div class="bg-light d-flex align-items-center justify-content-center rounded" style="height: 300px;">
+                                        <i class="fas fa-image fa-3x text-muted"></i>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-8">
+                                <h4 class="mb-3">@Model.Title</h4>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <strong>Mã sách:</strong>
+                                        <p>@Model.BookId</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Tác giả:</strong>
+                                        <p>@(Model.Author ?? "-")</p>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <strong>Nhà xuất bản:</strong>
+                                        <p>@(Model.Publisher ?? "-")</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Năm xuất bản:</strong>
+                                        <p>@(Model.PublishYear?.ToString() ?? "-")</p>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <strong>Thể loại:</strong>
+                                        <p>
+                                            @if (Model.Category != null)
+                                            {
+                                                <span class="badge bg-primary">@Model.Category.CategoryName</span>
+                                            }
+                                            else
+                                            {
+                                                <span>-</span>
+                                            }
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Số lượng:</strong>
+                                        <p>
+                                            <span class="badge @(Model.Quantity > 0 ? "bg-success" : "bg-danger")">
+                                                @Model.Quantity
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <strong>Tình trạng:</strong>
+                                        <p>
+                                            <span class="badge bg-info">@(Model.Status ?? "Có thể mượn")</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end border-top pt-3">
+                            <a href="@Url.Action("Index")" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </a>
+                            <a href="@Url.Action("Edit", new { id = Model.BookId })" class="btn btn-warning">
+                                <i class="fas fa-edit"></i> Sửa
+                            </a>
+                            <a href="@Url.Action("Delete", new { id = Model.BookId })" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Xóa
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i> Không tìm thấy thông tin sách
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

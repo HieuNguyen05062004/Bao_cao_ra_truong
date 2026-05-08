@@ -1,13 +1,24 @@
 using Core.Shared.Data;
+using Core.Shared.Interfaces;
+using Core.Shared.Repositories;
+using Core.Shared.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Đăng ký DbContext
 builder.Services.AddDbContext<LibraryDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Đăng ký Repository
+builder.Services.AddScoped<BookRepository>();
+
+// Đăng ký Service
+builder.Services.AddScoped<IBookService, BookService>();
 
 var app = builder.Build();
 
