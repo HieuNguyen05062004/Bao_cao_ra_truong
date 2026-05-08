@@ -39,24 +39,26 @@ public class CategoriesController : ControllerBase
     [HttpPut("{categoryId:int}")]
     public async Task<IActionResult> Update(int categoryId, [FromBody] Category category)
     {
-        var result = await _categoryService.UpdateAsync(categoryId, category);
-        if (!result.Success && result.Message.Contains("Không tìm thấy"))
+        var existing = await _categoryService.GetByIdAsync(categoryId);
+        if (existing is null)
         {
-            return NotFound(result);
+            return NotFound();
         }
 
+        var result = await _categoryService.UpdateAsync(categoryId, category);
         return result.Success ? Ok(result) : BadRequest(result);
     }
 
     [HttpDelete("{categoryId:int}")]
     public async Task<IActionResult> Delete(int categoryId)
     {
-        var result = await _categoryService.DeleteAsync(categoryId);
-        if (!result.Success && result.Message.Contains("Không tìm thấy"))
+        var existing = await _categoryService.GetByIdAsync(categoryId);
+        if (existing is null)
         {
-            return NotFound(result);
+            return NotFound();
         }
 
+        var result = await _categoryService.DeleteAsync(categoryId);
         return result.Success ? Ok(result) : BadRequest(result);
     }
 }

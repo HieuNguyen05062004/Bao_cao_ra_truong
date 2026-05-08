@@ -39,12 +39,13 @@ public class BorrowsController : ControllerBase
     [HttpPost("{ticketId:int}/return")]
     public async Task<IActionResult> ReturnBook(int ticketId, [FromBody] ReturnRequest request)
     {
-        var result = await _borrowService.ReturnAsync(ticketId, request);
-        if (!result.Success && result.Message.Contains("Không tìm thấy"))
+        var existing = await _borrowService.GetTicketByIdAsync(ticketId);
+        if (existing is null)
         {
-            return NotFound(result);
+            return NotFound();
         }
 
+        var result = await _borrowService.ReturnAsync(ticketId, request);
         return result.Success ? Ok(result) : BadRequest(result);
     }
 }

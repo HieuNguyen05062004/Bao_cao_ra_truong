@@ -115,7 +115,15 @@ public class AuthService : IAuthService
 
     private static string HashPassword(string rawPassword)
     {
-        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(rawPassword));
-        return Convert.ToHexString(bytes);
+        const int iterations = 100000;
+        var salt = RandomNumberGenerator.GetBytes(16);
+        var hash = Rfc2898DeriveBytes.Pbkdf2(
+            Encoding.UTF8.GetBytes(rawPassword),
+            salt,
+            iterations,
+            HashAlgorithmName.SHA256,
+            32);
+
+        return $"PBKDF2${iterations}${Convert.ToBase64String(salt)}${Convert.ToBase64String(hash)}";
     }
 }

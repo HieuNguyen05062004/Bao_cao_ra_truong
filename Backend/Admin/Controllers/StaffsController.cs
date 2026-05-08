@@ -39,24 +39,26 @@ public class StaffsController : ControllerBase
     [HttpPut("{username}")]
     public async Task<IActionResult> Update(string username, [FromBody] StaffUpsertRequest request)
     {
-        var result = await _authService.UpdateStaffAsync(username, request);
-        if (!result.Success && result.Message.Contains("Không tìm thấy"))
+        var existing = await _authService.GetStaffByUsernameAsync(username);
+        if (existing is null)
         {
-            return NotFound(result);
+            return NotFound();
         }
 
+        var result = await _authService.UpdateStaffAsync(username, request);
         return result.Success ? Ok(result) : BadRequest(result);
     }
 
     [HttpDelete("{username}")]
     public async Task<IActionResult> Delete(string username)
     {
-        var result = await _authService.DeleteStaffAsync(username);
-        if (!result.Success && result.Message.Contains("Không tìm thấy"))
+        var existing = await _authService.GetStaffByUsernameAsync(username);
+        if (existing is null)
         {
-            return NotFound(result);
+            return NotFound();
         }
 
+        var result = await _authService.DeleteStaffAsync(username);
         return result.Success ? Ok(result) : BadRequest(result);
     }
 }

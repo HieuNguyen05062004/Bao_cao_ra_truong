@@ -104,7 +104,7 @@ public class BorrowService : IBorrowService
             foreach (var book in books)
             {
                 book.Quantity = (book.Quantity ?? 0) - 1;
-                book.Status = book.Quantity > 0 ? BorrowStatusConstants.Available : BorrowStatusConstants.BorrowedOut;
+                book.Status = (book.Quantity ?? 0) > 0 ? BorrowStatusConstants.Available : BorrowStatusConstants.BorrowedOut;
             }
 
             await _borrowRepository.SaveChangesAsync();

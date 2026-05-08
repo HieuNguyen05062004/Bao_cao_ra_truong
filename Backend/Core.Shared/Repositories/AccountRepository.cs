@@ -1,3 +1,4 @@
+using Core.Shared.Constants;
 using Core.Shared.Data;
 using Core.Shared.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,7 @@ public class AccountRepository
     public async Task<List<Account>> GetStaffAccountsAsync()
     {
         return await _dbContext.Accounts
-            .Where(x => x.Role == "Admin" || x.Role == "Staff")
+            .Where(x => x.Role == RoleConstants.Admin || x.Role == RoleConstants.Staff)
             .OrderBy(x => x.Username)
             .ToListAsync();
     }

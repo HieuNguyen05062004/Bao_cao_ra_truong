@@ -39,24 +39,26 @@ public class BooksController : ControllerBase
     [HttpPut("{bookId}")]
     public async Task<IActionResult> Update(string bookId, [FromBody] Book book)
     {
-        var result = await _bookService.UpdateAsync(bookId, book);
-        if (!result.Success && result.Message.Contains("Không tìm thấy"))
+        var existing = await _bookService.GetByIdAsync(bookId);
+        if (existing is null)
         {
-            return NotFound(result);
+            return NotFound();
         }
 
+        var result = await _bookService.UpdateAsync(bookId, book);
         return result.Success ? Ok(result) : BadRequest(result);
     }
 
     [HttpDelete("{bookId}")]
     public async Task<IActionResult> Delete(string bookId)
     {
-        var result = await _bookService.DeleteAsync(bookId);
-        if (!result.Success && result.Message.Contains("Không tìm thấy"))
+        var existing = await _bookService.GetByIdAsync(bookId);
+        if (existing is null)
         {
-            return NotFound(result);
+            return NotFound();
         }
 
+        var result = await _bookService.DeleteAsync(bookId);
         return result.Success ? Ok(result) : BadRequest(result);
     }
 }

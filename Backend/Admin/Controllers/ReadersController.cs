@@ -39,24 +39,26 @@ public class ReadersController : ControllerBase
     [HttpPut("{readerId}")]
     public async Task<IActionResult> Update(string readerId, [FromBody] Reader reader)
     {
-        var result = await _readerService.UpdateAsync(readerId, reader);
-        if (!result.Success && result.Message.Contains("Không tìm thấy"))
+        var existing = await _readerService.GetByIdAsync(readerId);
+        if (existing is null)
         {
-            return NotFound(result);
+            return NotFound();
         }
 
+        var result = await _readerService.UpdateAsync(readerId, reader);
         return result.Success ? Ok(result) : BadRequest(result);
     }
 
     [HttpDelete("{readerId}")]
     public async Task<IActionResult> Delete(string readerId)
     {
-        var result = await _readerService.DeleteAsync(readerId);
-        if (!result.Success && result.Message.Contains("Không tìm thấy"))
+        var existing = await _readerService.GetByIdAsync(readerId);
+        if (existing is null)
         {
-            return NotFound(result);
+            return NotFound();
         }
 
+        var result = await _readerService.DeleteAsync(readerId);
         return result.Success ? Ok(result) : BadRequest(result);
     }
 }

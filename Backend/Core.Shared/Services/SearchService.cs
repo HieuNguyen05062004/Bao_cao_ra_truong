@@ -44,7 +44,18 @@ public class SearchService : ISearchService
             .ToLowerInvariant()
             .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-        var books = await _dbContext.Books.Include(x => x.Category).ToListAsync();
+        IQueryable<Book> queryable = _dbContext.Books.Include(x => x.Category);
+
+        foreach (var token in tokens)
+        {
+            queryable = queryable.Where(x =>
+                x.Title.Contains(token) ||
+                (x.Author != null && x.Author.Contains(token)) ||
+                (x.Category != null && x.Category.CategoryName.Contains(token)) ||
+                (x.Publisher != null && x.Publisher.Contains(token)));
+        }
+
+        var books = await queryable.ToListAsync();
 
         return books
             .Select(x => new
@@ -52,7 +63,6 @@ public class SearchService : ISearchService
                 Book = x,
                 Score = CalculateScore(x, tokens)
             })
-            .Where(x => x.Score > 0)
             .OrderByDescending(x => x.Score)
             .ThenBy(x => x.Book.Title)
             .Select(x => x.Book)
