@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using Core.Shared.Entities;
 
-namespace Core.Shared.Interfaces
+namespace Core.Shared.Interfaces;
+
+public interface ISearchService
 {
-    internal class ISearchService
-    {
-    }
+    Task<IEnumerable<Book>> BasicSearchAsync(string keyword);
+    Task<IEnumerable<Book>> AdvancedSearchAsync(string query);
 }
