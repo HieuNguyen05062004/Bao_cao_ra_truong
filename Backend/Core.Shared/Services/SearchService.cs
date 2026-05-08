@@ -49,10 +49,10 @@ public class SearchService : ISearchService
         foreach (var token in tokens)
         {
             queryable = queryable.Where(x =>
-                x.Title.Contains(token) ||
-                (x.Author != null && x.Author.Contains(token)) ||
-                (x.Category != null && x.Category.CategoryName.Contains(token)) ||
-                (x.Publisher != null && x.Publisher.Contains(token)));
+                x.Title.ToLower().Contains(token) ||
+                (x.Author != null && x.Author.ToLower().Contains(token)) ||
+                (x.Category != null && x.Category.CategoryName.ToLower().Contains(token)) ||
+                (x.Publisher != null && x.Publisher.ToLower().Contains(token)));
         }
 
         var books = await queryable.ToListAsync();
