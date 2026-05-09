@@ -3,6 +3,7 @@ using Core.Shared.Interfaces;
 using Core.Shared.Repositories;
 using Core.Shared.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,17 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.GetFullPath(Path.Combine(
+            Directory.GetCurrentDirectory(), "../Core.Shared/Uploads/books"))),
+    RequestPath = "/book-images"
+});
+
 app.UseRouting();
 
 app.UseAuthorization();

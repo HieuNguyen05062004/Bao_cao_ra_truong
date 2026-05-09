@@ -10,6 +10,7 @@
     <Folder Include="Entities\" />
     <Folder Include="Data\" />
     <Folder Include="Helpers\" />
+    <Folder Include="Uploads\books\" />
   </ItemGroup>
 
   <ItemGroup>

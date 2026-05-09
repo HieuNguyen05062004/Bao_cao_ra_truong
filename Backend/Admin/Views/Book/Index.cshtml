@@ -61,6 +61,7 @@
                     <thead class="table-light">
                         <tr>
                             <th><i class="fas fa-barcode"></i> Mã sách</th>
+                            <th><i class="fas fa-image"></i> Hình ảnh</th>
                             <th><i class="fas fa-book-open"></i> Tên sách</th>
                             <th><i class="fas fa-pen"></i> Tác giả</th>
                             <th><i class="fas fa-tag"></i> Thể loại</th>
@@ -75,6 +76,24 @@
                             <tr>
                                 <td>
                                     <strong>@book.BookId</strong>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(book.ImageUrl))
+                                    {
+                                        <img src="@book.ImageUrl"
+                                             alt="@book.Title"
+                                             width="70"
+                                             height="90"
+                                             class="img-thumbnail"
+                                             style="object-fit: cover;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-light d-flex align-items-center justify-content-center rounded"
+                                             style="width:70px; height:90px;">
+                                            <i class="fas fa-image text-muted"></i>
+                                        </div>
+                                    }
                                 </td>
                                 <td>@book.Title</td>
                                 <td>@(book.Author ?? "-")</td>

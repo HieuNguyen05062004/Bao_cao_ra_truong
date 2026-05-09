@@ -111,7 +111,21 @@ namespace Core.Shared.Repositories
         {
             try
             {
-                _context.Books.Update(book);
+                var existing = await _context.Books.FindAsync(book.BookId);
+                if (existing == null) return false;
+
+                existing.Title = book.Title;
+                existing.Author = book.Author;
+                existing.Publisher = book.Publisher;
+                existing.PublishYear = book.PublishYear;
+                existing.CategoryId = book.CategoryId;
+                existing.Quantity = book.Quantity;
+                existing.Status = book.Status;
+
+                // Chỉ cập nhật ImageUrl nếu có ảnh mới
+                if (!string.IsNullOrEmpty(book.ImageUrl))
+                    existing.ImageUrl = book.ImageUrl;
+
                 await _context.SaveChangesAsync();
                 return true;
             }

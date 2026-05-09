@@ -47,9 +47,8 @@
                             </div>
                         </div>
 
-                        <form method="post" action="@Url.Action("DeleteConfirmed")">
+                        <form method="post" action="@Url.Action("Delete", new { id = Model.BookId })">
                             @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@Model.BookId">
 
                             <div class="d-flex gap-2 justify-content-end">
                                 <a href="@Url.Action("Index")" class="btn btn-secondary">

@@ -4,6 +4,8 @@ using Core.Shared.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace Admin.Controllers
 {
@@ -13,10 +15,13 @@ namespace Admin.Controllers
     public class BookController : Controller
     {
         private readonly IBookService _bookService;
-
-        public BookController(IBookService bookService)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public BookController(
+    IBookService bookService,
+    IWebHostEnvironment webHostEnvironment)
         {
             _bookService = bookService;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         /// <summary>
@@ -104,6 +109,36 @@ namespace Admin.Controllers
             try
             {
                 // Chuyển đổi ViewModel sang Entity
+                string imagePath = string.Empty;
+
+                if (model.ImageFile != null)
+                {
+                    string uploadFolder = Path.Combine(
+    Directory.GetCurrentDirectory(),
+    "..",
+    "Core.Shared",
+    "Uploads",
+    "books"
+);
+
+                    if (!Directory.Exists(uploadFolder))
+                    {
+                        Directory.CreateDirectory(uploadFolder);
+                    }
+
+                    string fileName = Guid.NewGuid().ToString()
+                        + Path.GetExtension(model.ImageFile.FileName);
+
+                    string filePath = Path.Combine(uploadFolder, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.ImageFile.CopyToAsync(stream);
+                    }
+
+                    imagePath = "/book-images/" + fileName;
+                }
+
                 var book = new Book
                 {
                     BookId = model.BookId?.Trim(),
@@ -114,7 +149,7 @@ namespace Admin.Controllers
                     CategoryId = model.CategoryId,
                     Quantity = model.Quantity ?? 0,
                     Status = model.Status ?? "Có thể mượn",
-                    ImageUrl = model.ImageUrl
+                    ImageUrl = imagePath
                 };
 
                 var (success, message) = await _bookService.AddBookAsync(book);
@@ -204,6 +239,43 @@ namespace Admin.Controllers
 
             try
             {
+                string imagePath = model.ImageUrl ?? string.Empty;
+
+                // Nếu chọn ảnh mới
+                if (model.ImageFile != null)
+                {
+                    string uploadFolder = Path.Combine(
+    Directory.GetCurrentDirectory(),
+    "..",
+    "Core.Shared",
+    "Uploads",
+    "books"
+);
+
+                    // Tạo folder nếu chưa có
+                    if (!Directory.Exists(uploadFolder))
+                    {
+                        Directory.CreateDirectory(uploadFolder);
+                    }
+
+                    // Tạo tên file ngẫu nhiên
+                    string fileName = Guid.NewGuid().ToString()
+                        + Path.GetExtension(model.ImageFile.FileName);
+
+                    // Đường dẫn vật lý
+                    string filePath = Path.Combine(uploadFolder, fileName);
+
+                    // Lưu file
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.ImageFile.CopyToAsync(stream);
+                    }
+
+                    // Đường dẫn lưu DB
+                    imagePath = "/book-images/" + fileName;
+                }
+
+                // Tạo object Book
                 var book = new Book
                 {
                     BookId = model.BookId,
@@ -214,7 +286,7 @@ namespace Admin.Controllers
                     CategoryId = model.CategoryId,
                     Quantity = model.Quantity ?? 0,
                     Status = model.Status ?? "Có thể mượn",
-                    ImageUrl = model.ImageUrl
+                    ImageUrl = imagePath
                 };
 
                 var (success, message) = await _bookService.UpdateBookAsync(book);
@@ -227,16 +299,32 @@ namespace Admin.Controllers
                 else
                 {
                     TempData["ErrorMessage"] = message;
+
                     var categories = await _bookService.GetAllCategoriesAsync();
-                    ViewBag.Categories = new SelectList(categories, "CategoryId", "CategoryName", model.CategoryId);
+
+                    ViewBag.Categories = new SelectList(
+                        categories,
+                        "CategoryId",
+                        "CategoryName",
+                        model.CategoryId
+                    );
+
                     return View(model);
                 }
             }
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = "Lỗi khi cập nhật sách: " + ex.Message;
+
                 var categories = await _bookService.GetAllCategoriesAsync();
-                ViewBag.Categories = new SelectList(categories, "CategoryId", "CategoryName", model.CategoryId);
+
+                ViewBag.Categories = new SelectList(
+                    categories,
+                    "CategoryId",
+                    "CategoryName",
+                    model.CategoryId
+                );
+
                 return View(model);
             }
         }

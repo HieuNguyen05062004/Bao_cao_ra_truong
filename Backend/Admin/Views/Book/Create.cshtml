@@ -24,7 +24,7 @@
                         </div>
                     }
 
-                    <form method="post" action="@Url.Action("Create")">
+                    <form method="post" action="@Url.Action("Create")" enctype="multipart/form-data">
                         @Html.AntiForgeryToken()
 
                         <div class="row mb-3">
@@ -102,11 +102,17 @@
                                 <span asp-validation-for="Status" class="text-danger small"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="ImageUrl" class="form-label">
-                                    URL hình ảnh
+                                <label asp-for="ImageFile" class="form-label">
+                                    Hình ảnh sách
                                 </label>
-                                <input asp-for="ImageUrl" class="form-control" placeholder="https://...">
-                                <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+
+                                <input asp-for="ImageFile"
+                                       type="file"
+                                       class="form-control"
+                                       accept="image/*">
+
+                                <span asp-validation-for="ImageFile"
+                                      class="text-danger small"></span>
                             </div>
                         </div>
 
