@@ -31,6 +31,9 @@ public partial class Book
     [Column("ImageURL")]
     public string? ImageUrl { get; set; }
 
+    /// <summary>Thời điểm sách được thêm vào hệ thống — dùng để lấy sách mới nhất.</summary>
+    public DateTime? CreatedAt { get; set; }
+
     // ── CategoryId cũ đã bị xóa ──────────────────────────────────────────────
     // Database mới không có cột CategoryID trên bảng Books.
     // Quan hệ sách ↔ danh mục được quản lý hoàn toàn qua bảng trung gian BookCategories.

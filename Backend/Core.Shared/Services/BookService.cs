@@ -37,6 +37,12 @@ public class BookService : IBookService
     public async Task<List<Book>> GetAvailableBooksAsync()
         => await _repository.GetAvailableAsync();
 
+    public async Task<List<Book>> GetFeaturedBooksAsync(int count = 5)
+        => await _repository.GetFeaturedBooksAsync(count);
+
+    public async Task<List<Book>> GetTrendingBooksAsync(int count = 5)
+        => await _repository.GetTrendingBooksAsync(count);
+
     public async Task<List<Category>> GetAllCategoriesAsync()
         => await _repository.GetAllCategoriesAsync();
 

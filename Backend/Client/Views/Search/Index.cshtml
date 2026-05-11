@@ -88,7 +88,18 @@
                             </p>
                             <p class="card-text text-muted">
                                 <small>
-                                    <strong>Thể loại:</strong> @(book.Category?.CategoryName ?? "-")
+                                    <strong>Thể loại:</strong> 
+                                    @{
+                                        var categoryNames = book.BookCategories?.Select(bc => bc.Category?.CategoryName).Where(c => c != null).ToList();
+                                        if (categoryNames?.Count > 0)
+                                        {
+                                            @string.Join(", ", categoryNames)
+                                        }
+                                        else
+                                        {
+                                            <text>-</text>
+                                        }
+                                    }
                                 </small>
                             </p>
                             <div class="mb-3">

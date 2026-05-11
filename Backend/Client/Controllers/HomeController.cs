@@ -29,8 +29,12 @@ namespace Client.Controllers
             {
                 var books = await _bookService.GetAvailableBooksAsync();
                 var categories = await _bookService.GetAllCategoriesAsync();
+                var featuredBooks = await _bookService.GetFeaturedBooksAsync(5);
+                var trendingBooks = await _bookService.GetTrendingBooksAsync(5);
 
                 ViewBag.Categories = categories;
+                ViewBag.FeaturedBooks = featuredBooks;
+                ViewBag.TrendingBooks = trendingBooks;
                 return View(books);
             }
             catch (Exception ex)

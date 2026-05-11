@@ -9,6 +9,8 @@ public interface IBookService
     Task<List<Book>> SearchBooksAsync(string searchTerm);
     Task<List<Book>> GetBooksByCategoryAsync(int categoryId);
     Task<List<Book>> GetAvailableBooksAsync();
+    Task<List<Book>> GetFeaturedBooksAsync(int count = 5);
+    Task<List<Book>> GetTrendingBooksAsync(int count = 5);
     Task<List<Category>> GetAllCategoriesAsync();
 
     /// <summary>

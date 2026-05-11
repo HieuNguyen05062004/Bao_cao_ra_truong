@@ -113,7 +113,18 @@
                             </p>
                             <p class="card-text text-muted">
                                 <small>
-                                    <i class="fas fa-tag"></i> @(book.Category?.CategoryName ?? "-")
+                                    <i class="fas fa-tag"></i> 
+                                    @{
+                                        var categoryNames = book.BookCategories?.Select(bc => bc.Category?.CategoryName).Where(c => c != null).FirstOrDefault();
+                                        if (categoryNames != null)
+                                        {
+                                            @categoryNames
+                                        }
+                                        else
+                                        {
+                                            <text>-</text>
+                                        }
+                                    }
                                 </small>
                             </p>
                             <div class="mb-2">
@@ -149,6 +160,170 @@
         <div class="alert alert-info text-center py-5">
             <i class="fas fa-info-circle fa-3x mb-3"></i>
             <p>Hiện tại chưa có sách nào trong hệ thống</p>
+        </div>
+    }
+
+    <!-- Sách nổi bật (Mới nhất) -->
+    @if (ViewBag.FeaturedBooks != null && ((List<Core.Shared.Entities.Book>)ViewBag.FeaturedBooks).Count > 0)
+    {
+        <div class="mt-5">
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h4>
+                        <i class="fas fa-star"></i> Sách nổi bật (Mới nhất)
+                    </h4>
+                </div>
+            </div>
+
+            <div class="row">
+                @foreach (var book in (List<Core.Shared.Entities.Book>)ViewBag.FeaturedBooks)
+                {
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm hover-shadow">
+                            @if (!string.IsNullOrEmpty(book.ImageUrl))
+                            {
+                                <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" 
+                                     style="height: 250px; object-fit: cover; cursor: pointer;" 
+                                     onclick="location.href='@Url.Action("Details", "Search", new { id = book.BookId })';">
+                            }
+                            else
+                            {
+                                <div class="bg-light d-flex align-items-center justify-content-center" 
+                                     style="height: 250px; cursor: pointer;" 
+                                     onclick="location.href='@Url.Action("Details", "Search", new { id = book.BookId })';">
+                                    <i class="fas fa-book fa-4x text-muted"></i>
+                                </div>
+                            }
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    @if (book.Title.Length > 50)
+                                    {
+                                        @(book.Title.Substring(0, 50) + "...")
+                                    }
+                                    else
+                                    {
+                                        @book.Title
+                                    }
+                                </h5>
+                                <p class="card-text text-muted">
+                                    <small>
+                                        <i class="fas fa-pen"></i> @(book.Author ?? "-")
+                                    </small>
+                                </p>
+                                <p class="card-text text-muted">
+                                    <small>
+                                        <i class="fas fa-tag"></i> 
+                                        @{
+                                            var categoryNames = book.BookCategories?.Select(bc => bc.Category?.CategoryName).Where(c => c != null).FirstOrDefault();
+                                            if (categoryNames != null)
+                                            {
+                                                @categoryNames
+                                            }
+                                            else
+                                            {
+                                                <text>-</text>
+                                            }
+                                        }
+                                    </small>
+                                </p>
+                                <div class="mb-2">
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle"></i> Còn @book.Quantity
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white border-top-0">
+                                <a href="@Url.Action("Details", "Search", new { id = book.BookId })" 
+                                   class="btn btn-primary btn-sm w-100">
+                                    <i class="fas fa-eye"></i> Xem chi tiết
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Xu hướng (Được mượn nhiều nhất) -->
+    @if (ViewBag.TrendingBooks != null && ((List<Core.Shared.Entities.Book>)ViewBag.TrendingBooks).Count > 0)
+    {
+        <div class="mt-5">
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h4>
+                        <i class="fas fa-chart-line"></i> Xu hướng (Được mượn nhiều nhất)
+                    </h4>
+                </div>
+            </div>
+
+            <div class="row">
+                @foreach (var book in (List<Core.Shared.Entities.Book>)ViewBag.TrendingBooks)
+                {
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm hover-shadow">
+                            @if (!string.IsNullOrEmpty(book.ImageUrl))
+                            {
+                                <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" 
+                                     style="height: 250px; object-fit: cover; cursor: pointer;" 
+                                     onclick="location.href='@Url.Action("Details", "Search", new { id = book.BookId })';">
+                            }
+                            else
+                            {
+                                <div class="bg-light d-flex align-items-center justify-content-center" 
+                                     style="height: 250px; cursor: pointer;" 
+                                     onclick="location.href='@Url.Action("Details", "Search", new { id = book.BookId })';">
+                                    <i class="fas fa-book fa-4x text-muted"></i>
+                                </div>
+                            }
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    @if (book.Title.Length > 50)
+                                    {
+                                        @(book.Title.Substring(0, 50) + "...")
+                                    }
+                                    else
+                                    {
+                                        @book.Title
+                                    }
+                                </h5>
+                                <p class="card-text text-muted">
+                                    <small>
+                                        <i class="fas fa-pen"></i> @(book.Author ?? "-")
+                                    </small>
+                                </p>
+                                <p class="card-text text-muted">
+                                    <small>
+                                        <i class="fas fa-tag"></i> 
+                                        @{
+                                            var categoryNames = book.BookCategories?.Select(bc => bc.Category?.CategoryName).Where(c => c != null).FirstOrDefault();
+                                            if (categoryNames != null)
+                                            {
+                                                @categoryNames
+                                            }
+                                            else
+                                            {
+                                                <text>-</text>
+                                            }
+                                        }
+                                    </small>
+                                </p>
+                                <div class="mb-2">
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle"></i> Còn @book.Quantity
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white border-top-0">
+                                <a href="@Url.Action("Details", "Search", new { id = book.BookId })" 
+                                   class="btn btn-primary btn-sm w-100">
+                                    <i class="fas fa-eye"></i> Xem chi tiết
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     }
 </div>

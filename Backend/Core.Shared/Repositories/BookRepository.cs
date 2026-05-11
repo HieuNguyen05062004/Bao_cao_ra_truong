@@ -53,7 +53,34 @@ public class BookRepository
     public async Task<List<Book>> GetAvailableAsync()
     {
         return await _context.Books
+            .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
             .Where(b => b.Status == "Có thể mượn" && b.Quantity > 0)
+            .ToListAsync();
+    }
+
+    /// <summary>
+    /// Lấy 5 sách mới nhất được thêm vào hệ thống (sách nổi bật).
+    /// </summary>
+    public async Task<List<Book>> GetFeaturedBooksAsync(int count = 5)
+    {
+        return await _context.Books
+            .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
+            .Where(b => b.Status == "Có thể mượn" && b.Quantity > 0)
+            .OrderByDescending(b => b.CreatedAt)
+            .Take(count)
+            .ToListAsync();
+    }
+
+    /// <summary>
+    /// Lấy 5 sách được mượn nhiều nhất (xu hướng).
+    /// </summary>
+    public async Task<List<Book>> GetTrendingBooksAsync(int count = 5)
+    {
+        return await _context.Books
+            .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
+            .Where(b => b.Status == "Có thể mượn" && b.Quantity > 0)
+            .OrderByDescending(b => b.Tickets.Count)
+            .Take(count)
             .ToListAsync();
     }
 

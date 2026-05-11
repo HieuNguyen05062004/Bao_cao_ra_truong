@@ -55,13 +55,20 @@
                                 <div class="mb-3">
                                     <strong>Thể loại:</strong>
                                     <p>
-                                        @if (Model.Category != null)
-                                        {
-                                            <span class="badge bg-primary">@Model.Category.CategoryName</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">-</span>
+                                        @{
+                                            var categoryNames = Model.BookCategories?.Select(bc => bc.Category?.CategoryName).Where(c => c != null).ToList();
+                                            if (categoryNames?.Count > 0)
+                                            {
+                                                foreach (var catName in categoryNames)
+                                                {
+                                                    <span class="badge bg-primary">@catName</span>
+                                                    <text> </text>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
                                         }
                                     </p>
                                 </div>
