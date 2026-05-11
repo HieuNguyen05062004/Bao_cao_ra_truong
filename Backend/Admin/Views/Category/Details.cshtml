@@ -1,0 +1,94 @@
+﻿@model Admin.ViewModels.CategoryDetailsViewModel
+
+@{
+    ViewData["Title"] = "Chi tiết danh mục";
+}
+
+<div class="container py-4" style="max-width: 800px;">
+    <div class="d-flex align-items-center gap-2 mb-4">
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <h2 class="mb-0">Chi tiết danh mục</h2>
+    </div>
+
+    @* ── Thông tin danh mục ── *@
+    <div class="card mb-4">
+        <div class="card-header fw-semibold">Thông tin danh mục</div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3 text-muted">Mã danh mục</dt>
+                <dd class="col-sm-9">@Model.CategoryId</dd>
+
+                <dt class="col-sm-3 text-muted">Tên danh mục</dt>
+                <dd class="col-sm-9 fw-semibold">@Model.CategoryName</dd>
+
+                <dt class="col-sm-3 text-muted">Số sách</dt>
+                <dd class="col-sm-9">
+                    <span class="badge bg-primary">@Model.Books.Count cuốn</span>
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    @* ── Danh sách sách thuộc danh mục ── *@
+    <div class="card">
+        <div class="card-header fw-semibold">
+            Sách thuộc danh mục "@Model.CategoryName"
+        </div>
+        <div class="card-body p-0">
+            @if (!Model.Books.Any())
+            {
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-book fs-2 d-block mb-2"></i>
+                    Danh mục này chưa có sách nào.
+                </div>
+            }
+            else
+            {
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 120px;">Mã sách</th>
+                            <th>Tên sách</th>
+                            <th>Tác giả</th>
+                            <th style="width: 130px;">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var book in Model.Books)
+                        {
+                            <tr>
+                                <td class="text-muted small">@book.BookId</td>
+                                <td>@book.Title</td>
+                                <td class="text-muted">@(book.Author ?? "—")</td>
+                                <td>
+                                    @* Badge màu theo trạng thái (status) của sách *@
+                                    @if (book.Status == "Có thể mượn")
+                                    {
+                                        <span class="badge bg-success">@book.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@(book.Status ?? "—")</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+    @* ── Nút hành động ── *@
+    <div class="d-flex gap-2 mt-3">
+        <a asp-action="Edit" asp-route-id="@Model.CategoryId" class="btn btn-primary">
+            <i class="bi bi-pencil me-1"></i> Sửa danh mục
+        </a>
+        <a asp-action="Delete" asp-route-id="@Model.CategoryId" class="btn btn-outline-danger">
+            <i class="bi bi-trash me-1"></i> Xóa danh mục
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Quay lại danh sách</a>
+    </div>
+</div>

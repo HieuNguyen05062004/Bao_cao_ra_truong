@@ -1,67 +1,28 @@
 ﻿using Core.Shared.Entities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace Core.Shared.Interfaces
+namespace Core.Shared.Interfaces;
+
+public interface IBookService
 {
+    Task<List<Book>> GetAllBooksAsync();
+    Task<Book?> GetBookByIdAsync(string bookId);
+    Task<List<Book>> SearchBooksAsync(string searchTerm);
+    Task<List<Book>> GetBooksByCategoryAsync(int categoryId);
+    Task<List<Book>> GetAvailableBooksAsync();
+    Task<List<Category>> GetAllCategoriesAsync();
+
     /// <summary>
-    /// Interface cho dịch vụ quản lý sách
+    /// Thêm sách mới kèm danh sách danh mục (many-to-many).
+    /// categoryIds: danh sách CategoryID người dùng đã chọn qua chips.
     /// </summary>
-    public interface IBookService
-    {
-        /// <summary>
-        /// Lấy tất cả sách
-        /// </summary>
-        Task<List<Book>> GetAllBooksAsync();
+    Task<(bool Success, string Message)> AddBookAsync(Book book, List<int> categoryIds);
 
-        /// <summary>
-        /// Lấy sách theo ID
-        /// </summary>
-        Task<Book?> GetBookByIdAsync(string bookId);
+    /// <summary>
+    /// Cập nhật sách và đồng bộ lại danh sách danh mục.
+    /// </summary>
+    Task<(bool Success, string Message)> UpdateBookAsync(Book book, List<int> categoryIds);
 
-        /// <summary>
-        /// Tìm kiếm sách theo tên hoặc tác giả
-        /// </summary>
-        Task<List<Book>> SearchBooksAsync(string searchTerm);
-
-        /// <summary>
-        /// Lấy sách theo thể loại
-        /// </summary>
-        Task<List<Book>> GetBooksByCategoryAsync(int categoryId);
-
-        /// <summary>
-        /// Lấy sách còn hàng
-        /// </summary>
-        Task<List<Book>> GetAvailableBooksAsync();
-
-        /// <summary>
-        /// Thêm sách mới
-        /// </summary>
-        Task<(bool Success, string Message)> AddBookAsync(Book book);
-
-        /// <summary>
-        /// Cập nhật thông tin sách
-        /// </summary>
-        Task<(bool Success, string Message)> UpdateBookAsync(Book book);
-
-        /// <summary>
-        /// Xóa sách
-        /// </summary>
-        Task<(bool Success, string Message)> DeleteBookAsync(string bookId);
-
-        /// <summary>
-        /// Kiểm tra mã sách có tồn tại
-        /// </summary>
-        Task<bool> BookIdExistsAsync(string bookId);
-
-        /// <summary>
-        /// Lấy danh sách thể loại
-        /// </summary>
-        Task<List<Category>> GetAllCategoriesAsync();
-
-        /// <summary>
-        /// Cập nhật số lượng sách
-        /// </summary>
-        Task<(bool Success, string Message)> UpdateBookQuantityAsync(string bookId, int quantityChange);
-    }
+    Task<(bool Success, string Message)> DeleteBookAsync(string bookId);
+    Task<bool> BookIdExistsAsync(string bookId);
+    Task<(bool Success, string Message)> UpdateBookQuantityAsync(string bookId, int quantityChange);
 }

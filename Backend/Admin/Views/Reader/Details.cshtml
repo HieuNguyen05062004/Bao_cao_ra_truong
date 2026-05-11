@@ -1,0 +1,179 @@
+﻿@model Admin.ViewModels.ReaderDetailViewModel
+@{
+    ViewData["Title"] = "Chi tiết bạn đọc";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">🧑 Chi tiết bạn đọc: <strong>@Model.FullName</strong></h4>
+    <div class="d-flex gap-2">
+        <a asp-action="Index" class="btn btn-secondary">← Quay lại</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    {{-- Thông tin cá nhân --}}
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+                {
+                    <img src="@Model.AvatarUrl" class="rounded-circle mb-3 shadow"
+                         width="110" height="110" style="object-fit:cover" />
+                }
+                else
+                {
+                    <div class="rounded-circle bg-secondary d-inline-flex align-items-center
+                        justify-content-center shadow mb-3"
+                         style="width:110px;height:110px;font-size:44px;color:white">
+                        @Model.FullName.Substring(0, 1).ToUpper()
+                    </div>
+                }
+                <h5 class="mb-1">@Model.FullName</h5>
+                <p class="text-muted small mb-0">@Model.ReaderId</p>
+            </div>
+            <div class="card-footer bg-white">
+                <table class="table table-sm table-borderless mb-0">
+                    <tr>
+                        <th class="text-muted" width="100">Ngày sinh</th>
+                        <td>@(Model.DoB?.ToString("dd/MM/yyyy") ?? "—")</td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Giới tính</th>
+                        <td>@(Model.Gender ?? "—")</td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">SĐT</th>
+                        <td>@(Model.Phone ?? "—")</td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Email</th>
+                        <td>@(Model.Email ?? "—")</td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Địa chỉ</th>
+                        <td>@(Model.Address ?? "—")</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {{-- Thống kê --}}
+    <div class="col-md-8">
+        <div class="row g-3">
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm text-center p-3">
+                    <div class="fs-2 fw-bold text-dark">@Model.TotalBorrow</div>
+                    <div class="text-muted small">Tổng phiếu</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm text-center p-3">
+                    <div class="fs-2 fw-bold text-primary">@Model.BorrowingCount</div>
+                    <div class="text-muted small">Đang mượn</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm text-center p-3">
+                    <div class="fs-2 fw-bold text-danger">@Model.OverdueCount</div>
+                    <div class="text-muted small">Quá hạn</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card border-0 shadow-sm text-center p-3">
+                    <div class="fs-2 fw-bold text-success">@Model.ReturnedCount</div>
+                    <div class="text-muted small">Đã trả</div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Bộ lọc phiếu mượn --}}
+        <div class="mt-4">
+            <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                <span class="fw-semibold">📋 Phiếu mượn:</span>
+
+                @{
+                    var filters = new[]
+                    {
+                        ("all",       "Tất cả",     "secondary"),
+                        ("borrowing", "Đang mượn",  "primary"),
+                        ("overdue",   "Quá hạn",    "danger"),
+                        ("returned",  "Đã trả",     "success")
+                    };
+                }
+
+                @foreach (var (val, label, color) in filters)
+                {
+                    var active = Model.Filter == val ? "" : $"outline-";
+                    <a asp-action="Details"
+                           asp-route-id="@Model.ReaderId"
+                           asp-route-filter="@val"
+                           class="btn btn-sm btn-@(Model.Filter == val ? color : $"outline-{color}")">
+                        @label
+                    </a>
+                }
+            </div>
+
+            {{-- Bảng phiếu mượn --}}
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã phiếu</th>
+                            <th>Sách mượn</th>
+                            <th>Ngày mượn</th>
+                            <th>Hạn trả</th>
+                            <th>Ngày trả</th>
+                            <th class="text-center">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ticket in Model.BorrowTickets)
+                        {
+                            var isOverdue = ticket.ReturnDate == null &&
+                                            ticket.DueDate < DateTime.Now;
+                            <tr class="@(isOverdue ? "table-danger" : "")">
+                                <td>#@ticket.TicketId</td>
+                                <td>
+                                    @if (ticket.Books.Any())
+                                    {
+                                        @string.Join(", ", ticket.Books.Select(b => b.Title))
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td>@ticket.BorrowDate?.ToString("dd/MM/yyyy")</td>
+                                <td>@ticket.DueDate?.ToString("dd/MM/yyyy")</td>
+                                <td>@(ticket.ReturnDate?.ToString("dd/MM/yyyy") ?? "—")</td>
+                                <td class="text-center">
+                                    @if (ticket.ReturnDate != null)
+                                    {
+                                        <span class="badge bg-success">Đã trả</span>
+                                    }
+                                    else if (isOverdue)
+                                    {
+                                        <span class="badge bg-danger">Quá hạn</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-primary">Đang mượn</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.BorrowTickets.Any())
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-3">
+                                    Không có phiếu mượn nào.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

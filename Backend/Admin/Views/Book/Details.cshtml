@@ -59,13 +59,17 @@
                                     <div class="col-md-6">
                                         <strong>Thể loại:</strong>
                                         <p>
-                                            @if (Model.Category != null)
+                                            @* Lấy danh mục từ BookCategories thay vì Model.Category cũ *@
+                                            @if (Model.BookCategories.Any())
                                             {
-                                                <span class="badge bg-primary">@Model.Category.CategoryName</span>
+                                                @foreach (var bc in Model.BookCategories)
+                                                {
+                                                    <span class="badge bg-primary me-1">@bc.Category?.CategoryName</span>
+                                                }
                                             }
                                             else
                                             {
-                                                <span>-</span>
+                                                <span class="text-muted">-</span>
                                             }
                                         </p>
                                     </div>

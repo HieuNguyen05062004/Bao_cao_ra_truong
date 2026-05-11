@@ -1,0 +1,58 @@
+﻿@model Admin.ViewModels.CategoryViewModel
+
+@{
+    ViewData["Title"] = "Thêm danh mục";
+}
+
+<div class="container py-4" style="max-width: 600px;">
+    <div class="d-flex align-items-center gap-2 mb-4">
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <h2 class="mb-0">Thêm danh mục mới</h2>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            @* asp-action="Create": form POST về action Create *@
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                @* Hiển thị lỗi tổng (không gắn với field cụ thể) từ ModelState *@
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="display:none"></div>
+
+                <div class="mb-3">
+                    <label asp-for="CategoryName" class="form-label fw-semibold"></label>
+                    <input asp-for="CategoryName"
+                           class="form-control"
+                           placeholder="Ví dụ: Công nghệ thông tin"
+                           autofocus />
+                    @* asp-validation-for: hiển thị lỗi validation của field CategoryName *@
+                    <span asp-validation-for="CategoryName" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i> Thêm
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@* Partial view kích hoạt jQuery Validation (kiểm tra phía client) *@
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Tự động ẩn/hiện div alert khi có lỗi từ ModelState
+        const summary = document.querySelector('[data-valmsg-summary]');
+        if (summary && summary.querySelector('li')) {
+            summary.style.display = 'block';
+        }
+    </script>
+}

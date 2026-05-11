@@ -1,202 +1,173 @@
 ﻿using Core.Shared.Data;
 using Core.Shared.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Core.Shared.Repositories
+namespace Core.Shared.Repositories;
+
+public class BookRepository
 {
-    /// <summary>
-    /// Repository cho quản lý sách
-    /// </summary>
-    public class BookRepository
+    private readonly LibraryDbContext _context;
+
+    public BookRepository(LibraryDbContext context)
     {
-        private readonly LibraryDbContext _context;
+        _context = context;
+    }
 
-        public BookRepository(LibraryDbContext context)
-        {
-            _context = context;
-        }
+    // ─── READ ────────────────────────────────────────────────────────────────
 
-        /// <summary>
-        /// Lấy tất cả sách
-        /// </summary>
-        public async Task<List<Book>> GetAllAsync()
-        {
-            return await _context.Books
-                .Include(b => b.Category)
-                .AsNoTracking()
-                .ToListAsync();
-        }
+    public async Task<List<Book>> GetAllAsync()
+    {
+        return await _context.Books
+            .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
+            .OrderBy(b => b.Title)
+            .ToListAsync();
+    }
 
-        /// <summary>
-        /// Lấy sách theo ID
-        /// </summary>
-        public async Task<Book?> GetByIdAsync(string bookId)
-        {
-            return await _context.Books
-                .Include(b => b.Category)
-                .FirstOrDefaultAsync(b => b.BookId == bookId);
-        }
+    public async Task<Book?> GetByIdAsync(string bookId)
+    {
+        return await _context.Books
+            .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
+            .FirstOrDefaultAsync(b => b.BookId == bookId);
+    }
 
-        /// <summary>
-        /// Tìm kiếm sách theo tên hoặc tác giả
-        /// </summary>
-        public async Task<List<Book>> SearchAsync(string searchTerm)
-        {
-            searchTerm = searchTerm?.ToLower() ?? "";
-            return await _context.Books
-                .Include(b => b.Category)
-                .Where(b => b.Title.ToLower().Contains(searchTerm) ||
-                           b.Author!.ToLower().Contains(searchTerm))
-                .AsNoTracking()
-                .ToListAsync();
-        }
+    public async Task<List<Book>> SearchAsync(string searchTerm)
+    {
+        return await _context.Books
+            .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
+            .Where(b => b.Title.Contains(searchTerm)
+                     || (b.Author != null && b.Author.Contains(searchTerm))
+                     || b.BookId.Contains(searchTerm))
+            .OrderBy(b => b.Title)
+            .ToListAsync();
+    }
 
-        /// <summary>
-        /// Lấy sách theo thể loại
-        /// </summary>
-        public async Task<List<Book>> GetByCategoryAsync(int categoryId)
-        {
-            return await _context.Books
-                .Include(b => b.Category)
-                .Where(b => b.CategoryId == categoryId)
-                .AsNoTracking()
-                .ToListAsync();
-        }
+    public async Task<List<Book>> GetByCategoryAsync(int categoryId)
+    {
+        return await _context.Books
+            .Include(b => b.BookCategories)
+            .Where(b => b.BookCategories.Any(bc => bc.CategoryId == categoryId))
+            .OrderBy(b => b.Title)
+            .ToListAsync();
+    }
 
-        /// <summary>
-        /// Lấy sách còn hàng
-        /// </summary>
-        public async Task<List<Book>> GetAvailableAsync()
-        {
-            return await _context.Books
-                .Include(b => b.Category)
-                .Where(b => b.Quantity > 0)
-                .AsNoTracking()
-                .ToListAsync();
-        }
+    public async Task<List<Book>> GetAvailableAsync()
+    {
+        return await _context.Books
+            .Where(b => b.Status == "Có thể mượn" && b.Quantity > 0)
+            .ToListAsync();
+    }
 
-        /// <summary>
-        /// Kiểm tra mã sách có tồn tại
-        /// </summary>
-        public async Task<bool> ExistsAsync(string bookId)
-        {
-            return await _context.Books.AnyAsync(b => b.BookId == bookId);
-        }
+    public async Task<bool> ExistsAsync(string bookId)
+    {
+        return await _context.Books.AnyAsync(b => b.BookId == bookId);
+    }
 
-        /// <summary>
-        /// Thêm sách mới
-        /// </summary>
-        public async Task<bool> AddAsync(Book book)
+    public async Task<bool> IsBookBorrowedAsync(string bookId)
+    {
+        return await _context.BorrowTickets
+            .AnyAsync(t => t.Books.Any(b => b.BookId == bookId));
+    }
+
+    public async Task<List<Category>> GetAllCategoriesAsync()
+    {
+        return await _context.Categories
+            .OrderBy(c => c.CategoryName)
+            .ToListAsync();
+    }
+
+    // ─── WRITE ───────────────────────────────────────────────────────────────
+
+    public async Task<bool> AddAsync(Book book, List<int> categoryIds)
+    {
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-            try
+            _context.Books.Add(book);
+            await _context.SaveChangesAsync();
+
+            foreach (var catId in categoryIds.Distinct())
             {
-                _context.Books.Add(book);
-                await _context.SaveChangesAsync();
-                return true;
+                _context.BookCategories.Add(new BookCategory
+                {
+                    BookId = book.BookId,
+                    CategoryId = catId
+                });
             }
-            catch
-            {
-                return false;
-            }
-        }
 
-        /// <summary>
-        /// Cập nhật sách
-        /// </summary>
-        public async Task<bool> UpdateAsync(Book book)
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return true;
+        }
+        catch
         {
-            try
-            {
-                var existing = await _context.Books.FindAsync(book.BookId);
-                if (existing == null) return false;
-
-                existing.Title = book.Title;
-                existing.Author = book.Author;
-                existing.Publisher = book.Publisher;
-                existing.PublishYear = book.PublishYear;
-                existing.CategoryId = book.CategoryId;
-                existing.Quantity = book.Quantity;
-                existing.Status = book.Status;
-
-                // Chỉ cập nhật ImageUrl nếu có ảnh mới
-                if (!string.IsNullOrEmpty(book.ImageUrl))
-                    existing.ImageUrl = book.ImageUrl;
-
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            await transaction.RollbackAsync();
+            return false;
         }
+    }
 
-        /// <summary>
-        /// Xóa sách
-        /// </summary>
-        public async Task<bool> DeleteAsync(string bookId)
+    public async Task<bool> UpdateAsync(Book book, List<int> categoryIds)
+    {
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-            try
-            {
-                var book = await _context.Books.FindAsync(bookId);
-                if (book == null) return false;
+            var existing = await _context.Books
+                .Include(b => b.BookCategories)
+                .FirstOrDefaultAsync(b => b.BookId == book.BookId);
 
-                _context.Books.Remove(book);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch
+            if (existing == null) return false;
+
+            existing.Title = book.Title;
+            existing.Author = book.Author;
+            existing.Publisher = book.Publisher;
+            existing.PublishYear = book.PublishYear;
+            existing.Quantity = book.Quantity;
+            existing.Status = book.Status;
+            existing.ImageUrl = book.ImageUrl;
+
+            // Xóa liên kết danh mục cũ → thêm lại mới
+            _context.BookCategories.RemoveRange(existing.BookCategories);
+
+            foreach (var catId in categoryIds.Distinct())
             {
-                return false;
+                _context.BookCategories.Add(new BookCategory
+                {
+                    BookId = book.BookId,
+                    CategoryId = catId
+                });
             }
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return true;
         }
-
-        /// <summary>
-        /// Kiểm tra sách có đang được mượn không
-        /// </summary>
-        public async Task<bool> IsBookBorrowedAsync(string bookId)
+        catch
         {
-            return await _context.BorrowTickets
-                .Where(bt => bt.Status != "Trả hàng")
-                .SelectMany(bt => bt.Books)
-                .AnyAsync(b => b.BookId == bookId);
+            await transaction.RollbackAsync();
+            return false;
         }
+    }
 
-        /// <summary>
-        /// Cập nhật số lượng sách
-        /// </summary>
-        public async Task<bool> UpdateQuantityAsync(string bookId, int quantityChange)
+    public async Task<bool> DeleteAsync(string bookId)
+    {
+        try
         {
-            try
-            {
-                var book = await _context.Books.FindAsync(bookId);
-                if (book == null) return false;
+            var book = await _context.Books.FirstOrDefaultAsync(b => b.BookId == bookId);
+            if (book == null) return false;
 
-                book.Quantity = (book.Quantity ?? 0) + quantityChange;
-                if (book.Quantity < 0) book.Quantity = 0;
-
-                _context.Books.Update(book);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            _context.Books.Remove(book);
+            await _context.SaveChangesAsync();
+            return true;
         }
+        catch { return false; }
+    }
 
-        /// <summary>
-        /// Lấy danh sách thể loại
-        /// </summary>
-        public async Task<List<Category>> GetAllCategoriesAsync()
-        {
-            return await _context.Categories
-                .AsNoTracking()
-                .ToListAsync();
-        }
+    public async Task<bool> UpdateQuantityAsync(string bookId, int quantityChange)
+    {
+        var book = await _context.Books.FirstOrDefaultAsync(b => b.BookId == bookId);
+        if (book == null) return false;
+
+        book.Quantity = (book.Quantity ?? 0) + quantityChange;
+        await _context.SaveChangesAsync();
+        return true;
     }
 }

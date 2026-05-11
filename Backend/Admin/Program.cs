@@ -7,34 +7,46 @@ using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// ── MVC ──────────────────────────────────────────────────────────────────
 builder.Services.AddControllersWithViews();
 
-// Đăng ký DbContext
+// ── DbContext ─────────────────────────────────────────────────────────────
 builder.Services.AddDbContext<LibraryDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Đăng ký Repository
+// ── Session ───────────────────────────────────────────────────────────────
+builder.Services.AddDistributedMemoryCache();   // ← BẮT BUỘC phải có
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+// ── Repositories ─────────────────────────────────────────────────────────
 builder.Services.AddScoped<BookRepository>();
-
-// Đăng ký Service
+builder.Services.AddScoped<CategoryRepository>();
+builder.Services.AddScoped<AccountRepository>();   // ← mới
+builder.Services.AddScoped<ReaderRepository>();
+// ── Services ──────────────────────────────────────────────────────────────
 builder.Services.AddScoped<IBookService, BookService>();
-
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IAuthService, AuthService>();  // ← mới
+builder.Services.AddScoped<IReaderService, ReaderService>();
+// ─────────────────────────────────────────────────────────────────────────
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 
+// Serve ảnh sách
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
@@ -45,14 +57,34 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseRouting();
 
+app.UseSession();          // ← phải đặt TRƯỚC UseAuthorization
 app.UseAuthorization();
 
 app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Account}/{action=Login}/{id?}")  // Mặc định vào Login
     .WithStaticAssets();
 
+// Seed tài khoản admin mặc định nếu chưa có
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<LibraryDbContext>();
+    if (!context.Accounts.Any(a => a.Username == "admin"))
+    {
+        context.Accounts.Add(new Core.Shared.Entities.Account
+        {
+            Username = "admin",
+            Password = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
+            FullName = "Quản trị viên",
+            Role = "Admin",
+            Email = "admin@thuvien.com",
+            CreatedAt = DateTime.Now
+        });
+        context.SaveChanges();
+    }
+}
 
+app.Run();
 app.Run();

@@ -1,8 +1,116 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-0">🏛 Trang chủ - Quản lý Thư viện</h4>
+        <small class="text-muted">
+            Xin chào, <strong>@ViewBag.FullName</strong>
+            (@(ViewBag.Role == "Admin" ? "Quản trị viên" : "Nhân viên"))
+        </small>
+    </div>
+    <form asp-controller="Account" asp-action="Logout" method="post">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-outline-danger btn-sm">Đăng xuất</button>
+    </form>
+</div>
+
+@* Thống kê nhanh *@
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center p-3">
+            <div class="fs-1">📚</div>
+            <h6 class="mt-2 text-muted">Quản lý Sách</h6>
+            <a asp-controller="Book" asp-action="Index" class="btn btn-primary btn-sm mt-2">
+                Xem danh sách
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center p-3">
+            <div class="fs-1">📚</div>
+            <h6 class="mt-2 text-muted">Quản Danh mục</h6>
+            <a asp-controller="Category" asp-action="Index" class="btn btn-primary btn-sm mt-2">
+                Xem danh sách
+            </a>
+        </div>
+    </div>
+
+    @if (ViewBag.Role == "Admin")
+    {
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3">
+                <div class="fs-1">👤</div>
+                <h6 class="mt-2 text-muted">Quản lý Nhân viên</h6>
+                <a asp-controller="Staff" asp-action="Index" class="btn btn-primary btn-sm mt-2">
+                    Xem danh sách
+                </a>
+            </div>
+        </div>
+    }
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center p-3">
+            <div class="fs-1">📋</div>
+            <h6 class="mt-2 text-muted">Phiếu mượn</h6>
+            <a asp-controller="Borrow" asp-action="Index" class="btn btn-primary btn-sm mt-2">
+                Xem danh sách
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center p-3">
+            <div class="fs-1">🧑‍🤝‍🧑</div>
+            <h6 class="mt-2 text-muted">Bạn đọc</h6>
+            <a asp-controller="Reader" asp-action="Index" class="btn btn-primary btn-sm mt-2">
+                Xem danh sách
+            </a>
+        </div>
+    </div>
+</div>
+
+@* Hướng dẫn nhanh *@
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-light fw-semibold">📌 Chức năng theo quyền hạn</div>
+    <div class="card-body">
+        <table class="table table-sm mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Chức năng</th>
+                    <th class="text-center">Admin</th>
+                    <th class="text-center">Staff</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Quản lý sách</td>
+                    <td class="text-center">✅</td>
+                    <td class="text-center">✅</td>
+                </tr>
+                <tr>
+                    <tr>
+                        <td>Quản lý danh mục</td>
+                        <td class="text-center">✅</td>
+                        <td class="text-center">✅</td>
+                    </tr>
+                    <td>Quản lý phiếu mượn</td>
+                    <td class="text-center">✅</td>
+                    <td class="text-center">✅</td>
+                </tr>
+                <tr>
+                    <td>Quản lý bạn đọc</td>
+                    <td class="text-center">✅</td>
+                    <td class="text-center">✅</td>
+                </tr>
+                <tr>
+                    <td>Quản lý tài khoản nhân viên</td>
+                    <td class="text-center">✅</td>
+                    <td class="text-center">❌</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

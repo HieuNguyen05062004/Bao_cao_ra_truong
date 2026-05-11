@@ -1,5 +1,4 @@
 @using Admin.ViewModels
-@using Microsoft.AspNetCore.Mvc.Rendering
 @model BookViewModel
 
 @{
@@ -20,7 +19,7 @@
                     {
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     }
 
@@ -31,16 +30,12 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label asp-for="BookId" class="form-label">
-                                    Mã sách <span class="text-danger">*</span>
-                                </label>
+                                <label asp-for="BookId" class="form-label">Mã sách</label>
                                 <input asp-for="BookId" class="form-control" readonly>
                                 <small class="text-muted">Mã sách không thể thay đổi</small>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="Title" class="form-label">
-                                    Tên sách <span class="text-danger">*</span>
-                                </label>
+                                <label asp-for="Title" class="form-label">Tên sách <span class="text-danger">*</span></label>
                                 <input asp-for="Title" class="form-control" placeholder="Nhập tên sách">
                                 <span asp-validation-for="Title" class="text-danger small"></span>
                             </div>
@@ -48,80 +43,52 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label asp-for="Author" class="form-label">
-                                    Tác giả
-                                </label>
+                                <label asp-for="Author" class="form-label">Tác giả</label>
                                 <input asp-for="Author" class="form-control" placeholder="Nhập tên tác giả">
-                                <span asp-validation-for="Author" class="text-danger small"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="Publisher" class="form-label">
-                                    Nhà xuất bản
-                                </label>
-                                <input asp-for="Publisher" class="form-control" placeholder="Nhập tên nhà xuất bản">
-                                <span asp-validation-for="Publisher" class="text-danger small"></span>
+                                <label asp-for="Publisher" class="form-label">Nhà xuất bản</label>
+                                <input asp-for="Publisher" class="form-control" placeholder="Nhập tên NXB">
                             </div>
                         </div>
 
                         <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label asp-for="PublishYear" class="form-label">
-                                    Năm xuất bản
-                                </label>
+                            <div class="col-md-6">
+                                <label asp-for="PublishYear" class="form-label">Năm xuất bản</label>
                                 <input asp-for="PublishYear" type="number" class="form-control" min="1000" max="2100">
                                 <span asp-validation-for="PublishYear" class="text-danger small"></span>
                             </div>
-                            <div class="col-md-4">
-                                <label asp-for="CategoryId" class="form-label">
-                                    Thể loại
-                                </label>
-                                <select asp-for="CategoryId" class="form-select">
-                                    <option value="">-- Chọn thể loại --</option>
-                                    @if (ViewBag.Categories != null)
-                                    {
-                                        @foreach (SelectListItem item in ViewBag.Categories)
-                                        {
-                                            if (item.Selected)
-                                            {
-                                                <option value="@item.Value" selected>@item.Text</option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@item.Value">@item.Text</option>
-                                            }
-                                        }
-                                    }
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label asp-for="Quantity" class="form-label">
-                                    Số lượng <span class="text-danger">*</span>
-                                </label>
+                            <div class="col-md-6">
+                                <label asp-for="Quantity" class="form-label">Số lượng <span class="text-danger">*</span></label>
                                 <input asp-for="Quantity" type="number" class="form-control" min="0">
                                 <span asp-validation-for="Quantity" class="text-danger small"></span>
                             </div>
                         </div>
 
+                        @*
+                            ── Chips chọn nhiều danh mục ──
+                            SelectedIds = Model.CategoryIds: các chip đang chọn sẽ tự highlight
+                        *@
+                        @await Html.PartialAsync("_CategoryChips", new CategoryChipsViewModel
+                        {
+                            Categories = Model.Categories,
+                            SelectedIds = Model.CategoryIds,
+                            InputName = "CategoryIds"
+                        })
+
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label asp-for="Status" class="form-label">
-                                    Tình trạng
-                                </label>
+                                <label asp-for="Status" class="form-label">Tình trạng</label>
                                 <input asp-for="Status" class="form-control" placeholder="Có thể mượn">
-                                <span asp-validation-for="Status" class="text-danger small"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="ImageFile" class="form-label">
-                                    Hình ảnh sách
-                                </label>
-
-                                <input asp-for="ImageFile"
-                                       type="file"
-                                       class="form-control"
-                                       accept="image/*">
-
-                                <span asp-validation-for="ImageFile"
-                                      class="text-danger small"></span>
+                                <label asp-for="ImageFile" class="form-label">Hình ảnh bìa</label>
+                                <input asp-for="ImageFile" type="file" class="form-control" accept="image/*">
+                                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                                {
+                                    <small class="text-muted">Ảnh hiện tại: @Model.ImageUrl — chọn file mới để thay</small>
+                                }
+                                <input type="hidden" asp-for="ImageUrl" />
                             </div>
                         </div>
 

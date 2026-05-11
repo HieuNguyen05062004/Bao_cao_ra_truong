@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,9 +23,6 @@ public partial class Book
 
     public int? PublishYear { get; set; }
 
-    [Column("CategoryID")]
-    public int? CategoryId { get; set; }
-
     public int? Quantity { get; set; }
 
     [StringLength(50)]
@@ -36,10 +31,18 @@ public partial class Book
     [Column("ImageURL")]
     public string? ImageUrl { get; set; }
 
-    [ForeignKey("CategoryId")]
-    [InverseProperty("Books")]
-    public virtual Category? Category { get; set; }
+    // ── CategoryId cũ đã bị xóa ──────────────────────────────────────────────
+    // Database mới không có cột CategoryID trên bảng Books.
+    // Quan hệ sách ↔ danh mục được quản lý hoàn toàn qua bảng trung gian BookCategories.
 
+    /// <summary>
+    /// Danh mục của sách này (many-to-many qua BookCategories).
+    /// </summary>
+    public virtual ICollection<BookCategory> BookCategories { get; set; } = new List<BookCategory>();
+
+    /// <summary>
+    /// Phiếu mượn liên quan đến sách này.
+    /// </summary>
     [ForeignKey("BookId")]
     [InverseProperty("Books")]
     public virtual ICollection<BorrowTicket> Tickets { get; set; } = new List<BorrowTicket>();

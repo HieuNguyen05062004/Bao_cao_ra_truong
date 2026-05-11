@@ -35,11 +35,16 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
+// Thay đoạn cũ bằng đoạn này
+var bookImagesPath = Path.GetFullPath(Path.Combine(
+    Directory.GetCurrentDirectory(), "../Core.Shared/Uploads/books"));
+
+// Tự tạo folder nếu chưa có, tránh crash
+Directory.CreateDirectory(bookImagesPath);
+
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(
-        Path.GetFullPath(Path.Combine(
-            Directory.GetCurrentDirectory(), "../Core.Shared/Uploads/books"))),
+    FileProvider = new PhysicalFileProvider(bookImagesPath),
     RequestPath = "/book-images"
 });
 
