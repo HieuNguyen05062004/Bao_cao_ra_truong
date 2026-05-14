@@ -1,5 +1,6 @@
 ﻿using Core.Shared.Data;
 using Core.Shared.Entities;
+using Core.Shared.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core.Shared.Repositories;
@@ -58,9 +59,6 @@ public class BookRepository
             .ToListAsync();
     }
 
-    /// <summary>
-    /// Lấy 5 sách mới nhất được thêm vào hệ thống (sách nổi bật).
-    /// </summary>
     public async Task<List<Book>> GetFeaturedBooksAsync(int count = 5)
     {
         return await _context.Books
@@ -71,9 +69,6 @@ public class BookRepository
             .ToListAsync();
     }
 
-    /// <summary>
-    /// Lấy 5 sách được mượn nhiều nhất (xu hướng).
-    /// </summary>
     public async Task<List<Book>> GetTrendingBooksAsync(int count = 5)
     {
         return await _context.Books
@@ -89,10 +84,32 @@ public class BookRepository
         return await _context.Books.AnyAsync(b => b.BookId == bookId);
     }
 
+    /// <summary>
+    /// Kiểm tra sách có đang được mượn THỰC SỰ không.
+    ///
+    /// Dùng WHITELIST: chỉ chặn xóa khi phiếu có status đang trong quá trình mượn.
+    /// Các status kết thúc ("Đã Trả", "Bị Từ Chối", "Đã trả", "Từ chối"...)
+    /// đều KHÔNG chặn xóa.
+    ///
+    /// Các status "đang mượn thực sự":
+    ///   - "Chờ Duyệt"     : yêu cầu chưa được xử lý
+    ///   - "Đã Duyệt"      : đã duyệt nhưng chưa lấy sách
+    ///   - "Đang Mượn Sách": đang giữ sách
+    /// </summary>
     public async Task<bool> IsBookBorrowedAsync(string bookId)
     {
+        // Danh sách status "đang trong quá trình" — chặn xóa
+        var activeStatuses = new[]
+        {
+            "Chờ Duyệt",
+            "Đã Duyệt",
+            "Đang Mượn Sách"
+        };
+
         return await _context.BorrowTickets
-            .AnyAsync(t => t.Books.Any(b => b.BookId == bookId));
+            .AnyAsync(t =>
+                t.Books.Any(b => b.BookId == bookId) &&
+                activeStatuses.Contains(t.Status));
     }
 
     public async Task<List<Category>> GetAllCategoriesAsync()
@@ -109,6 +126,12 @@ public class BookRepository
         using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
+            if (string.IsNullOrWhiteSpace(book.BookId))
+                book.BookId = IdGenerator.GenerateBookId();
+
+            if (book.CreatedAt == null)
+                book.CreatedAt = DateTime.Now;
+
             _context.Books.Add(book);
             await _context.SaveChangesAsync();
 
@@ -151,7 +174,6 @@ public class BookRepository
             existing.Status = book.Status;
             existing.ImageUrl = book.ImageUrl;
 
-            // Xóa liên kết danh mục cũ → thêm lại mới
             _context.BookCategories.RemoveRange(existing.BookCategories);
 
             foreach (var catId in categoryIds.Distinct())
@@ -174,18 +196,43 @@ public class BookRepository
         }
     }
 
+    /// <summary>
+    /// Xóa sách theo đúng thứ tự FK:
+    /// 1. Xóa BorrowDetails (không có CASCADE trong SQL schema)
+    /// 2. Xóa BookCategories
+    /// 3. Xóa Book
+    /// Toàn bộ trong 1 transaction.
+    /// </summary>
     public async Task<bool> DeleteAsync(string bookId)
     {
+        using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
-            var book = await _context.Books.FirstOrDefaultAsync(b => b.BookId == bookId);
+            var book = await _context.Books
+                .Include(b => b.BookCategories)
+                .FirstOrDefaultAsync(b => b.BookId == bookId);
+
             if (book == null) return false;
 
+            // Bước 1: Xóa lịch sử mượn trong BorrowDetails
+            await _context.Database.ExecuteSqlRawAsync(
+                "DELETE FROM BorrowDetails WHERE BookID = {0}", bookId);
+
+            // Bước 2: Xóa BookCategories
+            _context.BookCategories.RemoveRange(book.BookCategories);
+
+            // Bước 3: Xóa sách
             _context.Books.Remove(book);
+
             await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
             return true;
         }
-        catch { return false; }
+        catch
+        {
+            await transaction.RollbackAsync();
+            return false;
+        }
     }
 
     public async Task<bool> UpdateQuantityAsync(string bookId, int quantityChange)

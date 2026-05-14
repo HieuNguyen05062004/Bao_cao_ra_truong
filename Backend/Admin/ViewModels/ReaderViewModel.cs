@@ -6,10 +6,8 @@ namespace Admin.ViewModels;
 // Dùng cho Index / Create / Edit
 public class ReaderViewModel
 {
-    [Required(ErrorMessage = "Vui lòng nhập mã bạn đọc.")]
-    [StringLength(20, ErrorMessage = "Tối đa 20 ký tự.")]
-    [Display(Name = "Mã bạn đọc")]
-    public string ReaderId { get; set; } = string.Empty;
+    // Chỉ dùng để hiển thị, không nhập tay — hệ thống tự sinh
+    public string? ReaderId { get; set; }
 
     [Required(ErrorMessage = "Vui lòng nhập họ tên.")]
     [StringLength(100, ErrorMessage = "Tối đa 100 ký tự.")]
@@ -34,6 +32,11 @@ public class ReaderViewModel
     [StringLength(100, ErrorMessage = "Tối đa 100 ký tự.")]
     [Display(Name = "Email")]
     public string? Email { get; set; }
+
+    [StringLength(100, MinimumLength = 6, ErrorMessage = "Mật khẩu từ 6 đến 100 ký tự.")]
+    [DataType(DataType.Password)]
+    [Display(Name = "Mật khẩu")]
+    public string? Password { get; set; }
 
     [Display(Name = "Ảnh đại diện")]
     public IFormFile? AvatarFile { get; set; }

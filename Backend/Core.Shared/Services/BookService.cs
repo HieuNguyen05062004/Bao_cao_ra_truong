@@ -1,6 +1,7 @@
 ﻿using Core.Shared.Entities;
 using Core.Shared.Interfaces;
 using Core.Shared.Repositories;
+using Core.Shared.Utilities;
 
 namespace Core.Shared.Services;
 
@@ -59,20 +60,26 @@ public class BookService : IBookService
         if (book == null)
             return (false, "Thông tin sách không hợp lệ.");
 
-        if (string.IsNullOrWhiteSpace(book.BookId))
-            return (false, "Mã sách không được để trống.");
-
         if (string.IsNullOrWhiteSpace(book.Title))
             return (false, "Tên sách không được để trống.");
-
-        if (book.BookId.Length > 20)
-            return (false, "Mã sách không được quá 20 ký tự.");
 
         if (book.Title.Length > 255)
             return (false, "Tên sách không được quá 255 ký tự.");
 
-        if (await _repository.ExistsAsync(book.BookId))
-            return (false, "Mã sách này đã tồn tại trong hệ thống.");
+        // Tự sinh BookId nếu không có — format BK + 5 số, đảm bảo không trùng
+        if (string.IsNullOrWhiteSpace(book.BookId))
+        {
+            string newId;
+            do { newId = IdGenerator.GenerateBookId(); }
+            while (await _repository.ExistsAsync(newId));
+            book.BookId = newId;
+        }
+        else
+        {
+            // Trường hợp truyền ID thủ công (import hàng loạt) → kiểm tra trùng
+            if (await _repository.ExistsAsync(book.BookId))
+                return (false, $"Mã sách '{book.BookId}' đã tồn tại trong hệ thống.");
+        }
 
         if (book.Quantity == null) book.Quantity = 0;
         if (book.Quantity < 0)
@@ -81,7 +88,6 @@ public class BookService : IBookService
         if (string.IsNullOrWhiteSpace(book.Status))
             book.Status = "Có thể mượn";
 
-        // categoryIds có thể rỗng (sách chưa phân loại) — không bắt buộc
         var ids = categoryIds ?? new List<int>();
 
         var result = await _repository.AddAsync(book, ids);

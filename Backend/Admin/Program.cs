@@ -29,11 +29,13 @@ builder.Services.AddScoped<BookRepository>();
 builder.Services.AddScoped<CategoryRepository>();
 builder.Services.AddScoped<AccountRepository>();   // ← mới
 builder.Services.AddScoped<ReaderRepository>();
+builder.Services.AddScoped<BorrowRepository>();
 // ── Services ──────────────────────────────────────────────────────────────
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IAuthService, AuthService>();  // ← mới
 builder.Services.AddScoped<IReaderService, ReaderService>();
+builder.Services.AddScoped<IBorrowService, BorrowService>();
 // ─────────────────────────────────────────────────────────────────────────
 var app = builder.Build();
 

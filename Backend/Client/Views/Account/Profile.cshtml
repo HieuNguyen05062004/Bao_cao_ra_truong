@@ -1,0 +1,193 @@
+@model Client.ViewModels.ProfileViewModel
+
+@{
+    ViewData["Title"] = "Hồ Sơ Cá Nhân";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <!-- Sidebar Info -->
+        <div class="col-md-4">
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-body text-center p-4">
+                    <!-- Avatar -->
+                    @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+                    {
+                        <img src="@Model.AvatarUrl" class="rounded-circle mb-3 shadow"
+                             width="140" height="140" style="object-fit:cover"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+                        <div class="rounded-circle bg-primary d-none align-items-center justify-content-center shadow mb-3"
+                             style="width:140px;height:140px;font-size:60px;color:white;margin:0 auto">
+                            @Model.FullName.Substring(0, 1).ToUpper()
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center shadow mb-3"
+                             style="width:140px;height:140px;font-size:60px;color:white">
+                            @Model.FullName.Substring(0, 1).ToUpper()
+                        </div>
+                    }
+
+                    <h4 class="mb-1">@Model.FullName</h4>
+                    <p class="text-muted small mb-3">@Model.ReaderId</p>
+
+                    <div class="alert alert-info small mb-3">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Thành viên từ: @Model.CreatedAt?.ToString("dd/MM/yyyy")
+                    </div>
+
+                    <a href="@Url.Action("EditProfile", "Account")" class="btn btn-primary btn-sm w-100 mb-2">
+                        <i class="fas fa-edit me-1"></i> Chỉnh Sửa Thông Tin
+                    </a>
+                    <a href="@Url.Action("DeleteAccount", "Account")" class="btn btn-outline-danger btn-sm w-100">
+                        <i class="fas fa-trash me-1"></i> Xóa Tài Khoản
+                    </a>
+                </div>
+            </div>
+
+            <!-- Thống Kê Nhanh -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white fw-bold">
+                    <i class="fas fa-chart-bar me-2"></i>Thống Kê
+                </div>
+                <div class="card-body">
+                    <div class="row text-center mb-3">
+                        <div class="col-6">
+                            <div class="stat-item">
+                                <div class="stat-number text-primary fw-bold" style="font-size:24px">@Model.TotalBorrow</div>
+                                <small class="text-muted">Tổng Mượn</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-item">
+                                <div class="stat-number text-info fw-bold" style="font-size:24px">@Model.BorrowingCount</div>
+                                <small class="text-muted">Đang Mượn</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="stat-item">
+                                <div class="stat-number text-danger fw-bold" style="font-size:24px">@Model.OverdueCount</div>
+                                <small class="text-muted">Quá Hạn</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-item">
+                                <div class="stat-number text-success fw-bold" style="font-size:24px">@Model.ReturnedCount</div>
+                                <small class="text-muted">Đã Trả</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-8">
+            <!-- Thông Tin Cá Nhân -->
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-header bg-primary text-white fw-bold">
+                    <i class="fas fa-user me-2"></i>Thông Tin Cá Nhân
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="fw-semibold text-muted small">Mã Bạn Đọc:</label>
+                            <p class="fs-5">@Model.ReaderId</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="fw-semibold text-muted small">Họ và Tên:</label>
+                            <p class="fs-5">@Model.FullName</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="fw-semibold text-muted small">Email:</label>
+                            <p class="fs-5">
+                                @if (!string.IsNullOrEmpty(Model.Email))
+                                {
+                                    <a href="mailto:@Model.Email">@Model.Email</a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="fw-semibold text-muted small">Số Điện Thoại:</label>
+                            <p class="fs-5">@(Model.Phone ?? "—")</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="fw-semibold text-muted small">Giới Tính:</label>
+                            <p class="fs-5">@(Model.Gender ?? "—")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="fw-semibold text-muted small">Ngày Sinh:</label>
+                            <p class="fs-5">@(Model.DoB?.ToString("dd/MM/yyyy") ?? "—")</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="fw-semibold text-muted small">Địa Chỉ:</label>
+                        <p class="fs-5">@(Model.Address ?? "—")</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liên Kết Nhanh -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-info text-white fw-bold">
+                    <i class="fas fa-link me-2"></i>Liên Kết Nhanh
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <a href="@Url.Action("BorrowHistory", "Borrow")" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-history me-2"></i>Lịch Sử Mượn
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="@Url.Action("Index", "Search")" class="btn btn-outline-success w-100">
+                                <i class="fas fa-search me-2"></i>Tìm Sách
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="@Url.Action("Index", "Borrow")" class="btn btn-outline-info w-100">
+                                <i class="fas fa-book me-2"></i>Mượn Sách
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-home me-2"></i>Trang Chủ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .stat-item {
+        padding: 10px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        border: none;
+        border-radius: 12px;
+    }
+
+    .card-header {
+        border-radius: 12px 12px 0 0 !important;
+    }
+</style>

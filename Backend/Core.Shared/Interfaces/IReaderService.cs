@@ -6,15 +6,23 @@ public interface IReaderService
 {
     Task<IEnumerable<Reader>> GetAllAsync();
     Task<Reader?> GetByIdAsync(string readerId);
+    Task<bool> ReaderIdExistsAsync(string readerId);
+    Task<IEnumerable<Reader>> SearchAsync(string keyword);
+    Task<int> CountBorrowingAsync(string readerId);
+    Task<int> CountOverdueAsync(string readerId);
 
     /// <summary>Trả về null nếu thành công, chuỗi lỗi nếu thất bại.</summary>
     Task<string?> CreateAsync(Reader reader);
+
+    /// <summary>Admin cập nhật bạn đọc.</summary>
     Task<string?> UpdateAsync(Reader reader);
+
+    /// <summary>Admin xóa bạn đọc.</summary>
     Task<string?> DeleteAsync(string readerId);
 
-    Task<IEnumerable<Reader>> SearchAsync(string keyword);
+    /// <summary>Client tự sửa thông tin cá nhân.</summary>
+    Task<string?> UpdateProfileAsync(Reader reader);
 
-    Task<bool> ReaderIdExistsAsync(string readerId);
-    Task<int> CountBorrowingAsync(string readerId);
-    Task<int> CountOverdueAsync(string readerId);
+    /// <summary>Client tự xóa tài khoản của mình.</summary>
+    Task<string?> DeleteSelfAsync(string readerId);
 }

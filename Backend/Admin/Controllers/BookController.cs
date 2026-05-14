@@ -28,6 +28,7 @@ public class BookController : Controller
                 : await _bookService.SearchBooksAsync(searchTerm);
 
             ViewBag.SearchTerm = searchTerm;
+            ViewBag.Categories = await _bookService.GetAllCategoriesAsync();
             return View(books);
         }
         catch (Exception ex)
@@ -61,7 +62,7 @@ public class BookController : Controller
         }
     }
 
-    // ─── CREATE ──────────────────────────────────────────────────────────────
+    // ─── CREATE (trang riêng — fallback nếu cần) ─────────────────────────────
 
     [HttpGet]
     public async Task<IActionResult> Create()
@@ -94,19 +95,19 @@ public class BookController : Controller
         {
             var book = new Book
             {
-                BookId = model.BookId?.Trim(),
+                BookId = null,   // Service tự sinh BK + 5 số
                 Title = model.Title?.Trim(),
                 Author = model.Author?.Trim(),
                 Publisher = model.Publisher?.Trim(),
                 PublishYear = model.PublishYear,
                 Quantity = model.Quantity ?? 0,
                 Status = model.Status ?? "Có thể mượn",
+                CreatedAt = DateTime.Now,
                 ImageUrl = model.ImageFile != null
-                                ? await SaveImageAsync(model.ImageFile)
-                                : string.Empty
+                                  ? await SaveImageAsync(model.ImageFile)
+                                  : string.Empty
             };
 
-            // Truyền CategoryIds (danh sách từ chips) vào Service
             var (success, message) = await _bookService.AddBookAsync(book, model.CategoryIds);
 
             if (success)
@@ -124,6 +125,42 @@ public class BookController : Controller
             TempData["ErrorMessage"] = "Lỗi khi thêm sách: " + ex.Message;
             model.Categories = await _bookService.GetAllCategoriesAsync();
             return View(model);
+        }
+    }
+
+    // ─── CREATE AJAX (gọi từ modal trong Index) ───────────────────────────────
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateAjax([FromForm] BookAjaxModel model)
+    {
+        try
+        {
+            var book = new Book
+            {
+                BookId = null,   // Service tự sinh BK + 5 số, đảm bảo không trùng
+                Title = model.Title?.Trim(),
+                Author = model.Author?.Trim(),
+                Publisher = model.Publisher?.Trim(),
+                PublishYear = model.PublishYear,
+                Quantity = model.Quantity ?? 0,
+                Status = string.IsNullOrWhiteSpace(model.Status)
+                                  ? "Có thể mượn"
+                                  : model.Status,
+                CreatedAt = DateTime.Now,
+                ImageUrl = model.ImageFile != null
+                                  ? await SaveImageAsync(model.ImageFile)
+                                  : string.Empty
+            };
+
+            var categoryIds = model.CategoryIds ?? new List<int>();
+
+            var (success, message) = await _bookService.AddBookAsync(book, categoryIds);
+            return Json(new { success, message });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = "Lỗi: " + ex.Message });
         }
     }
 
@@ -154,8 +191,6 @@ public class BookController : Controller
                 Status = book.Status,
                 ImageUrl = book.ImageUrl,
                 Categories = await _bookService.GetAllCategoriesAsync(),
-
-                // Lấy danh sách ID từ bảng trung gian BookCategories để highlight chips
                 CategoryIds = book.BookCategories.Select(bc => bc.CategoryId).ToList()
             };
 
@@ -192,8 +227,8 @@ public class BookController : Controller
                 Quantity = model.Quantity ?? 0,
                 Status = model.Status ?? "Có thể mượn",
                 ImageUrl = model.ImageFile != null
-                                ? await SaveImageAsync(model.ImageFile)
-                                : model.ImageUrl ?? string.Empty
+                                  ? await SaveImageAsync(model.ImageFile)
+                                  : model.ImageUrl ?? string.Empty
             };
 
             var (success, message) = await _bookService.UpdateBookAsync(book, model.CategoryIds);
@@ -213,6 +248,45 @@ public class BookController : Controller
             TempData["ErrorMessage"] = "Lỗi khi cập nhật sách: " + ex.Message;
             model.Categories = await _bookService.GetAllCategoriesAsync();
             return View(model);
+        }
+    }
+
+    // ─── EDIT AJAX (gọi từ modal trong Index) ─────────────────────────────────
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditAjax([FromForm] BookAjaxModel model)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(model.BookId))
+                return Json(new { success = false, message = "Mã sách không hợp lệ." });
+
+            var book = new Book
+            {
+                BookId = model.BookId,
+                Title = model.Title?.Trim(),
+                Author = model.Author?.Trim(),
+                Publisher = model.Publisher?.Trim(),
+                PublishYear = model.PublishYear,
+                Quantity = model.Quantity ?? 0,
+                Status = string.IsNullOrWhiteSpace(model.Status)
+                                  ? "Có thể mượn"
+                                  : model.Status,
+                // Nếu có ảnh mới thì lưu ảnh mới, ngược lại giữ URL ảnh cũ
+                ImageUrl = model.ImageFile != null
+                                  ? await SaveImageAsync(model.ImageFile)
+                                  : model.ImageUrl ?? string.Empty
+            };
+
+            var categoryIds = model.CategoryIds ?? new List<int>();
+
+            var (success, message) = await _bookService.UpdateBookAsync(book, categoryIds);
+            return Json(new { success, message });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = "Lỗi: " + ex.Message });
         }
     }
 
@@ -260,7 +334,39 @@ public class BookController : Controller
         }
     }
 
-    // ─── SEARCH (API) ─────────────────────────────────────────────────────────
+    // ─── DELETE MANY ─────────────────────────────────────────────────────────
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteMany(List<string> ids)
+    {
+        if (ids == null || ids.Count == 0)
+        {
+            TempData["ErrorMessage"] = "Không có sách nào được chọn để xóa.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        int successCount = 0;
+        var failedIds = new List<string>();
+
+        foreach (var id in ids)
+        {
+            var (success, _) = await _bookService.DeleteBookAsync(id);
+            if (success) successCount++;
+            else failedIds.Add(id);
+        }
+
+        if (failedIds.Count == 0)
+            TempData["SuccessMessage"] = $"Đã xóa thành công {successCount} cuốn sách.";
+        else
+            TempData["ErrorMessage"] =
+                $"Xóa được {successCount}/{ids.Count} sách. " +
+                $"Không thể xóa: {string.Join(", ", failedIds)} (có thể đang được mượn).";
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    // ─── SEARCH API ──────────────────────────────────────────────────────────
 
     [HttpGet]
     public async Task<IActionResult> Search(string term)
@@ -271,7 +377,10 @@ public class BookController : Controller
         {
             return Json(await _bookService.SearchBooksAsync(term));
         }
-        catch { return Json(new List<Book>()); }
+        catch
+        {
+            return Json(new List<Book>());
+        }
     }
 
     // ─── PRIVATE HELPER ──────────────────────────────────────────────────────
@@ -285,9 +394,29 @@ public class BookController : Controller
             Directory.CreateDirectory(uploadFolder);
 
         string fileName = Guid.NewGuid() + Path.GetExtension(imageFile.FileName);
-        using var stream = new FileStream(Path.Combine(uploadFolder, fileName), FileMode.Create);
+        string filePath = Path.Combine(uploadFolder, fileName);
+
+        using var stream = new FileStream(filePath, FileMode.Create);
         await imageFile.CopyToAsync(stream);
 
         return "/book-images/" + fileName;
     }
+}
+
+// ─── MODEL BIND CHO AJAX ─────────────────────────────────────────────────────
+// Nhận dữ liệu từ FormData (JavaScript fetch) trong CreateAjax / EditAjax.
+// Đặt cùng namespace để controller dùng trực tiếp không cần import thêm.
+
+public class BookAjaxModel
+{
+    public string? BookId { get; set; }
+    public string? Title { get; set; }
+    public string? Author { get; set; }
+    public string? Publisher { get; set; }
+    public int? PublishYear { get; set; }
+    public int? Quantity { get; set; }
+    public string? Status { get; set; }
+    public string? ImageUrl { get; set; }  // URL ảnh cũ khi Edit
+    public IFormFile? ImageFile { get; set; }  // File ảnh mới upload
+    public List<int>? CategoryIds { get; set; }  // Nhiều danh mục từ chips
 }

@@ -2,6 +2,7 @@
 using Core.Shared.Entities;
 using Core.Shared.Interfaces;
 using Core.Shared.Repositories;
+using Core.Shared.Utilities;
 
 namespace Core.Shared.Services;
 
@@ -37,12 +38,11 @@ public class ReaderService : IReaderService
     // ------------------------------------------------------------------ //
     public async Task<string?> CreateAsync(Reader reader)
     {
-        if (string.IsNullOrWhiteSpace(reader.ReaderId) ||
-            string.IsNullOrWhiteSpace(reader.FullName))
-            return "Vui lòng điền đầy đủ thông tin bắt buộc.";
+        if (string.IsNullOrWhiteSpace(reader.FullName))
+            return "Vui lòng điền họ tên.";
 
-        if (await _repo.ExistsAsync(reader.ReaderId))
-            return "Mã bạn đọc đã tồn tại.";
+        // Luôn tự sinh ID — không cho nhập tay
+        reader.ReaderId = await GenerateUniqueIdAsync(reader.FullName);
 
         if (!string.IsNullOrWhiteSpace(reader.Email) && !IsValidEmail(reader.Email))
             return "Email không hợp lệ.";
@@ -50,12 +50,14 @@ public class ReaderService : IReaderService
         if (!string.IsNullOrWhiteSpace(reader.Phone) && !IsValidPhone(reader.Phone))
             return "Số điện thoại không hợp lệ.";
 
+        reader.CreatedAt ??= DateTime.Now;
+
         await _repo.AddAsync(reader);
         return null;
     }
 
     // ------------------------------------------------------------------ //
-    //  UPDATE
+    //  UPDATE — Admin cập nhật bạn đọc
     // ------------------------------------------------------------------ //
     public async Task<string?> UpdateAsync(Reader reader)
     {
@@ -79,12 +81,52 @@ public class ReaderService : IReaderService
         existing.Email = reader.Email;
         existing.AvatarUrl = reader.AvatarUrl;
 
+        // Chỉ cập nhật PasswordHash nếu có giá trị mới (đã hash từ controller)
+        if (!string.IsNullOrWhiteSpace(reader.PasswordHash))
+            existing.PasswordHash = reader.PasswordHash;
+
         await _repo.UpdateAsync(existing);
         return null;
     }
 
     // ------------------------------------------------------------------ //
-    //  DELETE
+    //  UPDATE PROFILE — Client tự sửa thông tin cá nhân
+    // ------------------------------------------------------------------ //
+    public async Task<string?> UpdateProfileAsync(Reader reader)
+    {
+        var existing = await _repo.GetByIdAsync(reader.ReaderId);
+        if (existing is null) return "Tài khoản không tồn tại.";
+
+        if (string.IsNullOrWhiteSpace(reader.FullName))
+            return "Vui lòng nhập họ tên.";
+
+        if (!string.IsNullOrWhiteSpace(reader.Email) && !IsValidEmail(reader.Email))
+            return "Email không hợp lệ.";
+
+        if (!string.IsNullOrWhiteSpace(reader.Phone) && !IsValidPhone(reader.Phone))
+            return "Số điện thoại không hợp lệ.";
+
+        existing.FullName = reader.FullName;
+        existing.DoB = reader.DoB;
+        existing.Gender = reader.Gender;
+        existing.Address = reader.Address;
+        existing.Phone = reader.Phone;
+        existing.Email = reader.Email;
+
+        // Chỉ cập nhật avatar nếu có ảnh mới
+        if (reader.AvatarUrl != null)
+            existing.AvatarUrl = reader.AvatarUrl;
+
+        // Chỉ cập nhật mật khẩu nếu có giá trị mới (đã hash từ controller)
+        if (!string.IsNullOrWhiteSpace(reader.PasswordHash))
+            existing.PasswordHash = reader.PasswordHash;
+
+        await _repo.UpdateAsync(existing);
+        return null;
+    }
+
+    // ------------------------------------------------------------------ //
+    //  DELETE — Admin xóa bạn đọc
     // ------------------------------------------------------------------ //
     public async Task<string?> DeleteAsync(string readerId)
     {
@@ -99,8 +141,35 @@ public class ReaderService : IReaderService
     }
 
     // ------------------------------------------------------------------ //
+    //  DELETE SELF — Client tự xóa tài khoản
+    // ------------------------------------------------------------------ //
+    public async Task<string?> DeleteSelfAsync(string readerId)
+    {
+        var reader = await _repo.GetByIdAsync(readerId);
+        if (reader is null) return "Tài khoản không tồn tại.";
+
+        if (await _repo.HasActiveBorrowAsync(readerId))
+            return "Bạn đang có sách chưa trả. Vui lòng trả sách trước khi xóa tài khoản.";
+
+        await _repo.DeleteAsync(reader);
+        return null;
+    }
+
+    // ------------------------------------------------------------------ //
     //  HELPERS
     // ------------------------------------------------------------------ //
+    private async Task<string> GenerateUniqueIdAsync(string fullName)
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            var id = IdGenerator.GenerateReaderId(fullName);
+            if (!await _repo.ExistsAsync(id))
+                return id;
+        }
+        // Fallback — dùng RR prefix nhất quán
+        return $"RR{DateTime.Now:yyMMddHHmmss}";
+    }
+
     private static bool IsValidEmail(string email) =>
         Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase);
 

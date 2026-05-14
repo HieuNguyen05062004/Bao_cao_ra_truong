@@ -33,8 +33,6 @@ public class ReaderController : Controller
     // ------------------------------------------------------------------ //
     //  INDEX
     // ------------------------------------------------------------------ //
-
-    // GET /Reader  hoặc  /Reader?keyword=...
     [HttpGet]
     public async Task<IActionResult> Index(string? keyword)
     {
@@ -44,7 +42,6 @@ public class ReaderController : Controller
             ? await _readerService.GetAllAsync()
             : await _readerService.SearchAsync(keyword);
 
-        // Map sang ViewModel kèm thống kê số sách mượn
         var viewModels = new List<ReaderViewModel>();
         foreach (var r in readers)
         {
@@ -67,10 +64,8 @@ public class ReaderController : Controller
     }
 
     // ------------------------------------------------------------------ //
-    //  DETAILS (kèm lọc phiếu mượn)
+    //  DETAILS
     // ------------------------------------------------------------------ //
-
-    // GET /Reader/Details/{id}?filter=all|borrowing|overdue|returned
     [HttpGet]
     public async Task<IActionResult> Details(string id, string filter = "all")
     {
@@ -86,7 +81,6 @@ public class ReaderController : Controller
         var now = DateTime.Now;
         var tickets = reader.BorrowTickets.AsEnumerable();
 
-        // Áp dụng bộ lọc
         tickets = filter switch
         {
             "borrowing" => tickets.Where(bt => bt.ReturnDate == null),
@@ -119,8 +113,6 @@ public class ReaderController : Controller
     // ------------------------------------------------------------------ //
     //  CREATE
     // ------------------------------------------------------------------ //
-
-    // GET /Reader/Create
     [HttpGet]
     public IActionResult Create()
     {
@@ -128,27 +120,32 @@ public class ReaderController : Controller
         return View(new ReaderViewModel());
     }
 
-    // POST /Reader/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ReaderViewModel model)
     {
         var guard = RequireLogin(); if (guard != null) return guard;
 
+        // ReaderId không nhập tay nên không validate
+        ModelState.Remove(nameof(model.ReaderId));
         if (!ModelState.IsValid) return View(model);
 
         string? avatarUrl = await SaveAvatarAsync(model.AvatarFile);
 
         var reader = new Reader
         {
-            ReaderId = model.ReaderId.Trim(),
+            ReaderId = string.Empty,   // service sẽ tự sinh
             FullName = model.FullName.Trim(),
             DoB = model.DoB,
             Gender = model.Gender,
             Address = model.Address?.Trim(),
             Phone = model.Phone?.Trim(),
             Email = model.Email?.Trim(),
-            AvatarUrl = avatarUrl
+            AvatarUrl = avatarUrl,
+            // Hash mật khẩu nếu admin nhập
+            PasswordHash = string.IsNullOrWhiteSpace(model.Password)
+                ? null
+                : BCrypt.Net.BCrypt.HashPassword(model.Password)
         };
 
         var error = await _readerService.CreateAsync(reader);
@@ -158,15 +155,13 @@ public class ReaderController : Controller
             return View(model);
         }
 
-        TempData["Success"] = "Thêm bạn đọc thành công.";
+        TempData["Success"] = $"Thêm bạn đọc thành công. Mã bạn đọc: {reader.ReaderId}";
         return RedirectToAction(nameof(Index));
     }
 
     // ------------------------------------------------------------------ //
     //  EDIT
     // ------------------------------------------------------------------ //
-
-    // GET /Reader/Edit/{id}
     [HttpGet]
     public async Task<IActionResult> Edit(string id)
     {
@@ -189,12 +184,12 @@ public class ReaderController : Controller
             Phone = reader.Phone,
             Email = reader.Email,
             AvatarUrl = reader.AvatarUrl
+            // Password để trống — chỉ cập nhật nếu admin nhập mới
         };
 
         return View(model);
     }
 
-    // POST /Reader/Edit/{id}
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(string id, ReaderViewModel model)
@@ -202,6 +197,7 @@ public class ReaderController : Controller
         var guard = RequireLogin(); if (guard != null) return guard;
 
         ModelState.Remove(nameof(model.ReaderId));
+        ModelState.Remove(nameof(model.Password)); // Password không bắt buộc khi edit
         if (!ModelState.IsValid) return View(model);
 
         string? avatarUrl = model.AvatarUrl;
@@ -217,7 +213,11 @@ public class ReaderController : Controller
             Address = model.Address?.Trim(),
             Phone = model.Phone?.Trim(),
             Email = model.Email?.Trim(),
-            AvatarUrl = avatarUrl
+            AvatarUrl = avatarUrl,
+            // Chỉ hash và cập nhật nếu admin nhập mật khẩu mới
+            PasswordHash = string.IsNullOrWhiteSpace(model.Password)
+                ? null
+                : BCrypt.Net.BCrypt.HashPassword(model.Password)
         };
 
         var error = await _readerService.UpdateAsync(reader);
@@ -234,8 +234,6 @@ public class ReaderController : Controller
     // ------------------------------------------------------------------ //
     //  DELETE
     // ------------------------------------------------------------------ //
-
-    // GET /Reader/Delete/{id} — trang xác nhận
     [HttpGet]
     public async Task<IActionResult> Delete(string id)
     {
@@ -262,7 +260,6 @@ public class ReaderController : Controller
         return View(model);
     }
 
-    // POST /Reader/Delete/{id} — thực hiện xóa
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(string id)

@@ -6,10 +6,9 @@ namespace Admin.ViewModels;
 
 public class BookViewModel
 {
-    [Display(Name = "Mã sách")]
-    [Required(ErrorMessage = "Mã sách không được để trống")]
-    [StringLength(20)]
-    public string BookId { get; set; } = null!;
+    // Bỏ [Required] — ID do hệ thống tự sinh, không cần nhập tay
+    // Vẫn giữ để dùng khi Edit (truyền ID hiện tại)
+    public string? BookId { get; set; }
 
     [Display(Name = "Tên sách")]
     [Required(ErrorMessage = "Tên sách không được để trống")]
@@ -23,9 +22,11 @@ public class BookViewModel
     public string? Publisher { get; set; }
 
     [Display(Name = "Năm xuất bản")]
+    [Range(1000, 9999, ErrorMessage = "Năm xuất bản không hợp lệ")]
     public int? PublishYear { get; set; }
 
     [Display(Name = "Số lượng")]
+    [Range(0, int.MaxValue, ErrorMessage = "Số lượng không được âm")]
     public int? Quantity { get; set; }
 
     [Display(Name = "Tình trạng")]
@@ -37,8 +38,7 @@ public class BookViewModel
     public IFormFile? ImageFile { get; set; }
 
     /// <summary>
-    /// Danh sách ID danh mục đã chọn (many-to-many).
-    /// Model binding tự điền khi form POST nhiều hidden input cùng tên "CategoryIds".
+    /// Danh sách CategoryId đã chọn (many-to-many).
     /// </summary>
     public List<int> CategoryIds { get; set; } = new();
 

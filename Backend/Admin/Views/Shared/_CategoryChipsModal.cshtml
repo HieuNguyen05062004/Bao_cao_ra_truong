@@ -1,0 +1,153 @@
+@*
+    Partial View cho CategoryChips dùng trong Modal (Index.cshtml)
+    Đơn giản hơn _CategoryChips.cshtml vì chỉ hiển thị chips, không có form wrapper
+*@
+
+@model List<Core.Shared.Entities.Category>
+
+@{
+    var containerIdPrefix = ViewBag.ContainerIdPrefix ?? "cat"; // cat, ecat, etc.
+    var categories = Model ?? new List<Core.Shared.Entities.Category>();
+}
+
+<div class="category-chips-modal mb-3">
+    <label class="form-label fw-semibold">
+        Thể loại
+        <span class="text-muted fw-normal small">(có thể chọn nhiều)</span>
+    </label>
+
+    <!-- Chips Container -->
+    <div class="chips-container" id="@(containerIdPrefix)_chipsContainer" role="group" aria-label="Chọn thể loại sách"
+         style="display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0;">
+        @if (!categories.Any())
+        {
+            <span class="text-muted small fst-italic">Chưa có danh mục nào.</span>
+        }
+        else
+        {
+            @foreach (var cat in categories)
+            {
+                <button type="button"
+                        class="chip-modal"
+                        data-id="@cat.CategoryId"
+                        data-name="@cat.CategoryName"
+                        aria-pressed="false"
+                        style="display: inline-flex; align-items: center; gap: 5px; padding: 6px 14px; 
+                               border-radius: 999px; border: 1.5px solid #d0d5dd; background: #ffffff; 
+                               color: #344054; font-size: 0.85rem; font-weight: 500; cursor: pointer; 
+                               user-select: none; transition: all 0.15s;">
+                    @cat.CategoryName
+                </button>
+            }
+        }
+    </div>
+
+    <!-- Hidden inputs container (tạo bởi JavaScript) -->
+    <div id="@(containerIdPrefix)_hiddenInputsContainer" style="display: none;"></div>
+
+    <span class="text-danger small" id="@(containerIdPrefix)_validationMsg"></span>
+</div>
+
+<style>
+    .chip-modal {
+        outline: none;
+    }
+
+    .chip-modal:hover {
+        border-color: #0d6efd !important;
+        color: #0d6efd !important;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1) !important;
+    }
+
+    .chip-modal.selected {
+        background: #0d6efd !important;
+        border-color: #0d6efd !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.18) !important;
+    }
+
+    .chip-modal.selected:hover {
+        background: #0b5ed7 !important;
+        border-color: #0b5ed7 !important;
+        transform: scale(0.97);
+    }
+</style>
+
+<script>
+(function() {
+    const containerIdPrefix = '@containerIdPrefix';
+    const chipsContainer = document.getElementById(containerIdPrefix + '_chipsContainer');
+    const hiddenInputsContainer = document.getElementById(containerIdPrefix + '_hiddenInputsContainer');
+
+    if (!chipsContainer) return;
+
+    const selectedIds = new Set();
+
+    // Click event cho mỗi chip
+    document.querySelectorAll(`[id*="${containerIdPrefix}"] .chip-modal`).forEach(chip => {
+        chip.addEventListener('click', function(e) {
+            e.preventDefault();
+            const id = this.dataset.id;
+            const name = this.dataset.name;
+
+            if (selectedIds.has(id)) {
+                // Bỏ chọn
+                this.classList.remove('selected');
+                this.setAttribute('aria-pressed', 'false');
+                selectedIds.delete(id);
+
+                const input = hiddenInputsContainer.querySelector(`input[value="${id}"]`);
+                if (input) input.remove();
+            } else {
+                // Chọn
+                this.classList.add('selected');
+                this.setAttribute('aria-pressed', 'true');
+                selectedIds.add(id);
+
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'CategoryIds';
+                input.value = id;
+                hiddenInputsContainer.appendChild(input);
+            }
+        });
+    });
+
+    // Expose function để set selected categories từ outside
+    window[`setSelected_${containerIdPrefix}`] = function(ids) {
+        selectedIds.clear();
+        document.querySelectorAll(`[id*="${containerIdPrefix}"] .chip-modal`).forEach(chip => {
+            const id = chip.dataset.id;
+            if (ids.includes(parseInt(id))) {
+                chip.classList.add('selected');
+                chip.setAttribute('aria-pressed', 'true');
+                selectedIds.add(id);
+
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'CategoryIds';
+                input.value = id;
+                hiddenInputsContainer.appendChild(input);
+            } else {
+                chip.classList.remove('selected');
+                chip.setAttribute('aria-pressed', 'false');
+            }
+        });
+    };
+
+    // Expose function để clear selection
+    window[`clearSelected_${containerIdPrefix}`] = function() {
+        selectedIds.clear();
+        hiddenInputsContainer.innerHTML = '';
+        document.querySelectorAll(`[id*="${containerIdPrefix}"] .chip-modal`).forEach(chip => {
+            chip.classList.remove('selected');
+            chip.setAttribute('aria-pressed', 'false');
+        });
+    };
+
+    // Expose function để get selected IDs
+    window[`getSelected_${containerIdPrefix}`] = function() {
+        return Array.from(selectedIds);
+    };
+})();
+</script>

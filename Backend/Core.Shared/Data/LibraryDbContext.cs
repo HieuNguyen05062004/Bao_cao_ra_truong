@@ -32,7 +32,27 @@ public partial class LibraryDbContext : DbContext
         modelBuilder.Entity<Account>(entity =>
         {
             entity.HasKey(e => e.Username).HasName("PK__Accounts__536C85E5CD83A2C9");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+
+            entity.Property(e => e.Username)
+                  .HasMaxLength(50)
+                  .IsUnicode(false);
+
+            entity.Property(e => e.Password)
+                  .HasMaxLength(255)
+                  .IsUnicode(false);
+
+            entity.Property(e => e.FullName).HasMaxLength(100);
+            entity.Property(e => e.Role).HasMaxLength(20);
+
+            entity.Property(e => e.Email)
+                  .HasMaxLength(100)
+                  .IsUnicode(false);
+
+            entity.Property(e => e.AvatarUrl).HasColumnName("AvatarURL");
+
+            entity.Property(e => e.CreatedAt)
+                  .HasColumnType("datetime")
+                  .HasDefaultValueSql("(getdate())");
         });
 
         // ── Book ──────────────────────────────────────────────────────────────
@@ -48,8 +68,6 @@ public partial class LibraryDbContext : DbContext
             entity.Property(e => e.Quantity).HasDefaultValue(0);
             entity.Property(e => e.Status).HasDefaultValue("Có thể mượn");
             entity.Property(e => e.ImageUrl).HasColumnName("ImageURL");
-
-            // Không còn cột CategoryID trên bảng Books — bỏ hoàn toàn cấu hình FK cũ
         });
 
         // ── BookCategory (many-to-many Books ↔ Categories) ───────────────────
@@ -126,7 +144,33 @@ public partial class LibraryDbContext : DbContext
         modelBuilder.Entity<Reader>(entity =>
         {
             entity.HasKey(e => e.ReaderId).HasName("PK__Readers__8E67A581B0EBE500");
-            entity.Property(e => e.ReaderId).HasColumnName("ReaderID");
+
+            entity.Property(e => e.ReaderId)
+                  .HasColumnName("ReaderID")
+                  .HasMaxLength(20)
+                  .IsUnicode(false);
+
+            entity.Property(e => e.FullName).HasMaxLength(100);
+            entity.Property(e => e.Gender).HasMaxLength(10);
+            entity.Property(e => e.Address).HasMaxLength(255);
+
+            entity.Property(e => e.Phone)
+                  .HasMaxLength(15)
+                  .IsUnicode(false);
+
+            entity.Property(e => e.Email)
+                  .HasMaxLength(100)
+                  .IsUnicode(false);
+
+            entity.Property(e => e.AvatarUrl).HasColumnName("AvatarURL");
+
+            // ✅ Thêm config cho 2 cột mới
+            entity.Property(e => e.PasswordHash)
+                  .HasMaxLength(255);
+
+            entity.Property(e => e.CreatedAt)
+                  .HasColumnType("datetime")
+                  .HasDefaultValueSql("(getdate())");
         });
 
         OnModelCreatingPartial(modelBuilder);

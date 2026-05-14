@@ -3,338 +3,429 @@
 
 @{
     ViewData["Title"] = "Trang chủ";
+    var featured = ViewBag.FeaturedBooks as List<Core.Shared.Entities.Book> ?? new();
+    var trending = ViewBag.TrendingBooks as List<Core.Shared.Entities.Book> ?? new();
+    var categories = ViewBag.Categories as List<Category> ?? new();
 }
 
-<div class="container mt-4">
-    <!-- Hero Section -->
-    <div class="row mb-5">
-        <div class="col-md-12">
-            <div class="bg-light p-5 rounded text-center">
-                <h1 class="display-4">
-                    <i class="fas fa-library"></i> Hệ thống quản lý thư viện
-                </h1>
-                <p class="lead text-muted">Khám phá hàng ngàn đầu sách hay tại thư viện của chúng tôi</p>
-            </div>
-        </div>
-    </div>
+<!-- ══ HERO ═══════════════════════════════════════════════════════════════ -->
+<section class="hero-section">
+    <div class="hero-bg"></div>
+    <div class="container hero-content">
+        <p class="hero-eyebrow">Mở cửa tri thức với sức mạnh AI</p>
+        <h1 class="hero-title">Hệ thống quản lý<br>thư viện thông minh</h1>
+        <p class="hero-sub">Sử dụng ngôn ngữ tự nhiên để tìm kiếm tài liệu<br>chính xác hơn bao giờ hết.</p>
 
-    <!-- Thanh tìm kiếm -->
-    <div class="row mb-4">
-        <div class="col-md-8 offset-md-2">
-            <form method="get" action="@Url.Action("Index", "Search")" class="row g-2">
-                <div class="col-md-10">
-                    <input type="text" name="searchTerm" class="form-control form-control-lg" 
-                           placeholder="Tìm kiếm sách theo tên hoặc tác giả...">
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary btn-lg w-100">
-                        <i class="fas fa-search"></i> Tìm
-                    </button>
-                </div>
+        <!-- Search box -->
+        <div class="hero-search-box">
+            <div class="search-tabs">
+                <button class="stab active" id="tab-normal" onclick="switchTab('normal')">
+                    <i class="fas fa-search"></i> Tìm kiếm thường
+                </button>
+                <button class="stab" id="tab-ai" onclick="switchTab('ai')">
+                    <i class="fas fa-robot"></i> AI Search <span class="badge-beta">Beta</span>
+                </button>
+            </div>
+
+            <!-- Form thường -->
+            <form id="form-normal" method="get" action="@Url.Action("Index","Search")" class="search-form">
+                <i class="fas fa-search search-icon-inside"></i>
+                <input type="text" name="searchTerm" placeholder="Tìm kiếm tài liệu bằng AI..."
+                       class="search-input" autocomplete="off" />
+                <button type="submit" class="search-btn">Khám phá</button>
+            </form>
+
+            <!-- Form AI -->
+            <form id="form-ai" method="post" action="@Url.Action("AiSearch","Search")"
+                  class="search-form d-none">
+                @Html.AntiForgeryToken()
+                <i class="fas fa-robot search-icon-inside text-primary"></i>
+                <input type="text" name="aiQuery" placeholder="VD: sách lập trình Python cho người mới..."
+                       class="search-input" autocomplete="off" />
+                <button type="submit" class="search-btn ai-btn">
+                    <i class="fas fa-magic me-1"></i>Tìm với AI
+                </button>
             </form>
         </div>
     </div>
+</section>
 
-    <!-- Thể loại -->
-    @if (ViewBag.Categories != null && ((List<Category>)ViewBag.Categories).Count > 0)
-    {
-        <div class="row mb-5">
-            <div class="col-md-12">
-                <h5 class="mb-3">Duyệt theo thể loại:</h5>
-                <div class="d-flex flex-wrap gap-2">
-                    <a href="@Url.Action("Index")" class="btn btn-outline-primary">
-                        <i class="fas fa-list"></i> Tất cả
-                    </a>
-                    @foreach (var category in (List<Category>)ViewBag.Categories)
+<!-- ══ BỘ SƯU TẬP ════════════════════════════════════════════════════════ -->
+@if (Model != null && Model.Count > 0)
+{
+    <section class="section-block">
+        <div class="container">
+            <div class="section-header">
+                <div>
+                    <p class="section-label">Bộ sưu tập</p>
+                    <h2 class="section-title">Sách nổi bật</h2>
+                </div>
+                <a href="@Url.Action("Index","Search")" class="see-all">Xem tất cả <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+
+            @{var first = Model.First();}
+            <a href="@Url.Action("Details","Search", new { id = first.BookId })" class="banner-wrap">
+                @if (!string.IsNullOrEmpty(first.ImageUrl))
+                {
+                    <!-- Nền blur hai bên -->
+                    <div class="banner-bg" style="background-image:url('@first.ImageUrl')"></div>
+                    <!-- Ảnh sắc nét căn giữa -->
+                    <img src="@first.ImageUrl" alt="@first.Title" class="banner-main-img" />
+                }
+                else
+                {
+                    <div class="banner-bg" style="background:#1a2a3a"></div>
+                    <div class="banner-no-img"><i class="fas fa-book"></i></div>
+                }
+                <!-- Gradient + text -->
+                <div class="banner-info">
+                    <span class="banner-badge @(first.Quantity > 0 ? "badge-green" : "badge-red")">
+                        @(first.Quantity > 0 ? "SẴN CÓ" : "HẾT HÀNG")
+                    </span>
+                    <h3 class="banner-title">@(first.Title.Length > 80 ? first.Title[..80] + "\u2026" : first.Title)</h3>
+                    @if (!string.IsNullOrEmpty(first.Author))
                     {
-                        <a href="@Url.Action("Index", "Search", new { categoryId = category.CategoryId })" 
-                           class="btn btn-outline-secondary">
-                            @category.CategoryName
-                        </a>
+                        <p class="banner-desc">@first.Author</p>
                     }
                 </div>
+            </a>
+        </div>
+    </section>
+}
+
+<!-- ══ MỚI NHẤT ══════════════════════════════════════════════════════════ -->
+@if (featured.Count > 0)
+{
+    <section class="section-block section-alt">
+        <div class="container">
+            <div class="section-header">
+                <div>
+                    <p class="section-label">Mới nhất</p>
+                    <h2 class="section-title">Sách mới cập nhật</h2>
+                </div>
+                <div class="scroll-arrows">
+                    <button class="arr-btn" onclick="scrollRow('row-new',-1)"><i class="fas fa-chevron-left"></i></button>
+                    <button class="arr-btn" onclick="scrollRow('row-new',1)"><i class="fas fa-chevron-right"></i></button>
+                </div>
             </div>
-        </div>
-    }
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
-
-    <!-- Danh sách sách nổi bật -->
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <h4>
-                <i class="fas fa-fire"></i> Sách nổi bật (Còn hàng)
-            </h4>
-        </div>
-    </div>
-
-    @if (Model != null && Model.Count > 0)
-    {
-        <div class="row">
-            @foreach (var book in Model.Take(6))
-            {
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm hover-shadow">
+            <div class="books-scroll-row" id="row-new">
+                @foreach (var book in featured)
+                {
+                    <a href="@Url.Action("Details","Search", new { id = book.BookId })" class="book-card-small">
                         @if (!string.IsNullOrEmpty(book.ImageUrl))
                         {
-                            <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" 
-                                 style="height: 250px; object-fit: cover; cursor: pointer;" 
-                                 onclick="location.href='@Url.Action("Details", "Search", new { id = book.BookId })';">
+                            <img src="@book.ImageUrl" alt="@book.Title" class="small-img" />
                         }
                         else
                         {
-                            <div class="bg-light d-flex align-items-center justify-content-center" 
-                                 style="height: 250px; cursor: pointer;" 
-                                 onclick="location.href='@Url.Action("Details", "Search", new { id = book.BookId })';">
-                                <i class="fas fa-book fa-4x text-muted"></i>
-                            </div>
+                            <div class="small-img-placeholder"><i class="fas fa-book"></i></div>
                         }
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                @if (book.Title.Length > 50)
-                                {
-                                    @(book.Title.Substring(0, 50) + "...")
-                                }
-                                else
-                                {
-                                    @book.Title
-                                }
-                            </h5>
-                            <p class="card-text text-muted">
-                                <small>
-                                    <i class="fas fa-pen"></i> @(book.Author ?? "-")
-                                </small>
-                            </p>
-                            <p class="card-text text-muted">
-                                <small>
-                                    <i class="fas fa-tag"></i> 
-                                    @{
-                                        var categoryNames = book.BookCategories?.Select(bc => bc.Category?.CategoryName).Where(c => c != null).FirstOrDefault();
-                                        if (categoryNames != null)
-                                        {
-                                            @categoryNames
-                                        }
-                                        else
-                                        {
-                                            <text>-</text>
-                                        }
-                                    }
-                                </small>
-                            </p>
-                            <div class="mb-2">
-                                <span class="badge bg-success">
-                                    <i class="fas fa-check-circle"></i> Còn @book.Quantity
-                                </span>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-white border-top-0">
-                            <a href="@Url.Action("Details", "Search", new { id = book.BookId })" 
-                               class="btn btn-primary btn-sm w-100">
-                                <i class="fas fa-eye"></i> Xem chi tiết
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-
-        @if (Model.Count > 6)
-        {
-            <div class="row mt-4">
-                <div class="col-md-12 text-center">
-                    <a href="@Url.Action("Index", "Search")" class="btn btn-lg btn-outline-primary">
-                        <i class="fas fa-search"></i> Xem tất cả sách
+                        <p class="small-title">@(book.Title.Length > 30 ? book.Title[..30] + "…" : book.Title)</p>
+                        <p class="small-author">@(book.Author ?? "—")</p>
                     </a>
-                </div>
-            </div>
-        }
-    }
-    else
-    {
-        <div class="alert alert-info text-center py-5">
-            <i class="fas fa-info-circle fa-3x mb-3"></i>
-            <p>Hiện tại chưa có sách nào trong hệ thống</p>
-        </div>
-    }
-
-    <!-- Sách nổi bật (Mới nhất) -->
-    @if (ViewBag.FeaturedBooks != null && ((List<Core.Shared.Entities.Book>)ViewBag.FeaturedBooks).Count > 0)
-    {
-        <div class="mt-5">
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <h4>
-                        <i class="fas fa-star"></i> Sách nổi bật (Mới nhất)
-                    </h4>
-                </div>
-            </div>
-
-            <div class="row">
-                @foreach (var book in (List<Core.Shared.Entities.Book>)ViewBag.FeaturedBooks)
-                {
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100 shadow-sm hover-shadow">
-                            @if (!string.IsNullOrEmpty(book.ImageUrl))
-                            {
-                                <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" 
-                                     style="height: 250px; object-fit: cover; cursor: pointer;" 
-                                     onclick="location.href='@Url.Action("Details", "Search", new { id = book.BookId })';">
-                            }
-                            else
-                            {
-                                <div class="bg-light d-flex align-items-center justify-content-center" 
-                                     style="height: 250px; cursor: pointer;" 
-                                     onclick="location.href='@Url.Action("Details", "Search", new { id = book.BookId })';">
-                                    <i class="fas fa-book fa-4x text-muted"></i>
-                                </div>
-                            }
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    @if (book.Title.Length > 50)
-                                    {
-                                        @(book.Title.Substring(0, 50) + "...")
-                                    }
-                                    else
-                                    {
-                                        @book.Title
-                                    }
-                                </h5>
-                                <p class="card-text text-muted">
-                                    <small>
-                                        <i class="fas fa-pen"></i> @(book.Author ?? "-")
-                                    </small>
-                                </p>
-                                <p class="card-text text-muted">
-                                    <small>
-                                        <i class="fas fa-tag"></i> 
-                                        @{
-                                            var categoryNames = book.BookCategories?.Select(bc => bc.Category?.CategoryName).Where(c => c != null).FirstOrDefault();
-                                            if (categoryNames != null)
-                                            {
-                                                @categoryNames
-                                            }
-                                            else
-                                            {
-                                                <text>-</text>
-                                            }
-                                        }
-                                    </small>
-                                </p>
-                                <div class="mb-2">
-                                    <span class="badge bg-success">
-                                        <i class="fas fa-check-circle"></i> Còn @book.Quantity
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-white border-top-0">
-                                <a href="@Url.Action("Details", "Search", new { id = book.BookId })" 
-                                   class="btn btn-primary btn-sm w-100">
-                                    <i class="fas fa-eye"></i> Xem chi tiết
-                                </a>
-                            </div>
-                        </div>
-                    </div>
                 }
             </div>
         </div>
-    }
+    </section>
+}
 
-    <!-- Xu hướng (Được mượn nhiều nhất) -->
-    @if (ViewBag.TrendingBooks != null && ((List<Core.Shared.Entities.Book>)ViewBag.TrendingBooks).Count > 0)
-    {
-        <div class="mt-5">
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <h4>
-                        <i class="fas fa-chart-line"></i> Xu hướng (Được mượn nhiều nhất)
-                    </h4>
+<!-- ══ XU HƯỚNG ══════════════════════════════════════════════════════════ -->
+@if (trending.Count > 0)
+{
+    <section class="section-block">
+        <div class="container">
+            <div class="section-header">
+                <div>
+                    <p class="section-label">Xu hướng</p>
+                    <h2 class="section-title">Sách mượn nhiều nhất</h2>
                 </div>
             </div>
-
-            <div class="row">
-                @foreach (var book in (List<Core.Shared.Entities.Book>)ViewBag.TrendingBooks)
+            <div class="trending-list">
+                @for (int i = 0; i < trending.Count; i++)
                 {
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100 shadow-sm hover-shadow">
-                            @if (!string.IsNullOrEmpty(book.ImageUrl))
-                            {
-                                <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title" 
-                                     style="height: 250px; object-fit: cover; cursor: pointer;" 
-                                     onclick="location.href='@Url.Action("Details", "Search", new { id = book.BookId })';">
-                            }
-                            else
-                            {
-                                <div class="bg-light d-flex align-items-center justify-content-center" 
-                                     style="height: 250px; cursor: pointer;" 
-                                     onclick="location.href='@Url.Action("Details", "Search", new { id = book.BookId })';">
-                                    <i class="fas fa-book fa-4x text-muted"></i>
-                                </div>
-                            }
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    @if (book.Title.Length > 50)
-                                    {
-                                        @(book.Title.Substring(0, 50) + "...")
-                                    }
-                                    else
-                                    {
-                                        @book.Title
-                                    }
-                                </h5>
-                                <p class="card-text text-muted">
-                                    <small>
-                                        <i class="fas fa-pen"></i> @(book.Author ?? "-")
-                                    </small>
-                                </p>
-                                <p class="card-text text-muted">
-                                    <small>
-                                        <i class="fas fa-tag"></i> 
-                                        @{
-                                            var categoryNames = book.BookCategories?.Select(bc => bc.Category?.CategoryName).Where(c => c != null).FirstOrDefault();
-                                            if (categoryNames != null)
-                                            {
-                                                @categoryNames
-                                            }
-                                            else
-                                            {
-                                                <text>-</text>
-                                            }
-                                        }
-                                    </small>
-                                </p>
-                                <div class="mb-2">
-                                    <span class="badge bg-success">
-                                        <i class="fas fa-check-circle"></i> Còn @book.Quantity
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-white border-top-0">
-                                <a href="@Url.Action("Details", "Search", new { id = book.BookId })" 
-                                   class="btn btn-primary btn-sm w-100">
-                                    <i class="fas fa-eye"></i> Xem chi tiết
-                                </a>
-                            </div>
+                    var book = trending[i];
+                    <a href="@Url.Action("Details","Search", new { id = book.BookId })" class="trending-item">
+                        <span class="trend-rank">@(i + 1)</span>
+                        @if (!string.IsNullOrEmpty(book.ImageUrl))
+                        {
+                            <img src="@book.ImageUrl" alt="@book.Title" class="trend-img" />
+                        }
+                        else
+                        {
+                            <div class="trend-img trend-img-ph"><i class="fas fa-book"></i></div>
+                        }
+                        <div class="trend-info">
+                            <p class="trend-title">@(book.Title.Length > 50 ? book.Title[..50] + "…" : book.Title)</p>
+                            <p class="trend-author">@(book.Author ?? "—")</p>
                         </div>
-                    </div>
+                        <div class="trend-right">
+                            <span class="trend-qty">@book.Quantity lượt còn</span>
+                            <span class="btn-borrow-sm">Mượn ngay</span>
+                        </div>
+                    </a>
                 }
             </div>
         </div>
-    }
-</div>
+    </section>
+}
 
 <style>
-    .hover-shadow {
-        transition: all 0.3s ease;
-    }
+/* ── CSS Variables — Light Theme ──────────────────────────────── */
+:root {
+    --c-bg:      #ffffff;
+    --c-bg2:     #f5f7fb;
+    --c-card:    #ffffff;
+    --c-card2:   #eef1f8;
+    --c-accent:  #3b7ef8;
+    --c-accent2: #6c5ce7;
+    --c-gold:    #f59e0b;
+    --c-text:    #1a1d2e;
+    --c-muted:   #6b7280;
+    --c-border:  #e5e7ef;
+    --r:         14px;
+}
 
-    .hover-shadow:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    }
+/* ── Reset context ────────────────────────────────────────────── */
+body { background: var(--c-bg); color: var(--c-text); font-family: 'Segoe UI', sans-serif; }
+.container { max-width: 1200px; }
+a { text-decoration: none; color: inherit; }
+
+/* ── HERO ─────────────────────────────────────────────────────── */
+.hero-section {
+    position: relative;
+    padding: 70px 0 60px;
+    overflow: hidden;
+    text-align: center;
+    background: #fff;
+}
+.hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%,
+                rgba(59,126,248,.08) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 80% 50%,
+                rgba(108,92,231,.06) 0%, transparent 60%),
+                #fff;
+}
+.hero-content { position: relative; z-index: 1; }
+.hero-eyebrow {
+    font-size: .82rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--c-accent); margin-bottom: 16px; font-weight: 600;
+}
+.hero-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
+    line-height: 1.25; margin-bottom: 16px; color: var(--c-text);
+}
+.hero-sub { color: var(--c-muted); font-size: 1rem; margin-bottom: 36px; line-height: 1.7; }
+
+/* Search box */
+.hero-search-box {
+    background: #fff;
+    border: 1px solid var(--c-border);
+    border-radius: 20px;
+    padding: 20px 24px;
+    max-width: 640px; margin: 0 auto;
+    box-shadow: 0 8px 32px rgba(59,126,248,.10);
+}
+.search-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.stab {
+    padding: 7px 16px; border-radius: 10px; border: 1px solid var(--c-border);
+    background: var(--c-bg2); color: var(--c-muted); font-size: .88rem;
+    cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 7px;
+}
+.stab.active { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+.badge-beta {
+    background: rgba(59,126,248,.12); color: var(--c-accent);
+    border-radius: 6px; padding: 1px 7px; font-size: .72rem; font-weight: 700;
+}
+.search-form {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--c-bg2); border-radius: 12px;
+    padding: 6px 6px 6px 16px; border: 1px solid var(--c-border);
+}
+.search-icon-inside { color: var(--c-muted); font-size: .9rem; flex-shrink: 0; }
+.search-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--c-text); font-size: .95rem;
+}
+.search-input::placeholder { color: #adb5bd; }
+.search-btn {
+    background: var(--c-accent); color: #fff; border: none;
+    border-radius: 9px; padding: 9px 22px; font-size: .9rem;
+    font-weight: 600; cursor: pointer; white-space: nowrap;
+    transition: opacity .2s;
+}
+.search-btn:hover { opacity: .88; }
+.ai-btn { background: linear-gradient(135deg, var(--c-accent), var(--c-accent2)); }
+
+/* ── Sections ─────────────────────────────────────────────────── */
+.section-block { padding: 52px 0; }
+.section-alt { background: var(--c-bg2); }
+.section-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 24px;
+}
+.section-label {
+    font-size: .75rem; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--c-accent); margin-bottom: 4px; font-weight: 600;
+}
+.section-title { font-size: 1.5rem; font-weight: 700; margin: 0; color: var(--c-text); }
+.see-all { color: var(--c-muted); font-size: .88rem; transition: color .2s; }
+.see-all:hover { color: var(--c-accent); }
+
+/* ── Banner toàn chiều ngang ──────────────────────────────────── */
+.banner-wrap {
+    position: relative; display: block;
+    border-radius: 18px; overflow: hidden;
+    height: 420px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.18);
+    background: #111;
+    text-decoration: none;
+}
+/* Lớp nền blur — ảnh phóng to làm backdrop toàn bộ */
+.banner-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    filter: blur(0px) brightness(.6) saturate(1.1);
+}
+/* Ảnh sắc nét phủ toàn bộ banner */
+.banner-main-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center;
+    display: block;
+}
+.banner-no-img {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 6rem; color: rgba(255,255,255,.2);
+}
+/* Gradient phủ phía dưới để đọc được text */
+.banner-info {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 32px 36px;
+    background: linear-gradient(to top,
+        rgba(0,0,0,.90) 0%,
+        rgba(0,0,0,.5) 50%,
+        transparent 100%);
+    z-index: 2;
+}
+.banner-badge {
+    display: inline-block; border-radius: 20px;
+    padding: 3px 14px; font-size: .74rem; font-weight: 700;
+    letter-spacing: .06em; margin-bottom: 10px;
+    border: 1.5px solid;
+}
+.badge-green {
+    background: rgba(22,163,74,.15); color: #4ade80;
+    border-color: rgba(74,222,128,.4);
+}
+.badge-red {
+    background: rgba(220,38,38,.15); color: #f87171;
+    border-color: rgba(248,113,113,.4);
+}
+.banner-title {
+    font-size: 1.5rem; font-weight: 800; color: #fff;
+    margin: 0 0 8px; line-height: 1.3;
+    text-shadow: 0 2px 8px rgba(0,0,0,.4);
+}
+.banner-desc {
+    color: rgba(255,255,255,.72); font-size: .9rem;
+    margin: 0; line-height: 1.5;
+}
+
+/* ── Scroll row (Mới nhất) ────────────────────────────────────── */
+.books-scroll-row {
+    display: flex; gap: 16px; overflow-x: auto;
+    padding-bottom: 8px; scroll-behavior: smooth;
+}
+.books-scroll-row::-webkit-scrollbar { display: none; }
+.book-card-small {
+    flex-shrink: 0; width: 148px; display: block;
+    background: var(--c-card); border-radius: var(--r);
+    overflow: hidden; border: 1px solid var(--c-border);
+    transition: border-color .2s, box-shadow .2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+.book-card-small:hover { border-color: var(--c-accent); box-shadow: 0 4px 16px rgba(59,126,248,.12); }
+.small-img { width: 100%; height: 196px; object-fit: cover; display: block; }
+.small-img-placeholder {
+    width: 100%; height: 196px; background: var(--c-card2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--c-muted); font-size: 2rem;
+}
+.small-title {
+    font-size: .82rem; font-weight: 600; margin: 10px 10px 4px;
+    line-height: 1.35; color: var(--c-text);
+}
+.small-author { color: var(--c-muted); font-size: .76rem; margin: 0 10px 10px; }
+
+.scroll-arrows { display: flex; gap: 8px; }
+.arr-btn {
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid var(--c-border); background: var(--c-card);
+    color: var(--c-muted); cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,.06);
+}
+.arr-btn:hover { border-color: var(--c-accent); color: var(--c-accent); }
+
+/* ── Trending list ────────────────────────────────────────────── */
+.trending-list { display: flex; flex-direction: column; gap: 12px; }
+.trending-item {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--c-card); border-radius: var(--r);
+    padding: 14px 18px; border: 1px solid var(--c-border);
+    transition: border-color .2s, box-shadow .2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,.04);
+}
+.trending-item:hover { border-color: var(--c-accent); box-shadow: 0 4px 16px rgba(59,126,248,.10); }
+.trend-rank {
+    font-size: 1.4rem; font-weight: 800; color: #d1d5db;
+    width: 32px; text-align: center; flex-shrink: 0;
+}
+.trending-item:nth-child(1) .trend-rank { color: var(--c-gold); }
+.trending-item:nth-child(2) .trend-rank { color: #9ca3af; }
+.trending-item:nth-child(3) .trend-rank { color: #cd7f32; }
+.trend-img {
+    width: 54px; height: 70px; object-fit: cover;
+    border-radius: 8px; flex-shrink: 0;
+}
+.trend-img-ph {
+    background: var(--c-card2); display: flex; align-items: center;
+    justify-content: center; color: var(--c-muted);
+}
+.trend-info { flex: 1; min-width: 0; }
+.trend-title { font-size: .92rem; font-weight: 600; margin: 0 0 4px; color: var(--c-text); }
+.trend-author { color: var(--c-muted); font-size: .82rem; margin: 0; }
+.trend-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+.trend-qty { color: var(--c-muted); font-size: .78rem; }
+.btn-borrow-sm {
+    background: rgba(59,126,248,.1); color: var(--c-accent);
+    border-radius: 8px; padding: 5px 14px; font-size: .8rem; font-weight: 600;
+    transition: background .2s;
+}
+.trending-item:hover .btn-borrow-sm { background: var(--c-accent); color: #fff; }
+
+/* ── Navbar light override ────────────────────────────────────── */
+.navbar { background: #fff !important; border-bottom: 1px solid var(--c-border) !important; }
+.navbar-brand { color: var(--c-text) !important; }
+.nav-link { color: var(--c-muted) !important; }
+.nav-link:hover { color: var(--c-accent) !important; }
+footer { background: var(--c-bg2) !important; border-color: var(--c-border) !important; color: var(--c-muted); }
 </style>
+
+@section Scripts {
+<script>
+function switchTab(tab) {
+    const isAi = tab === 'ai';
+    document.getElementById('tab-normal').classList.toggle('active', !isAi);
+    document.getElementById('tab-ai').classList.toggle('active', isAi);
+    document.getElementById('form-normal').classList.toggle('d-none', isAi);
+    document.getElementById('form-ai').classList.toggle('d-none', !isAi);
+}
+function scrollRow(id, dir) {
+    const el = document.getElementById(id);
+    el.scrollBy({ left: dir * 300, behavior: 'smooth' });
+}
+</script>
+}

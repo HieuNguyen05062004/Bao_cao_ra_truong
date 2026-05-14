@@ -21,79 +21,100 @@
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>Thêm sách mới</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="resetCreate()"></button>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal" onclick="resetCreate()"></button>
             </div>
 
-            <!-- Bước 1: Nhập thông tin -->
+            <!-- Bước 1: Form nhập -->
             <div id="stepCreateForm">
                 <div class="modal-body">
+
+                    <!-- Tên sách -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Tên sách <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" id="c_Title" class="form-control"
+                               placeholder="Nhập tên sách" maxlength="255">
+                        <div class="invalid-feedback">Tên sách không được để trống</div>
+                    </div>
+
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Mã sách <span class="text-danger">*</span></label>
-                            <input type="text" id="c_BookId" class="form-control" placeholder="VD: BK001" maxlength="20">
-                            <div class="invalid-feedback">Mã sách không được để trống (tối đa 20 ký tự)</div>
+                            <label class="form-label fw-semibold">Tác giả</label>
+                            <input type="text" id="c_Author" class="form-control"
+                                   placeholder="Nhập tên tác giả">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Tên sách <span class="text-danger">*</span></label>
-                            <input type="text" id="c_Title" class="form-control" placeholder="Nhập tên sách" maxlength="255">
-                            <div class="invalid-feedback">Tên sách không được để trống</div>
+                            <label class="form-label fw-semibold">Nhà xuất bản</label>
+                            <input type="text" id="c_Publisher" class="form-control"
+                                   placeholder="Nhập tên NXB">
                         </div>
                     </div>
+
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Tác giả</label>
-                            <input type="text" id="c_Author" class="form-control" placeholder="Nhập tên tác giả">
+                            <label class="form-label fw-semibold">Năm xuất bản</label>
+                            <input type="number" id="c_PublishYear" class="form-control"
+                                   min="1000" max="2100" placeholder="VD: 2020">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Nhà xuất bản</label>
-                            <input type="text" id="c_Publisher" class="form-control" placeholder="Nhập tên NXB">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Năm xuất bản</label>
-                            <input type="number" id="c_PublishYear" class="form-control" min="1000" max="2100" placeholder="VD: 2020">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Thể loại</label>
-                            <select id="c_CategoryId" class="form-select">
-                                <option value="">-- Chọn thể loại --</option>
-                                @if (ViewBag.Categories != null)
-                                {
-                                    @foreach (var cat in (List<Category>)ViewBag.Categories)
-                                    {
-                                        <option value="@cat.CategoryId">@cat.CategoryName</option>
-                                    }
-                                }
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Số lượng <span class="text-danger">*</span></label>
-                            <input type="number" id="c_Quantity" class="form-control" min="0" value="1">
+                            <label class="form-label fw-semibold">
+                                Số lượng <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" id="c_Quantity" class="form-control"
+                                   min="0" value="1">
                             <div class="invalid-feedback">Số lượng không hợp lệ</div>
                         </div>
                     </div>
+
+                    <!-- ── Chips chọn danh mục (nhiều) ── -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Thể loại</label>
+                        <div id="c_CategoryChips" class="d-flex flex-wrap gap-2 mt-1">
+                            @if (ViewBag.Categories != null)
+                            {
+                                @foreach (var cat in (List<Category>)ViewBag.Categories)
+                                {
+                                    <span class="chip badge rounded-pill border border-2
+                                                 border-success text-success px-3 py-2
+                                                 fs-6 cursor-pointer user-select-none"
+                                          style="cursor:pointer;font-weight:500"
+                                          data-id="@cat.CategoryId"
+                                          onclick="toggleChip(this,'create')">
+                                        @cat.CategoryName
+                                    </span>
+                                }
+                            }
+                        </div>
+                        <small class="text-muted">Nhấn để chọn/bỏ chọn — có thể chọn nhiều</small>
+                    </div>
+
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Tình trạng</label>
-                            <input type="text" id="c_Status" class="form-control" value="Có thể mượn">
+                            <label class="form-label fw-semibold">Tình trạng</label>
+                            <input type="text" id="c_Status" class="form-control"
+                                   value="Có thể mượn">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Hình ảnh bìa</label>
-                            <input type="file" id="c_ImageFile" class="form-control" accept="image/*">
+                            <label class="form-label fw-semibold">Hình ảnh bìa</label>
+                            <input type="file" id="c_ImageFile" class="form-control"
+                                   accept="image/*">
                             <div id="c_ImagePreview" class="mt-2 d-none">
                                 <img id="c_PreviewImg" src="" alt="preview"
-                                     style="height:80px;object-fit:cover;border-radius:6px;border:1px solid #dee2e6">
+                                     style="height:80px;object-fit:cover;
+                                            border-radius:6px;border:1px solid #dee2e6">
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="resetCreate()">
+                    <button class="btn btn-secondary"
+                            data-bs-dismiss="modal" onclick="resetCreate()">
                         <i class="fas fa-times"></i> Hủy
                     </button>
                     <button class="btn btn-success" onclick="toCreateConfirm()">
-                        <i class="fas fa-arrow-right"></i> Thêm sách
+                        <i class="fas fa-arrow-right"></i> Tiếp theo
                     </button>
                 </div>
             </div>
@@ -102,18 +123,26 @@
             <div id="stepCreateConfirm" class="d-none">
                 <div class="modal-body">
                     <div class="alert alert-success py-2">
-                        <i class="fas fa-check-circle me-2"></i>Xác nhận thông tin sách trước khi lưu:
+                        <i class="fas fa-check-circle me-2"></i>
+                        Xác nhận thông tin sách trước khi lưu:
                     </div>
                     <table class="table table-bordered table-sm mb-0">
-                        <tr><td class="fw-semibold bg-light" style="width:35%">Mã sách</td><td id="conf_BookId"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Tên sách</td><td id="conf_Title"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Tác giả</td><td id="conf_Author"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Nhà xuất bản</td><td id="conf_Publisher"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Năm xuất bản</td><td id="conf_Year"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Thể loại</td><td id="conf_Category"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Số lượng</td><td id="conf_Quantity"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Tình trạng</td><td id="conf_Status"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Hình ảnh</td><td id="conf_Image"></td></tr>
+                        <tr><td class="fw-semibold bg-light" style="width:35%">Tên sách</td>
+                            <td id="conf_Title"></td></tr>
+                        <tr><td class="fw-semibold bg-light">Tác giả</td>
+                            <td id="conf_Author"></td></tr>
+                        <tr><td class="fw-semibold bg-light">Nhà xuất bản</td>
+                            <td id="conf_Publisher"></td></tr>
+                        <tr><td class="fw-semibold bg-light">Năm xuất bản</td>
+                            <td id="conf_Year"></td></tr>
+                        <tr><td class="fw-semibold bg-light">Thể loại</td>
+                            <td id="conf_Category"></td></tr>
+                        <tr><td class="fw-semibold bg-light">Số lượng</td>
+                            <td id="conf_Quantity"></td></tr>
+                        <tr><td class="fw-semibold bg-light">Tình trạng</td>
+                            <td id="conf_Status"></td></tr>
+                        <tr><td class="fw-semibold bg-light">Hình ảnh</td>
+                            <td id="conf_Image"></td></tr>
                     </table>
                 </div>
                 <div class="modal-footer">
@@ -151,64 +180,84 @@
                 <div class="modal-body">
                     <input type="hidden" id="e_BookId">
                     <input type="hidden" id="e_OldImageUrl">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Mã sách</label>
-                            <input type="text" id="e_BookIdDisplay" class="form-control" readonly>
-                            <small class="text-muted">Mã sách không thể thay đổi</small>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Tên sách <span class="text-danger">*</span></label>
-                            <input type="text" id="e_Title" class="form-control" maxlength="255">
-                            <div class="invalid-feedback">Tên sách không được để trống</div>
-                        </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Mã sách</label>
+                        <input type="text" id="e_BookIdDisplay" class="form-control bg-light"
+                               readonly>
+                        <small class="text-muted">Mã sách không thể thay đổi</small>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Tên sách <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" id="e_Title" class="form-control" maxlength="255">
+                        <div class="invalid-feedback">Tên sách không được để trống</div>
+                    </div>
+
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Tác giả</label>
+                            <label class="form-label fw-semibold">Tác giả</label>
                             <input type="text" id="e_Author" class="form-control">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Nhà xuất bản</label>
+                            <label class="form-label fw-semibold">Nhà xuất bản</label>
                             <input type="text" id="e_Publisher" class="form-control">
                         </div>
                     </div>
+
                     <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Năm xuất bản</label>
-                            <input type="number" id="e_PublishYear" class="form-control" min="1000" max="2100">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Năm xuất bản</label>
+                            <input type="number" id="e_PublishYear" class="form-control"
+                                   min="1000" max="2100">
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Thể loại</label>
-                            <select id="e_CategoryId" class="form-select">
-                                <option value="">-- Chọn thể loại --</option>
-                                @if (ViewBag.Categories != null)
-                                {
-                                    @foreach (var cat in (List<Category>)ViewBag.Categories)
-                                    {
-                                        <option value="@cat.CategoryId">@cat.CategoryName</option>
-                                    }
-                                }
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Số lượng <span class="text-danger">*</span></label>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                Số lượng <span class="text-danger">*</span>
+                            </label>
                             <input type="number" id="e_Quantity" class="form-control" min="0">
                             <div class="invalid-feedback">Số lượng không hợp lệ</div>
                         </div>
                     </div>
+
+                    <!-- ── Chips chọn danh mục (Edit) ── -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Thể loại</label>
+                        <div id="e_CategoryChips" class="d-flex flex-wrap gap-2 mt-1">
+                            @if (ViewBag.Categories != null)
+                            {
+                                @foreach (var cat in (List<Category>)ViewBag.Categories)
+                                {
+                                    <span class="chip badge rounded-pill border border-2
+                                                 border-warning text-warning px-3 py-2
+                                                 fs-6 user-select-none"
+                                          style="cursor:pointer;font-weight:500"
+                                          data-id="@cat.CategoryId"
+                                          onclick="toggleChip(this,'edit')">
+                                        @cat.CategoryName
+                                    </span>
+                                }
+                            }
+                        </div>
+                        <small class="text-muted">Nhấn để chọn/bỏ chọn — có thể chọn nhiều</small>
+                    </div>
+
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Tình trạng</label>
+                            <label class="form-label fw-semibold">Tình trạng</label>
                             <input type="text" id="e_Status" class="form-control">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Hình ảnh bìa mới</label>
-                            <input type="file" id="e_ImageFile" class="form-control" accept="image/*">
+                            <label class="form-label fw-semibold">Hình ảnh bìa mới</label>
+                            <input type="file" id="e_ImageFile" class="form-control"
+                                   accept="image/*">
                             <div class="mt-2" id="e_CurrentImageWrap">
                                 <small class="text-muted">Ảnh hiện tại:</small><br>
                                 <img id="e_CurrentImg" src="" alt="current"
-                                     style="height:70px;object-fit:cover;border-radius:4px;border:1px solid #dee2e6">
+                                     style="height:70px;object-fit:cover;
+                                            border-radius:4px;border:1px solid #dee2e6">
                             </div>
                         </div>
                     </div>
@@ -218,7 +267,7 @@
                         <i class="fas fa-times"></i> Hủy
                     </button>
                     <button class="btn btn-warning" onclick="toEditConfirm()">
-                        <i class="fas fa-arrow-right"></i> Lưu thay đổi
+                        <i class="fas fa-arrow-right"></i> Tiếp theo
                     </button>
                 </div>
             </div>
@@ -227,18 +276,28 @@
             <div id="stepEditConfirm" class="d-none">
                 <div class="modal-body">
                     <div class="alert alert-warning py-2">
-                        <i class="fas fa-exclamation-circle me-2"></i>Xác nhận cập nhật thông tin sách?
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Xác nhận cập nhật thông tin sách?
                     </div>
                     <table class="table table-bordered table-sm mb-0">
-                        <tr><td class="fw-semibold bg-light" style="width:35%">Mã sách</td><td id="econf_BookId"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Tên sách</td><td id="econf_Title"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Tác giả</td><td id="econf_Author"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Nhà xuất bản</td><td id="econf_Publisher"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Năm xuất bản</td><td id="econf_Year"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Thể loại</td><td id="econf_Category"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Số lượng</td><td id="econf_Quantity"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Tình trạng</td><td id="econf_Status"></td></tr>
-                        <tr><td class="fw-semibold bg-light">Ảnh mới</td><td id="econf_Image"></td></tr>
+                        <tr><td class="fw-semibold bg-light" style="width:35%">Mã sách</td>
+                            <td id="econf_BookId"></td></tr>
+                        <tr><td class="fw-semibold bg-light">Tên sách</td>
+                            <td id="econf_Title"></td></tr>
+                        <tr><td class="fw-semibold bg-light">Tác giả</td>
+                            <td id="econf_Author"></td></tr>
+                        <tr><td class="fw-semibold bg-light">Nhà xuất bản</td>
+                            <td id="econf_Publisher"></td></tr>
+                        <tr><td class="fw-semibold bg-light">Năm xuất bản</td>
+                            <td id="econf_Year"></td></tr>
+                        <tr><td class="fw-semibold bg-light">Thể loại</td>
+                            <td id="econf_Category"></td></tr>
+                        <tr><td class="fw-semibold bg-light">Số lượng</td>
+                            <td id="econf_Quantity"></td></tr>
+                        <tr><td class="fw-semibold bg-light">Tình trạng</td>
+                            <td id="econf_Status"></td></tr>
+                        <tr><td class="fw-semibold bg-light">Ảnh mới</td>
+                            <td id="econf_Image"></td></tr>
                     </table>
                 </div>
                 <div class="modal-footer">
@@ -262,13 +321,16 @@
     </div>
 </div>
 
-<!-- ═══ MODAL XÓA ═══ -->
+<!-- ═══ MODAL XÓA ═══ (giữ nguyên) -->
 <div class="modal fade" id="modalDelete" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title"><i class="fas fa-trash-alt me-2"></i>Xác nhận xóa sách</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title">
+                    <i class="fas fa-trash-alt me-2"></i>Xác nhận xóa sách
+                </h5>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-warning py-2">
@@ -277,13 +339,15 @@
                 </div>
                 <p id="deleteMsg" class="mb-2"></p>
                 <div id="deleteManyList" class="d-none small text-muted"
-                     style="max-height:160px;overflow-y:auto;border:1px solid #dee2e6;border-radius:6px;padding:8px"></div>
+                     style="max-height:160px;overflow-y:auto;
+                            border:1px solid #dee2e6;border-radius:6px;padding:8px"></div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="fas fa-times"></i> Hủy
                 </button>
-                <form id="formDelete" method="post" action="@Url.Action("DeleteMany","Book")">
+                <form id="formDelete" method="post"
+                      action="@Url.Action("DeleteMany","Book")">
                     @Html.AntiForgeryToken()
                     <div id="hiddenDeleteIds"></div>
                     <button type="submit" class="btn btn-danger">
@@ -297,35 +361,21 @@
 
 <!-- ═══ NỘI DUNG CHÍNH ═══ -->
 <div class="container mt-4">
-
     <div class="row mb-3 align-items-center">
         <div class="col-md-6">
             <h2><i class="fas fa-book"></i> Quản lý sách</h2>
         </div>
         <div class="col-md-6 text-end d-flex gap-2 justify-content-end flex-wrap">
-            <button id="btnDeleteMany" class="btn btn-danger d-none" onclick="openDeleteMany()">
-                <i class="fas fa-trash"></i> Xóa đã chọn (<span id="selectedCount">0</span>)
+            <button id="btnDeleteMany" class="btn btn-danger d-none"
+                    onclick="openDeleteMany()">
+                <i class="fas fa-trash"></i>
+                Xóa đã chọn (<span id="selectedCount">0</span>)
             </button>
             <button class="btn btn-success" onclick="openCreate()">
                 <i class="fas fa-plus"></i> Thêm sách
             </button>
         </div>
     </div>
-
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show">
-            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show">
-            <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
 
     <!-- Tìm kiếm -->
     <div class="card mb-4">
@@ -369,12 +419,9 @@
                     <tbody>
                         @foreach (var book in Model)
                         {
-                            @* Lấy tên danh mục từ BookCategories (many-to-many) *@
-                            var categoryNames = string.Join(", ",
-                                book.BookCategories.Select(bc => bc.Category?.CategoryName).Where(n => n != null));
-
-                            @* Lấy ID danh mục đầu tiên để truyền vào modal Edit (dùng select đơn) *@
-                            var firstCatId = book.BookCategories.FirstOrDefault()?.CategoryId.ToString() ?? "";
+                            var catIds = book.BookCategories
+                                             .Select(bc => bc.CategoryId)
+                                             .ToList();
 
                             <tr>
                                 <td>
@@ -389,11 +436,13 @@
                                     {
                                         <img src="@book.ImageUrl" alt="@book.Title"
                                              width="60" height="80"
-                                             class="img-thumbnail" style="object-fit:cover" />
+                                             class="img-thumbnail"
+                                             style="object-fit:cover"/>
                                     }
                                     else
                                     {
-                                        <div class="bg-light d-flex align-items-center justify-content-center rounded"
+                                        <div class="bg-light d-flex align-items-center
+                                                    justify-content-center rounded"
                                              style="width:60px;height:80px">
                                             <i class="fas fa-image text-muted"></i>
                                         </div>
@@ -402,12 +451,13 @@
                                 <td>@book.Title</td>
                                 <td>@(book.Author ?? "-")</td>
                                 <td>
-                                    @* Hiển thị tất cả danh mục dưới dạng badges *@
                                     @if (book.BookCategories.Any())
                                     {
                                         @foreach (var bc in book.BookCategories)
                                         {
-                                            <span class="badge bg-primary me-1">@bc.Category?.CategoryName</span>
+                                            <span class="badge bg-primary me-1">
+                                                @bc.Category?.CategoryName
+                                            </span>
                                         }
                                     }
                                     else
@@ -427,21 +477,23 @@
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <button class="btn btn-sm btn-warning" title="Sửa"
-                                            onclick='openEdit(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(new {
-                                                bookId    = book.BookId,
-                                                title     = book.Title,
-                                                author    = book.Author,
-                                                publisher = book.Publisher,
-                                                year      = book.PublishYear,
-                                                catId     = firstCatId,
-                                                qty       = book.Quantity,
-                                                status    = book.Status,
-                                                imageUrl  = book.ImageUrl
-                                            })))'>
+                                            onclick='openEdit(@Html.Raw(
+                                                System.Text.Json.JsonSerializer.Serialize(new {
+                                                    bookId    = book.BookId,
+                                                    title     = book.Title,
+                                                    author    = book.Author,
+                                                    publisher = book.Publisher,
+                                                    year      = book.PublishYear,
+                                                    catIds    = catIds,   // mảng nhiều ID
+                                                    qty       = book.Quantity,
+                                                    status    = book.Status,
+                                                    imageUrl  = book.ImageUrl
+                                                })))'>
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <button class="btn btn-sm btn-danger" title="Xóa"
-                                            onclick="openDeleteOne('@book.BookId','@Html.Raw(book.Title?.Replace("'","\\'")??"")')">
+                                            onclick="openDeleteOne('@book.BookId',
+                                                '@Html.Raw(book.Title?.Replace("'","\\'") ?? "")')">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
@@ -464,13 +516,73 @@
 </div>
 
 <style>
-    .table-hover tbody tr:hover { background-color: #f8f9fa; }
-    .toast { min-width: 300px; }
+/* ── Chip thể loại ── */
+.chip {
+    transition: all .18s ease;
+    font-size: .85rem !important;
+}
+.chip.selected-create {
+    background-color: #198754 !important;
+    color: #fff !important;
+    border-color: #198754 !important;
+}
+.chip.selected-edit {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+    border-color: #ffc107 !important;
+}
+.chip:hover { opacity: .85; transform: scale(1.04); }
 </style>
 
 @section Scripts {
 <script>
-/* ═══ TOAST ═══ */
+/* ══════════════════════════════════════════════
+   CHIP LOGIC — dùng chung Create / Edit
+   ══════════════════════════════════════════════ */
+
+/**
+ * Toggle (bật/tắt) chip khi click.
+ * mode = 'create' | 'edit'
+ */
+function toggleChip(el, mode) {
+    el.classList.toggle('selected-' + mode);
+}
+
+/**
+ * Lấy danh sách CategoryId đã chọn từ chip container.
+ * containerId: ID của div chứa chips.
+ * mode: 'create' | 'edit'
+ */
+function getSelectedChipIds(containerId, mode) {
+    return Array.from(
+        document.querySelectorAll(`#${containerId} .chip.selected-${mode}`)
+    ).map(el => parseInt(el.dataset.id));
+}
+
+/**
+ * Lấy tên các chip đang được chọn (để hiển thị trong bảng xác nhận).
+ */
+function getSelectedChipNames(containerId, mode) {
+    const names = Array.from(
+        document.querySelectorAll(`#${containerId} .chip.selected-${mode}`)
+    ).map(el => el.textContent.trim());
+    return names.length ? names.join(', ') : '-';
+}
+
+/**
+ * Set trạng thái chip theo mảng IDs (dùng khi mở modal Edit).
+ */
+function setChips(containerId, mode, ids) {
+    document.querySelectorAll(`#${containerId} .chip`).forEach(el => {
+        el.classList.remove('selected-' + mode);
+        if (ids.includes(parseInt(el.dataset.id)))
+            el.classList.add('selected-' + mode);
+    });
+}
+
+/* ══════════════════════════════════════════════
+   TOAST
+   ══════════════════════════════════════════════ */
 function showToast(msg, type) {
     const box = document.getElementById('toastBox');
     box.className = 'toast align-items-center border-0 text-white bg-' + type;
@@ -478,7 +590,9 @@ function showToast(msg, type) {
     new bootstrap.Toast(box, { delay: 3500 }).show();
 }
 
-/* ═══ HELPER BƯỚC ═══ */
+/* ══════════════════════════════════════════════
+   HELPER BƯỚC
+   ══════════════════════════════════════════════ */
 function showStep(list, activeId) {
     list.forEach(id => {
         const el = document.getElementById(id);
@@ -486,23 +600,30 @@ function showStep(list, activeId) {
     });
 }
 
-/* ═══ THÊM SÁCH ═══ */
+/* ══════════════════════════════════════════════
+   THÊM SÁCH
+   ══════════════════════════════════════════════ */
 function openCreate() {
     resetCreate();
     new bootstrap.Modal(document.getElementById('modalCreate')).show();
 }
 
 function resetCreate() {
-    ['c_BookId','c_Title','c_Author','c_Publisher'].forEach(id => {
+    ['c_Title','c_Author','c_Publisher'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = '';
     });
-    document.getElementById('c_Status').value = 'Có thể mượn';
-    document.getElementById('c_Quantity').value = 1;
+    document.getElementById('c_Status').value      = 'Có thể mượn';
+    document.getElementById('c_Quantity').value    = 1;
     document.getElementById('c_PublishYear').value = '';
-    document.getElementById('c_CategoryId').value = '';
-    document.getElementById('c_ImageFile').value = '';
+    document.getElementById('c_ImageFile').value   = '';
     document.getElementById('c_ImagePreview').classList.add('d-none');
-    document.querySelectorAll('#modalCreate .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    // Bỏ chọn tất cả chip Create
+    document.querySelectorAll('#c_CategoryChips .chip').forEach(el =>
+        el.classList.remove('selected-create')
+    );
+    document.querySelectorAll('#modalCreate .is-invalid').forEach(el =>
+        el.classList.remove('is-invalid')
+    );
     showStep(['stepCreateForm','stepCreateConfirm','stepCreateLoading'], 'stepCreateForm');
 }
 
@@ -518,29 +639,28 @@ document.getElementById('c_ImageFile').addEventListener('change', function () {
 
 function toCreateConfirm() {
     let ok = true;
-    const bookId = document.getElementById('c_BookId').value.trim();
-    const title  = document.getElementById('c_Title').value.trim();
-    const qty    = parseInt(document.getElementById('c_Quantity').value);
+    const title = document.getElementById('c_Title').value.trim();
+    const qty   = parseInt(document.getElementById('c_Quantity').value);
 
-    const setErr = (id, isErr) => document.getElementById(id).classList.toggle('is-invalid', isErr);
-    setErr('c_BookId',   !bookId || bookId.length > 20); if (!bookId || bookId.length > 20) ok = false;
-    setErr('c_Title',    !title);                         if (!title) ok = false;
-    setErr('c_Quantity', isNaN(qty) || qty < 0);          if (isNaN(qty) || qty < 0) ok = false;
+    const setErr = (id, isErr) =>
+        document.getElementById(id).classList.toggle('is-invalid', isErr);
+
+    setErr('c_Title',    !title);                    if (!title) ok = false;
+    setErr('c_Quantity', isNaN(qty) || qty < 0);     if (isNaN(qty) || qty < 0) ok = false;
     if (!ok) return;
 
-    const catSel  = document.getElementById('c_CategoryId');
     const imgFile = document.getElementById('c_ImageFile').files[0];
-    document.getElementById('conf_BookId').textContent    = bookId;
     document.getElementById('conf_Title').textContent     = title;
     document.getElementById('conf_Author').textContent    = document.getElementById('c_Author').value || '-';
     document.getElementById('conf_Publisher').textContent = document.getElementById('c_Publisher').value || '-';
     document.getElementById('conf_Year').textContent      = document.getElementById('c_PublishYear').value || '-';
-    document.getElementById('conf_Category').textContent  = catSel.value ? catSel.options[catSel.selectedIndex].text : '-';
+    document.getElementById('conf_Category').textContent  = getSelectedChipNames('c_CategoryChips','create');
     document.getElementById('conf_Quantity').textContent  = qty;
     document.getElementById('conf_Status').textContent    = document.getElementById('c_Status').value || 'Có thể mượn';
     document.getElementById('conf_Image').innerHTML       = imgFile
         ? `<span class="text-success"><i class="fas fa-file-image me-1"></i>${imgFile.name}</span>`
         : '<span class="text-muted">Không có</span>';
+
     showStep(['stepCreateForm','stepCreateConfirm','stepCreateLoading'], 'stepCreateConfirm');
 }
 
@@ -550,21 +670,30 @@ function backCreateForm() {
 
 async function submitCreate() {
     showStep(['stepCreateForm','stepCreateConfirm','stepCreateLoading'], 'stepCreateLoading');
+
     const fd = new FormData();
-    fd.append('BookId',      document.getElementById('c_BookId').value.trim());
+    // Không gửi BookId — server tự sinh
     fd.append('Title',       document.getElementById('c_Title').value.trim());
     fd.append('Author',      document.getElementById('c_Author').value.trim());
     fd.append('Publisher',   document.getElementById('c_Publisher').value.trim());
     fd.append('PublishYear', document.getElementById('c_PublishYear').value);
-    fd.append('CategoryId',  document.getElementById('c_CategoryId').value);
     fd.append('Quantity',    document.getElementById('c_Quantity').value);
     fd.append('Status',      document.getElementById('c_Status').value);
+
+    // Gửi nhiều CategoryIds
+    getSelectedChipIds('c_CategoryChips','create').forEach(id =>
+        fd.append('CategoryIds', id)
+    );
+
     const imgFile = document.getElementById('c_ImageFile').files[0];
     if (imgFile) fd.append('ImageFile', imgFile);
-    fd.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
+
+    fd.append('__RequestVerificationToken',
+        document.querySelector('input[name="__RequestVerificationToken"]').value);
 
     try {
-        const res  = await fetch('@Url.Action("CreateAjax","Book")', { method: 'POST', body: fd });
+        const res  = await fetch('@Url.Action("CreateAjax","Book")',
+                                  { method: 'POST', body: fd });
         const data = await res.json();
         bootstrap.Modal.getInstance(document.getElementById('modalCreate')).hide();
         showToast(
@@ -578,19 +707,23 @@ async function submitCreate() {
     }
 }
 
-/* ═══ SỬA SÁCH ═══ */
+/* ══════════════════════════════════════════════
+   SỬA SÁCH
+   ══════════════════════════════════════════════ */
 function openEdit(book) {
     document.getElementById('e_BookId').value        = book.bookId;
     document.getElementById('e_BookIdDisplay').value = book.bookId;
-    document.getElementById('e_Title').value         = book.title    || '';
-    document.getElementById('e_Author').value        = book.author   || '';
+    document.getElementById('e_Title').value         = book.title     || '';
+    document.getElementById('e_Author').value        = book.author    || '';
     document.getElementById('e_Publisher').value     = book.publisher || '';
-    document.getElementById('e_PublishYear').value   = book.year     || '';
-    document.getElementById('e_CategoryId').value    = book.catId    || '';
-    document.getElementById('e_Quantity').value      = book.qty      ?? 0;
-    document.getElementById('e_Status').value        = book.status   || 'Có thể mượn';
-    document.getElementById('e_OldImageUrl').value   = book.imageUrl || '';
+    document.getElementById('e_PublishYear').value   = book.year      || '';
+    document.getElementById('e_Quantity').value      = book.qty       ?? 0;
+    document.getElementById('e_Status').value        = book.status    || 'Có thể mượn';
+    document.getElementById('e_OldImageUrl').value   = book.imageUrl  || '';
     document.getElementById('e_ImageFile').value     = '';
+
+    // Highlight chip theo danh mục hiện có của sách
+    setChips('e_CategoryChips', 'edit', book.catIds || []);
 
     const wrap = document.getElementById('e_CurrentImageWrap');
     if (book.imageUrl) {
@@ -600,7 +733,9 @@ function openEdit(book) {
         wrap.classList.add('d-none');
     }
 
-    document.querySelectorAll('#modalEdit .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    document.querySelectorAll('#modalEdit .is-invalid').forEach(el =>
+        el.classList.remove('is-invalid')
+    );
     showStep(['stepEditForm','stepEditConfirm','stepEditLoading'], 'stepEditForm');
     new bootstrap.Modal(document.getElementById('modalEdit')).show();
 }
@@ -609,24 +744,25 @@ function toEditConfirm() {
     let ok = true;
     const title = document.getElementById('e_Title').value.trim();
     const qty   = parseInt(document.getElementById('e_Quantity').value);
-    const setErr = (id, isErr) => document.getElementById(id).classList.toggle('is-invalid', isErr);
-    setErr('e_Title',    !title);               if (!title) ok = false;
+    const setErr = (id, isErr) =>
+        document.getElementById(id).classList.toggle('is-invalid', isErr);
+    setErr('e_Title',    !title);                if (!title) ok = false;
     setErr('e_Quantity', isNaN(qty) || qty < 0); if (isNaN(qty) || qty < 0) ok = false;
     if (!ok) return;
 
-    const catSel  = document.getElementById('e_CategoryId');
     const imgFile = document.getElementById('e_ImageFile').files[0];
     document.getElementById('econf_BookId').textContent    = document.getElementById('e_BookId').value;
     document.getElementById('econf_Title').textContent     = title;
     document.getElementById('econf_Author').textContent    = document.getElementById('e_Author').value || '-';
     document.getElementById('econf_Publisher').textContent = document.getElementById('e_Publisher').value || '-';
     document.getElementById('econf_Year').textContent      = document.getElementById('e_PublishYear').value || '-';
-    document.getElementById('econf_Category').textContent  = catSel.value ? catSel.options[catSel.selectedIndex].text : '-';
+    document.getElementById('econf_Category').textContent  = getSelectedChipNames('e_CategoryChips','edit');
     document.getElementById('econf_Quantity').textContent  = qty;
     document.getElementById('econf_Status').textContent    = document.getElementById('e_Status').value;
     document.getElementById('econf_Image').innerHTML       = imgFile
         ? `<span class="text-success"><i class="fas fa-file-image me-1"></i>${imgFile.name}</span>`
         : '<span class="text-muted">Giữ ảnh cũ</span>';
+
     showStep(['stepEditForm','stepEditConfirm','stepEditLoading'], 'stepEditConfirm');
 }
 
@@ -636,22 +772,31 @@ function backEditForm() {
 
 async function submitEdit() {
     showStep(['stepEditForm','stepEditConfirm','stepEditLoading'], 'stepEditLoading');
+
     const fd = new FormData();
     fd.append('BookId',      document.getElementById('e_BookId').value);
     fd.append('Title',       document.getElementById('e_Title').value.trim());
     fd.append('Author',      document.getElementById('e_Author').value.trim());
     fd.append('Publisher',   document.getElementById('e_Publisher').value.trim());
     fd.append('PublishYear', document.getElementById('e_PublishYear').value);
-    fd.append('CategoryId',  document.getElementById('e_CategoryId').value);
     fd.append('Quantity',    document.getElementById('e_Quantity').value);
     fd.append('Status',      document.getElementById('e_Status').value);
     fd.append('ImageUrl',    document.getElementById('e_OldImageUrl').value);
+
+    // Gửi nhiều CategoryIds từ chip edit
+    getSelectedChipIds('e_CategoryChips','edit').forEach(id =>
+        fd.append('CategoryIds', id)
+    );
+
     const imgFile = document.getElementById('e_ImageFile').files[0];
     if (imgFile) fd.append('ImageFile', imgFile);
-    fd.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
+
+    fd.append('__RequestVerificationToken',
+        document.querySelector('input[name="__RequestVerificationToken"]').value);
 
     try {
-        const res  = await fetch('@Url.Action("EditAjax","Book")', { method: 'POST', body: fd });
+        const res  = await fetch('@Url.Action("EditAjax","Book")',
+                                  { method: 'POST', body: fd });
         const data = await res.json();
         bootstrap.Modal.getInstance(document.getElementById('modalEdit')).hide();
         showToast(
@@ -665,7 +810,9 @@ async function submitEdit() {
     }
 }
 
-/* ═══ XÓA ═══ */
+/* ══════════════════════════════════════════════
+   XÓA
+   ══════════════════════════════════════════════ */
 function openDeleteOne(id, title) {
     document.getElementById('deleteMsg').innerHTML =
         `Bạn có chắc muốn xóa cuốn sách <strong class="text-danger">"${title}"</strong>?`;
@@ -682,7 +829,8 @@ function openDeleteMany() {
         `Bạn có chắc muốn xóa <strong class="text-danger">${checked.length} cuốn sách</strong> đã chọn?`;
     const list = document.getElementById('deleteManyList');
     list.innerHTML = Array.from(checked)
-        .map((c, i) => `<div>${i+1}. <strong>${c.dataset.title}</strong> <span class="text-muted">(${c.value})</span></div>`)
+        .map((c,i) => `<div>${i+1}. <strong>${c.dataset.title}</strong>
+                       <span class="text-muted">(${c.value})</span></div>`)
         .join('');
     list.classList.remove('d-none');
     document.getElementById('hiddenDeleteIds').innerHTML = Array.from(checked)
@@ -691,12 +839,13 @@ function openDeleteMany() {
     new bootstrap.Modal(document.getElementById('modalDelete')).show();
 }
 
-/* ═══ CHECKBOX ═══ */
+/* ══════════════════════════════════════════════
+   CHECKBOX
+   ══════════════════════════════════════════════ */
 function toggleAll(chkAll) {
     document.querySelectorAll('.chk-book').forEach(c => c.checked = chkAll.checked);
     updateSelected();
 }
-
 function updateSelected() {
     const checked = document.querySelectorAll('.chk-book:checked');
     const total   = document.querySelectorAll('.chk-book').length;
@@ -710,7 +859,9 @@ function updateSelected() {
     }
 }
 
-/* ═══ TOAST TỪ SERVER SAU REDIRECT ═══ */
+/* ══════════════════════════════════════════════
+   TOAST TỪ SERVER SAU REDIRECT
+   ══════════════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded', () => {
     @if (TempData["SuccessMessage"] != null) {
         <text>showToast('<i class="fas fa-check-circle me-2"></i>@Html.Raw(TempData["SuccessMessage"])', 'success');</text>

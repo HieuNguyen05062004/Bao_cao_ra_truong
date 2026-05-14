@@ -1,0 +1,147 @@
+@model Client.ViewModels.BorrowRequestViewModel
+
+@{
+    ViewData["Title"] = "Mượn Sách";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-book me-2"></i> Yêu Cầu Mượn Sách
+                    </h4>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="post" action="@Url.Action("SubmitBorrowRequest", "Borrow")" class="needs-validation">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Thông tin bạn đọc (tự động) -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fas fa-id-card me-2"></i> Mã Bạn Đọc
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" 
+                                           value="@Model.ReaderId" readonly>
+                                    <input type="hidden" name="ReaderId" value="@Model.ReaderId">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fas fa-user me-2"></i> Tên Bạn Đọc
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" 
+                                           value="@Model.ReaderName" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Danh sách sách được chọn -->
+                        <div class="form-group mb-4">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-list me-2"></i> Sách Được Chọn
+                            </label>
+                            <div class="border rounded p-3 bg-light">
+                                @if (Model.SelectedBookTitles.Any())
+                                {
+                                    <ol class="mb-0">
+                                        @foreach (var title in Model.SelectedBookTitles)
+                                        {
+                                            <li class="mb-2">@title</li>
+                                        }
+                                    </ol>
+                                }
+                                else
+                                {
+                                    <p class="text-muted mb-0">Chưa chọn sách nào</p>
+                                }
+                            </div>
+                            <!-- Hidden inputs cho SelectedBookIds -->
+                            @foreach (var bookId in Model.SelectedBookIds)
+                            {
+                                <input type="hidden" name="SelectedBookIds" value="@bookId">
+                            }
+                        </div>
+
+                        <!-- Ngày mượn -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fas fa-calendar-check me-2"></i> Ngày Mượn <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date" class="form-control form-control-lg" 
+                                           name="BorrowDate" value="@Model.BorrowDate.ToString("yyyy-MM-dd")" 
+                                           required>
+                                    <small class="text-muted">Ngày bắt đầu mượn sách</small>
+                                </div>
+                            </div>
+
+                            <!-- Ngày trả -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fas fa-calendar-times me-2"></i> Ngày Trả Dự Kiến <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date" class="form-control form-control-lg" 
+                                           name="DueDate" value="@Model.DueDate.ToString("yyyy-MM-dd")" 
+                                           required>
+                                    <small class="text-muted">Ngày dự kiến trả sách</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alert info -->
+                        <div class="alert alert-info mb-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Lưu ý:</strong> Sau khi gửi yêu cầu, nhân viên thư viện sẽ duyệt và 
+                            cập nhật số lượng sách. Bạn có thể theo dõi trạng thái yêu cầu trong "Lịch sử mượn sách".
+                        </div>
+
+                        <!-- Nút hành động -->
+                        <div class="d-flex gap-3 justify-content-end">
+                            <a href="@Url.Action("Index", "Search")" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i> Hủy
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check me-2"></i> Gửi Yêu Cầu
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control-lg {
+        min-height: 50px;
+        font-size: 1.1rem;
+    }
+
+    .card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        border-bottom: 3px solid #0056b3;
+    }
+
+    .btn-lg {
+        padding: 12px 32px;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+</style>

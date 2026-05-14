@@ -1,0 +1,289 @@
+@model Core.Shared.Entities.BorrowTicket
+
+@{
+    ViewData["Title"] = "Chi Tiết Yêu Cầu Mượn";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-lg-10 offset-lg-1">
+            <div class="card shadow-lg mb-4">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-alt me-2"></i> Yêu Cầu Mượn Sách #@Model.TicketId
+                    </h4>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Trạng thái và thông tin cơ bản -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Trạng Thái</h6>
+                            @{
+                                var statusBadgeClass = Model.Status switch
+                                {
+                                    "Pending" => "badge bg-warning text-dark p-3",
+                                    "Approved" => "badge bg-success p-3",
+                                    "Returned" => "badge bg-info p-3",
+                                    "Rejected" => "badge bg-danger p-3",
+                                    _ => "badge bg-secondary p-3"
+                                };
+
+                                var statusText = Model.Status switch
+                                {
+                                    "Pending" => "Chờ Duyệt",
+                                    "Approved" => "Đã Duyệt",
+                                    "Returned" => "Đã Trả",
+                                    "Rejected" => "Bị Từ Chối",
+                                    _ => Model.Status
+                                };
+                            }
+                            <span class="@statusBadgeClass">@statusText</span>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Mã Yêu Cầu</h6>
+                            <p class="fs-5"><strong>#@Model.TicketId</strong></p>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <!-- Thông tin bạn đọc -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2"><i class="fas fa-id-card me-2"></i> Mã Bạn Đọc</h6>
+                            <p class="fs-6"><strong>@Model.ReaderId</strong></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2"><i class="fas fa-user me-2"></i> Tên Bạn Đọc</h6>
+                            <p class="fs-6"><strong>@Model.Reader?.FullName ?? "Không xác định"</strong></p>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin mượn/trả -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <h6 class="text-muted mb-2"><i class="fas fa-calendar-check me-2 text-success"></i> Ngày Mượn</h6>
+                            <p class="fs-6"><strong>@Model.BorrowDate?.ToString("dd/MM/yyyy HH:mm")</strong></p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="text-muted mb-2"><i class="fas fa-calendar-times me-2 text-warning"></i> Ngày Trả Dự Kiến</h6>
+                            <p class="fs-6"><strong>@Model.DueDate?.ToString("dd/MM/yyyy")</strong></p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="text-muted mb-2"><i class="fas fa-calendar-check me-2 text-info"></i> Ngày Trả Thực Tế</h6>
+                            <p class="fs-6">
+                                @if (Model.ReturnDate.HasValue)
+                                {
+                                    <strong>@Model.ReturnDate?.ToString("dd/MM/yyyy HH:mm")</strong>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Nhân viên phê duyệt -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2"><i class="fas fa-user-tie me-2"></i> Nhân Viên Duyệt</h6>
+                            <p class="fs-6">
+                                @if (!string.IsNullOrEmpty(Model.StaffUsername))
+                                {
+                                    <strong>@Model.StaffUsernameNavigation?.FullName ?? Model.StaffUsername</strong>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <!-- Danh sách sách mượn -->
+                    <h5 class="mb-3">
+                        <i class="fas fa-book me-2 text-primary"></i> 
+                        Sách Đang Mượn 
+                        <span class="badge bg-primary rounded-pill">@Model.Books.Count</span>
+                    </h5>
+
+                    @if (Model.Books.Any())
+                    {
+                        <div class="alert alert-info mb-4" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Tổng số sách đang mượn: <strong>@Model.Books.Count</strong> cuốn
+                        </div>
+
+                        <div class="table-responsive mb-4">
+                            <table class="table table-hover table-striped">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th><i class="fas fa-key me-2"></i>Mã Sách</th>
+                                        <th><i class="fas fa-book me-2"></i>Tên Sách</th>
+                                        <th><i class="fas fa-pen me-2"></i>Tác Giả</th>
+                                        <th><i class="fas fa-building me-2"></i>NXB</th>
+                                        <th><i class="fas fa-calendar me-2"></i>Năm</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var book in Model.Books)
+                                    {
+                                        <tr>
+                                            <td><span class="badge bg-secondary">@book.BookId</span></td>
+                                            <td>
+                                                <a href="@Url.Action("Details", "Book", new { id = book.BookId })" 
+                                                   class="text-decoration-none fw-bold" title="@book.Title">
+                                                    @(book.Title.Length > 40 ? book.Title.Substring(0, 40) + "..." : book.Title)
+                                                </a>
+                                            </td>
+                                            <td>@(book.Author ?? "—")</td>
+                                            <td>@(book.Publisher ?? "—")</td>
+                                            <td>@(book.PublishYear?.ToString() ?? "—")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Grid view -->
+                        <h6 class="mb-3">
+                            <i class="fas fa-th me-2"></i>Chi Tiết Sách
+                        </h6>
+                        <div class="row">
+                            @foreach (var book in Model.Books)
+                            {
+                                <div class="col-md-6 mb-4">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        @if (!string.IsNullOrEmpty(book.ImageUrl))
+                                        {
+                                            <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title"
+                                                 style="height: 200px; object-fit: cover;">
+                                        }
+                                        else
+                                        {
+                                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                                                 style="height: 200px;">
+                                                <i class="fas fa-book fa-3x text-muted"></i>
+                                            </div>
+                                        }
+                                        <div class="card-body">
+                                            <h6 class="card-title fw-bold text-truncate" title="@book.Title">@book.Title</h6>
+                                            <p class="card-text mb-1">
+                                                <small class="text-muted">
+                                                    <strong>Tác giả:</strong> @(book.Author ?? "Không xác định")
+                                                </small>
+                                            </p>
+                                            <p class="card-text mb-0">
+
+```
+                                                <small class="text-muted">
+                                                    <strong>NXB:</strong> @(book.Publisher ?? "Không xác định")
+                                                </small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> Không có sách trong yêu cầu này.
+                        </div>
+                    }
+                </div>
+
+                <!-- Hành động -->
+                <div class="card-footer p-4 bg-light">
+                    <div class="d-flex gap-2 justify-content-between">
+                        <a href="@Url.Action("Index", "Borrow")" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i> Quay Lại
+                        </a>
+
+                        <div class="d-flex gap-2">
+                            @if (Model.Status == "Pending")
+                            {
+                                <form method="post" action="@Url.Action("Approve", "Borrow")" style="display: inline;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@Model.TicketId">
+                                    <button type="submit" class="btn btn-success" onclick="return confirm('Duyệt yêu cầu mượn này?')">
+                                        <i class="fas fa-check me-2"></i> Duyệt
+                                    </button>
+                                </form>
+
+                                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                                    <i class="fas fa-times me-2"></i> Từ Chối
+                                </button>
+                            }
+
+                            @if (Model.Status == "Approved")
+                            {
+                                <form method="post" action="@Url.Action("ReturnBooks", "Borrow")" style="display: inline;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@Model.TicketId">
+                                    <button type="submit" class="btn btn-info" onclick="return confirm('Xác nhận trả sách?')">
+                                        <i class="fas fa-undo me-2"></i> Xác Nhận Trả Sách
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Từ Chối -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" action="@Url.Action("Reject", "Borrow")">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.TicketId">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Từ Chối Yêu Cầu Mượn</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Lý Do Từ Chối (Tùy Chọn)</label>
+                        <textarea name="reason" class="form-control" rows="4" placeholder="Nhập lý do từ chối..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-danger">Từ Chối</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 8px;
+    }
+
+    .card-img-top {
+        border-radius: 8px 8px 0 0;
+    }
+
+    .badge {
+        padding: 8px 12px;
+        font-size: 0.95rem;
+    }
+
+    .btn {
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+</style>

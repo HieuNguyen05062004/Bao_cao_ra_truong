@@ -1,0 +1,168 @@
+@model Core.Shared.ViewModels.UnifiedLoginViewModel
+
+@{
+    ViewData["Title"] = "Đăng Nhập";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-sign-in-alt me-2"></i> Đăng Nhập
+                    </h3>
+                </div>
+
+                <div class="card-body p-5">
+                    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <strong>Lỗi đăng nhập!</strong>
+                            @foreach (var modelState in ViewData.ModelState.Values)
+                            {
+                                @foreach (var error in modelState.Errors)
+                                {
+                                    <div>@error.ErrorMessage</div>
+                                }
+                            }
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Login" asp-controller="Account" method="post" class="needs-validation" novalidate>
+                        @Html.AntiForgeryToken()
+
+                        <!-- Email -->
+                        <div class="mb-4">
+                            <div class="form-group">
+                                <label asp-for="Email" class="form-label fw-semibold">
+                                    <i class="fas fa-envelope me-2 text-primary"></i>Email <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Email" type="email" class="form-control form-control-lg" 
+                                       placeholder="Nhập email của bạn" autofocus>
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                                <small class="text-muted d-block mt-1">
+                                    Hệ thống sẽ tự động nhận dạng loại tài khoản (Bạn Đọc hoặc Nhân Viên)
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Mật Khẩu -->
+                        <div class="mb-4">
+                            <div class="form-group">
+                                <label asp-for="Password" class="form-label fw-semibold">
+                                    <i class="fas fa-lock me-2 text-primary"></i>Mật Khẩu <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <input asp-for="Password" id="clientLoginPassword" type="password" 
+                                           class="form-control form-control-lg" 
+                                           placeholder="Nhập mật khẩu của bạn">
+                                    <button type="button" class="btn btn-outline-secondary" 
+                                            onclick="toggleClientLoginPassword()">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                                <div class="form-check mt-2">
+                                    <input type="checkbox" class="form-check-input" id="showClientPassword" 
+                                           onchange="toggleClientLoginPassword()">
+                                    <label class="form-check-label" for="showClientPassword">
+                                        <i class="fas fa-eye me-1"></i>Hiển thị mật khẩu
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ghi Nhớ Tôi -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input asp-for="RememberMe" type="checkbox" class="form-check-input" id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">
+                                    <i class="fas fa-check-square me-1"></i>Ghi nhớ tôi
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Nút Hành Động -->
+                        <div class="d-grid gap-3 mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                                <i class="fas fa-sign-in-alt me-2"></i> Đăng Nhập
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <!-- Links -->
+                    <div class="text-center">
+                        <p class="text-muted mb-3">
+                            Chưa có tài khoản? 
+                            <a href="@Url.Action("Register", "Account")" class="text-primary fw-bold">
+                                Đăng ký tại đây
+                            </a>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Đăng nhập chung cho Bạn Đọc, Nhân Viên và Quản Trị Viên
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control-lg {
+        min-height: 50px;
+        font-size: 1rem;
+    }
+
+    .form-label {
+        margin-bottom: 0.75rem;
+    }
+
+    .card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        border-bottom: 3px solid #0056b3;
+    }
+
+    .btn-lg {
+        padding: 12px 32px;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        function toggleClientLoginPassword() {
+            const input = document.getElementById('clientLoginPassword');
+            const checkbox = document.getElementById('showClientPassword');
+            const button = document.querySelector('button[onclick="toggleClientLoginPassword()"]');
+            const icon = button.querySelector('i');
+
+            if (checkbox.checked) {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

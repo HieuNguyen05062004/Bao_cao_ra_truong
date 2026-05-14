@@ -1,0 +1,118 @@
+@{
+    ViewData["Title"] = "Đăng Ký Thành Công";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5 text-center">
+                    <!-- Success Icon -->
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 80px;"></i>
+                    </div>
+
+                    <!-- Success Message -->
+                    <h2 class="mb-3 text-success fw-bold">Đăng Ký Thành Công!</h2>
+                    <p class="fs-5 text-muted mb-4">
+                        Chúc mừng bạn đã trở thành bạn đọc của thư viện. 
+                        <br />
+                        Bạn có thể bắt đầu mượn sách ngay bây giờ.
+                    </p>
+
+                    <!-- Reader ID Display -->
+                    <div class="alert alert-info mb-4" role="alert">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="mb-2">
+                                    <i class="fas fa-id-card me-2"></i> Mã Bạn Đọc của Bạn
+                                </h5>
+                                <div class="bg-white p-3 rounded border-2 border-primary">
+                                    <h3 class="text-primary fw-bold mb-0" style="font-size: 2.5rem;">
+                                        @ViewBag.ReaderId
+                                    </h3>
+                                </div>
+                                <small class="text-muted d-block mt-2">
+                                    Lưu lại mã này, bạn sẽ cần nó để mượn sách và quản lý tài khoản.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Important Info -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title fw-bold">
+                                        <i class="fas fa-book text-primary me-2"></i> Bắt Đầu Mượn Sách
+                                    </h6>
+                                    <p class="card-text small mb-0">
+                                        Khám phá kho sách phong phú của thư viện và gửi yêu cầu mượn ngay.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title fw-bold">
+                                        <i class="fas fa-history text-success me-2"></i> Theo Dõi Lịch Sử
+                                    </h6>
+                                    <p class="card-text small mb-0">
+                                        Xem lịch sử mượn sách, ngày trả dự kiến, và trạng thái yêu cầu.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nút Hành Động -->
+                    <div class="d-flex gap-3 justify-content-center mt-5">
+                        <a href="@Url.Action("Index", "Search")" class="btn btn-primary btn-lg">
+                            <i class="fas fa-search me-2"></i> Tìm Kiếm Sách
+                        </a>
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-home me-2"></i> Quay Lại Trang Chủ
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="mt-4">
+                <div class="alert alert-success" role="alert">
+                    <h5 class="alert-heading">
+                        <i class="fas fa-lightbulb me-2"></i> Hướng Dẫn Nhanh
+                    </h5>
+                    <ul class="mb-0">
+                        <li>💡 Sử dụng mã bạn đọc <strong>@ViewBag.ReaderId</strong> để mượn sách</li>
+                        <li>📅 Bạn có thể mượn sách trong vòng 7 ngày</li>
+                        <li>📚 Tìm kiếm sách bằng tên, tác giả hoặc thể loại</li>
+                        <li>🔔 Theo dõi yêu cầu mượn của bạn trong "Lịch sử mượn sách"</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 12px;
+    }
+
+    .btn-lg {
+        padding: 12px 32px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+
+    .text-success {
+        color: #28a745 !important;
+    }
+</style>

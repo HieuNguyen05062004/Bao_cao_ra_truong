@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "Xóa Tài Khoản";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card shadow-lg border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Xóa Tài Khoản
+                    </h4>
+                </div>
+
+                <div class="card-body p-4 text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-user-times text-danger" style="font-size:60px;"></i>
+                    </div>
+
+                    <h5 class="mb-1">Xin chào, <strong>@ViewBag.FullName</strong></h5>
+                    <p class="text-muted mb-3">
+                        Mã bạn đọc: <strong class="text-primary">@ViewBag.ReaderId</strong>
+                    </p>
+
+                    @if ((bool)ViewBag.HasActive)
+                    {
+                        <div class="alert alert-warning text-start">
+                            <i class="fas fa-book me-2"></i>
+                            Bạn đang có <strong>sách chưa trả</strong>.
+                            Vui lòng trả sách trước khi xóa tài khoản.
+                        </div>
+                        <a asp-action="Profile" class="btn btn-secondary btn-lg mt-2">
+                            <i class="fas fa-arrow-left me-2"></i> Quay Lại Hồ Sơ
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger text-start">
+                            <strong>⚠️ Cảnh báo: Hành động này không thể hoàn tác!</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Toàn bộ thông tin cá nhân sẽ bị xóa vĩnh viễn.</li>
+                                <li>Lịch sử mượn sách sẽ bị xóa.</li>
+                                <li>Bạn sẽ không thể đăng nhập lại bằng tài khoản này.</li>
+                            </ul>
+                        </div>
+
+                        <form asp-action="DeleteAccount" method="post" class="mt-3">
+                            @Html.AntiForgeryToken()
+                            <div class="d-flex gap-3 justify-content-center">
+                                <a asp-action="Profile" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-times me-2"></i> Hủy
+                                </a>
+                                <button type="submit" class="btn btn-danger btn-lg">
+                                    <i class="fas fa-trash me-2"></i> Xác Nhận Xóa Tài Khoản
+                                </button>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card { border-radius: 12px; overflow: hidden; }
+    .card-header { border-radius: 12px 12px 0 0 !important; }
+    .btn-lg { padding: 12px 32px; font-size: 1.1rem; font-weight: 600; }
+</style>

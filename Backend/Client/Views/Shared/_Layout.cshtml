@@ -1,47 +1,226 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Client</title>
+    <title>@ViewData["Title"] - Thư Viện</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Client.styles.css" asp-append-version="true" />
+    <style>
+        :root {
+            --c-bg:     #ffffff;
+            --c-bg2:    #f5f7fb;
+            --c-accent: #3b7ef8;
+            --c-text:   #1a1d2e;
+            --c-muted:  #6b7280;
+            --c-border: #e5e7ef;
+        }
+        html, body {
+            background: var(--c-bg);
+            color: var(--c-text);
+            min-height: 100vh;
+        }
+        /* ── Navbar ── */
+        .navbar {
+            background: #fff !important;
+            border-bottom: 1px solid var(--c-border) !important;
+            padding: 12px 0;
+            box-shadow: 0 1px 4px rgba(0,0,0,.06);
+        }
+        .navbar-brand {
+            font-weight: 800; font-size: 1.15rem;
+            color: var(--c-text) !important;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .navbar-brand .brand-icon {
+            width: 30px; height: 30px; background: var(--c-accent);
+            border-radius: 8px; display: flex; align-items: center;
+            justify-content: center; font-size: .8rem; color: #fff;
+        }
+        .nav-link { color: var(--c-muted) !important; font-size: .9rem; transition: color .2s; }
+        .nav-link:hover { color: var(--c-accent) !important; }
+        .btn-nav-login {
+            border: 1px solid var(--c-border); color: var(--c-text) !important;
+            border-radius: 9px; padding: 6px 16px; font-size: .88rem;
+            background: transparent; transition: all .2s;
+        }
+        .btn-nav-login:hover { border-color: var(--c-accent); color: var(--c-accent) !important; }
+        .btn-nav-register {
+            background: var(--c-accent); color: #fff !important;
+            border-radius: 9px; padding: 6px 16px; font-size: .88rem;
+            border: none; transition: opacity .2s;
+        }
+        .btn-nav-register:hover { opacity: .85; }
+        /* Avatar dropdown */
+        .user-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            object-fit: cover; border: 2px solid var(--c-accent);
+        }
+        .dropdown-menu {
+            background: #fff; border: 1px solid var(--c-border);
+            border-radius: 12px; padding: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.10);
+        }
+        .dropdown-item {
+            color: var(--c-muted); border-radius: 8px; font-size: .88rem;
+            padding: 8px 14px; transition: all .15s;
+        }
+        .dropdown-item:hover { background: var(--c-bg2); color: var(--c-text); }
+        .dropdown-divider { border-color: var(--c-border); }
+        /* ── Alerts ── */
+        .alert { border-radius: 12px; border: none; font-size: .9rem; }
+        /* ── Footer ── */
+        footer {
+            background: var(--c-bg2) !important;
+            border-top: 1px solid var(--c-border) !important;
+            color: var(--c-muted); padding: 20px 0; font-size: .85rem;
+        }
+        footer a { color: var(--c-muted); }
+        footer a:hover { color: var(--c-accent); }
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--c-bg2); }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Client</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-sm navbar-dark">
+            <div class="container">
+                <!-- Brand -->
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    <span class="brand-icon"><i class="fas fa-book-open"></i></span>
+                    Thư Viện
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target=".navbar-collapse" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <!-- Nav links -->
+                    <ul class="navbar-nav flex-grow-1 ms-4 gap-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                <i class="fas fa-home me-1"></i> Trang chủ
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" asp-controller="Search" asp-action="Index">
+                                <i class="fas fa-search me-1"></i> Tìm sách
+                            </a>
                         </li>
+                    </ul>
+
+                    <!-- Auth -->
+                    <ul class="navbar-nav align-items-center gap-2">
+                        @{
+                            var readerId   = Context.Session.GetString("ReaderId");
+                            var readerName = Context.Session.GetString("ReaderName");
+                            var readerAvatar = Context.Session.GetString("ReaderAvatar");
+                        }
+
+                        @if (string.IsNullOrEmpty(readerId))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link btn-nav-login" asp-controller="Account" asp-action="Login">
+                                    <i class="fas fa-sign-in-alt me-1"></i> Đăng nhập
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link btn-nav-register" asp-controller="Account" asp-action="Register">
+                                    Đăng ký
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center gap-2"
+                                   href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                    @if (!string.IsNullOrEmpty(readerAvatar))
+                                    {
+                                        <img src="@readerAvatar" class="user-avatar" alt="avatar" />
+                                    }
+                                    else
+                                    {
+                                        <span style="width:32px;height:32px;border-radius:50%;background:var(--c-accent);display:flex;align-items:center;justify-content:center;font-size:.8rem;color:#fff;">
+                                            <i class="fas fa-user"></i>
+                                        </span>
+                                    }
+                                    <span style="color:var(--c-text);font-size:.9rem;">@readerName</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href="@Url.Action("Profile","Account")">
+                                            <i class="fas fa-user me-2"></i>Hồ sơ cá nhân
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="@Url.Action("BorrowHistory","Borrow")">
+                                            <i class="fas fa-history me-2"></i>Lịch sử mượn
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-action="Logout" asp-controller="Account" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Client - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <main role="main">
+        @if (TempData["Success"] != null)
+        {
+            <div class="container mt-3">
+                <div class="alert alert-success alert-dismissible fade show">
+                    <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        }
+        @if (TempData["Warning"] != null)
+        {
+            <div class="container mt-3">
+                <div class="alert alert-warning alert-dismissible fade show">
+                    <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Warning"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="container mt-3">
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        }
+        @RenderBody()
+    </main>
+
+    <footer>
+        <div class="container d-flex justify-content-between align-items-center">
+            <span>&copy; 2026 Thư Viện — Hệ thống quản lý thư viện thông minh</span>
+            <a asp-controller="Home" asp-action="Privacy">Chính sách bảo mật</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

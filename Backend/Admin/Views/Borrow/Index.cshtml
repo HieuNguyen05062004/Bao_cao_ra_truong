@@ -1,0 +1,146 @@
+@model List<Core.Shared.Entities.BorrowTicket>
+
+@{
+    ViewData["Title"] = "Quản Lý Mượn Sách";
+}
+
+<div class="container-fluid mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                <i class="fas fa-book-reader me-2"></i> Quản Lý Yêu Cầu Mượn Sách
+            </h4>
+        </div>
+
+        <div class="card-body p-4">
+            <!-- Filter Status -->
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Lọc theo trạng thái:</label>
+                <div class="btn-group" role="group">
+                    <a href="@Url.Action("Index", "Borrow")" class="btn btn-outline-secondary">
+                        Tất cả
+                    </a>
+                    <a href="@Url.Action("Index", "Borrow", new { status = "Pending" })" class="btn btn-outline-warning">
+                        Chờ Duyệt
+                    </a>
+                    <a href="@Url.Action("Index", "Borrow", new { status = "Approved" })" class="btn btn-outline-success">
+                        Đã Duyệt
+                    </a>
+                    <a href="@Url.Action("Index", "Borrow", new { status = "Borrowing" })" class="btn btn-outline-primary">
+                        <i class="fas fa-book me-1"></i>Đang Mượn Sách
+                    </a>
+                    <a href="@Url.Action("Index", "Borrow", new { status = "Returned" })" class="btn btn-outline-info">
+                        Đã Trả
+                    </a>
+                    <a href="@Url.Action("Index", "Borrow", new { status = "Rejected" })" class="btn btn-outline-danger">
+                        Bị Từ Chối
+                    </a>
+                </div>
+            </div>
+
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="8%">ID</th>
+                                <th width="12%">Bạn Đọc</th>
+                                <th width="10%">Ngày Mượn</th>
+                                <th width="12%">Ngày Trả Dự Kiến</th>
+                                <th width="12%">Trạng Thái</th>
+                                <th width="10%">Số Sách</th>
+                                <th width="12%">Nhân Viên</th>
+                                <th width="12%">Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ticket in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>#@ticket.TicketId</strong>
+                                    </td>
+                                    <td>
+                                        <strong>@ticket.ReaderId</strong>
+                                        <br />
+                                        <small class="text-muted">@ticket.Reader?.FullName</small>
+                                    </td>
+                                    <td>
+                                        @ticket.BorrowDate?.ToString("dd/MM/yyyy HH:mm")
+                                    </td>
+                                    <td>
+                                        @ticket.DueDate?.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td>
+                                        @{
+                                            var statusBadgeClass = ticket.Status switch
+                                            {
+                                                "Pending" => "badge bg-warning text-dark",
+                                                "Approved" => ticket.ReturnDate.HasValue ? "badge bg-info" : "badge bg-primary",
+                                                "Returned" => "badge bg-info",
+                                                "Rejected" => "badge bg-danger",
+                                                _ => "badge bg-secondary"
+                                            };
+
+                                            var statusText = ticket.Status switch
+                                            {
+                                                "Pending" => "Chờ Duyệt",
+                                                "Approved" => ticket.ReturnDate.HasValue ? "Đã Trả" : "Đang Mượn Sách",
+                                                "Returned" => "Đã Trả",
+                                                "Rejected" => "Bị Từ Chối",
+                                                _ => ticket.Status
+                                            };
+                                        }
+                                        <span class="@statusBadgeClass">@statusText</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-secondary">@ticket.Books.Count</span>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(ticket.StaffUsername))
+                                        {
+                                            <small>@ticket.StaffUsernameNavigation?.FullName</small>
+                                        }
+                                        else
+                                        {
+                                            <small class="text-muted">-</small>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Details", "Borrow", new { id = ticket.TicketId })"
+                                           class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i> Chi Tiết
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Không có yêu cầu mượn sách nào.</strong>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    .badge {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+
+    .btn-group .btn {
+        padding: 8px 16px;
+    }
+</style>

@@ -36,6 +36,13 @@ public partial class Reader
     [Column("AvatarURL")]
     public string? AvatarUrl { get; set; }
 
+    // Mật khẩu đã hash (BCrypt) — dùng cho đăng nhập Client
+    [StringLength(255)]
+    public string? PasswordHash { get; set; }
+
+    [Column(TypeName = "datetime")]
+    public DateTime? CreatedAt { get; set; }
+
     [InverseProperty("Reader")]
     public virtual ICollection<BorrowTicket> BorrowTickets { get; set; } = new List<BorrowTicket>();
 }
