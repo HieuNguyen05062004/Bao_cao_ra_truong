@@ -1,4 +1,3 @@
-using Core.Shared.Entities;
 using Core.Shared.Interfaces;
 using Core.Shared.Repositories;
 using Core.Shared.ViewModels;
@@ -6,9 +5,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Core.Shared.Services;
 
-/// <summary>
-/// Service xác thực chung cho Client và Admin
-/// </summary>
 public class UnifiedAuthService : IUnifiedAuthService
 {
     private readonly ReaderRepository _readerRepository;
@@ -25,124 +21,101 @@ public class UnifiedAuthService : IUnifiedAuthService
         _logger = logger;
     }
 
-    /// <summary>
-    /// Đăng nhập bằng email + password
-    /// Kiểm tra cả Reader và Account (Admin/Staff)
-    /// </summary>
     public async Task<LoginResultViewModel> LoginAsync(string email, string password)
     {
         try
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+                return Fail("Email và mật khẩu không được để trống");
+
+            // ── Kiểm tra Reader ──────────────────────────────────────────
+            var readers = await _readerRepository.GetAllAsync();
+            var reader = readers.FirstOrDefault(r =>
+                r.Email?.ToLower() == email.ToLower());
+
+            if (reader != null)
             {
+                // Reader tồn tại nhưng chưa có mật khẩu (tạo từ Admin, chưa set password)
+                if (string.IsNullOrEmpty(reader.PasswordHash))
+                    return Fail("Tài khoản này chưa được đặt mật khẩu. Vui lòng liên hệ thủ thư.");
+
+                if (!BCrypt.Net.BCrypt.Verify(password, reader.PasswordHash))
+                    return Fail("Email hoặc mật khẩu không đúng");
+
+                _logger.LogInformation("Reader {ReaderId} đã đăng nhập thành công", reader.ReaderId);
                 return new LoginResultViewModel
                 {
-                    Success = false,
-                    Message = "Email và mật khẩu không được để trống"
+                    Success = true,
+                    Message = "Đăng nhập thành công",
+                    UserType = "Reader",
+                    UserId = reader.ReaderId,
+                    UserName = reader.FullName,
+                    AvatarUrl = reader.AvatarUrl
                 };
             }
 
-            // Kiểm tra xem email có phải Reader không
-            var readers = await _readerRepository.GetAllAsync();
-            var reader = readers.FirstOrDefault(r => r.Email?.ToLower() == email.ToLower());
-
-            if (reader != null && !string.IsNullOrEmpty(reader.PasswordHash))
-            {
-                // Verify password cho Reader
-                if (BCrypt.Net.BCrypt.Verify(password, reader.PasswordHash))
-                {
-                    _logger.LogInformation($"Reader {reader.ReaderId} đã đăng nhập thành công");
-                    return new LoginResultViewModel
-                    {
-                        Success = true,
-                        Message = "Đăng nhập thành công",
-                        UserType = "Reader",
-                        UserId = reader.ReaderId,
-                        UserName = reader.FullName,
-                        AvatarUrl = reader.AvatarUrl
-                    };
-                }
-            }
-
-            // Kiểm tra xem email có phải Account (Admin/Staff) không
+            // ── Kiểm tra Account (Admin/Staff) ───────────────────────────
             var accounts = await _accountRepository.GetAllAsync();
-            var account = accounts.FirstOrDefault(a => a.Email?.ToLower() == email.ToLower());
+            var account = accounts.FirstOrDefault(a =>
+                a.Email?.ToLower() == email.ToLower());
 
-            if (account != null && !string.IsNullOrEmpty(account.Password))
+            if (account != null)
             {
-                // Verify password cho Account
-                if (BCrypt.Net.BCrypt.Verify(password, account.Password))
+                if (string.IsNullOrEmpty(account.Password))
+                    return Fail("Tài khoản này chưa có mật khẩu.");
+
+                if (!BCrypt.Net.BCrypt.Verify(password, account.Password))
+                    return Fail("Email hoặc mật khẩu không đúng");
+
+                _logger.LogInformation("Account {Username} đã đăng nhập thành công", account.Username);
+                return new LoginResultViewModel
                 {
-                    _logger.LogInformation($"Account {account.Username} đã đăng nhập thành công");
-                    return new LoginResultViewModel
-                    {
-                        Success = true,
-                        Message = "Đăng nhập thành công",
-                        UserType = account.Role ?? "Admin", // "Admin" hoặc "Staff"
-                        UserId = account.Username,
-                        UserName = account.FullName ?? account.Username,
-                        AvatarUrl = account.AvatarUrl
-                    };
-                }
+                    Success = true,
+                    Message = "Đăng nhập thành công",
+                    UserType = account.Role ?? "Admin",
+                    UserId = account.Username,
+                    UserName = account.FullName ?? account.Username,
+                    AvatarUrl = account.AvatarUrl
+                };
             }
 
-            // Email hoặc password không đúng
-            return new LoginResultViewModel
-            {
-                Success = false,
-                Message = "Email hoặc mật khẩu không đúng"
-            };
+            // Email không tồn tại trong cả 2 bảng
+            return Fail("Email hoặc mật khẩu không đúng");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Lỗi khi đăng nhập");
-            return new LoginResultViewModel
-            {
-                Success = false,
-                Message = $"Lỗi hệ thống: {ex.Message}"
-            };
+            return Fail($"Lỗi hệ thống: {ex.Message}");
         }
     }
 
-    /// <summary>
-    /// Kiểm tra email đã được sử dụng chưa
-    /// </summary>
     public async Task<bool> EmailExistsAsync(string email)
     {
-        if (string.IsNullOrEmpty(email))
-            return false;
+        if (string.IsNullOrEmpty(email)) return false;
 
-        // Kiểm tra Reader
         var readers = await _readerRepository.GetAllAsync();
         if (readers.Any(r => r.Email?.ToLower() == email.ToLower()))
             return true;
 
-        // Kiểm tra Account
         var accounts = await _accountRepository.GetAllAsync();
-        if (accounts.Any(a => a.Email?.ToLower() == email.ToLower()))
-            return true;
-
-        return false;
+        return accounts.Any(a => a.Email?.ToLower() == email.ToLower());
     }
 
-    /// <summary>
-    /// Lấy loại tài khoản từ email
-    /// </summary>
     public async Task<string> GetAccountTypeByEmailAsync(string email)
     {
-        if (string.IsNullOrEmpty(email))
-            return "Unknown";
+        if (string.IsNullOrEmpty(email)) return "Unknown";
 
-        // Kiểm tra Reader
         var readers = await _readerRepository.GetAllAsync();
         if (readers.Any(r => r.Email?.ToLower() == email.ToLower()))
             return "Reader";
 
-        // Kiểm tra Account
         var accounts = await _accountRepository.GetAllAsync();
         if (accounts.Any(a => a.Email?.ToLower() == email.ToLower()))
             return "Admin";
 
         return "Unknown";
     }
+
+    private static LoginResultViewModel Fail(string message) =>
+        new() { Success = false, Message = message };
 }

@@ -58,6 +58,32 @@
                             </div>
                         </div>
 
+                        <!-- Số Điện Thoại + Giới Tính -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Phone" class="form-label fw-semibold">
+                                        <i class="fas fa-phone me-2 text-primary"></i>Số Điện Thoại
+                                    </label>
+                                    <input asp-for="Phone" type="text" class="form-control form-control-lg"
+                                           placeholder="0xxxxxxxxx">
+                                    <span asp-validation-for="Phone" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Gender" class="form-label fw-semibold">
+                                        <i class="fas fa-venus-mars me-2 text-primary"></i>Giới Tính
+                                    </label>
+                                    <select asp-for="Gender" class="form-select form-select-lg">
+                                        <option value="Nam">Nam</option>
+                                        <option value="Nữ">Nữ</option>
+                                        <option value="Khác">Khác</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Mật Khẩu -->
                         <div class="mb-4">
                             <div class="form-group">

@@ -7,7 +7,7 @@ using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ── MVC ──────────────────────────────────────────────────────────────────
+// ── MVC ───────────────────────────────────────────────────────────────────
 builder.Services.AddControllersWithViews();
 
 // ── DbContext ─────────────────────────────────────────────────────────────
@@ -16,7 +16,7 @@ builder.Services.AddDbContext<LibraryDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // ── Session ───────────────────────────────────────────────────────────────
-builder.Services.AddDistributedMemoryCache();   // ← BẮT BUỘC phải có
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -24,19 +24,20 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// ── Repositories ─────────────────────────────────────────────────────────
+// ── Repositories ──────────────────────────────────────────────────────────
 builder.Services.AddScoped<BookRepository>();
 builder.Services.AddScoped<CategoryRepository>();
-builder.Services.AddScoped<AccountRepository>();   // ← mới
+builder.Services.AddScoped<AccountRepository>();
 builder.Services.AddScoped<ReaderRepository>();
 builder.Services.AddScoped<BorrowRepository>();
+
 // ── Services ──────────────────────────────────────────────────────────────
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IAuthService, AuthService>();  // ← mới
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IReaderService, ReaderService>();
 builder.Services.AddScoped<IBorrowService, BorrowService>();
-// ─────────────────────────────────────────────────────────────────────────
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -48,7 +49,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// Serve ảnh sách
+// ── Serve ảnh sách ────────────────────────────────────────────────────────
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
@@ -57,19 +58,27 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/book-images"
 });
 
+// ── Serve ảnh đại diện bạn đọc ────────────────────────────────────────────
+var readerAvatarsPath = Path.GetFullPath(Path.Combine(
+    Directory.GetCurrentDirectory(), "../Core.Shared/Uploads/reader-avatars"));
+Directory.CreateDirectory(readerAvatarsPath); // tạo folder nếu chưa có
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(readerAvatarsPath),
+    RequestPath = "/reader-avatars"
+});
+
 app.UseRouting();
-
-app.UseSession();          // ← phải đặt TRƯỚC UseAuthorization
+app.UseSession();
 app.UseAuthorization();
-
 app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}")  // Mặc định vào Login
+    pattern: "{controller=Account}/{action=Login}/{id?}")
     .WithStaticAssets();
 
-// Seed tài khoản admin mặc định nếu chưa có
+// ── Seed tài khoản admin mặc định ─────────────────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<LibraryDbContext>();
@@ -88,5 +97,4 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.Run();
-app.Run();
+app.Run(); // ← chỉ gọi 1 lần (đã xóa app.Run() thừa ở cuối)

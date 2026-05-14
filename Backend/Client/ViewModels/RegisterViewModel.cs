@@ -2,14 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Client.ViewModels;
 
-/// <summary>
-/// ViewModel cho form đăng ký bạn đọc
-/// </summary>
 public class RegisterViewModel
 {
-    // ReaderId sẽ tự động sinh, không cần nhập từ user
-    // Nó sẽ được tạo bởi ReaderRepository.AddAsync() với format RR + 6 chữ số
-
     [Display(Name = "Họ và Tên")]
     [Required(ErrorMessage = "Họ và tên không được để trống")]
     [StringLength(100, ErrorMessage = "Họ và tên không được quá 100 ký tự")]
@@ -21,11 +15,11 @@ public class RegisterViewModel
     [StringLength(100)]
     public string Email { get; set; } = string.Empty;
 
+    // Không [Required] — form Register không có trường Phone
     [Display(Name = "Số Điện Thoại")]
-    [Required(ErrorMessage = "Số điện thoại không được để trống")]
     [RegularExpression(@"^0\d{9}$", ErrorMessage = "Số điện thoại phải bắt đầu với 0 và có 10 chữ số")]
     [StringLength(15)]
-    public string Phone { get; set; } = string.Empty;
+    public string? Phone { get; set; }
 
     [Display(Name = "Mật Khẩu")]
     [Required(ErrorMessage = "Mật khẩu không được để trống")]
@@ -49,9 +43,6 @@ public class RegisterViewModel
     public IFormFile? AvatarFile { get; set; }
 }
 
-/// <summary>
-/// ViewModel cho kết quả đăng ký
-/// </summary>
 public class RegisterResultViewModel
 {
     public bool Success { get; set; }

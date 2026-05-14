@@ -263,6 +263,10 @@ public class AccountController : ClientBaseController
     // ------------------------------------------------------------------ //
     //  DELETE ACCOUNT
     // ------------------------------------------------------------------ //
+    // ------------------------------------------------------------------ //
+    //  DELETE ACCOUNT — chỉ thay 2 action này trong AccountController
+    // ------------------------------------------------------------------ //
+
     [HttpGet]
     public async Task<IActionResult> DeleteAccount()
     {
@@ -292,10 +296,20 @@ public class AccountController : ClientBaseController
             return RedirectToAction(nameof(Profile));
         }
 
+        // Xóa toàn bộ session + expire cookie
         HttpContext.Session.Clear();
+        await HttpContext.Session.CommitAsync();
+
+        // Xóa session cookie trên trình duyệt
+        foreach (var cookie in Request.Cookies.Keys)
+        {
+            Response.Cookies.Delete(cookie);
+        }
+
         TempData["AccountDeleted"] = "Tài khoản của bạn đã được xóa thành công.";
         return RedirectToAction("Index", "Home");
     }
+
 
     // ------------------------------------------------------------------ //
     //  HELPER

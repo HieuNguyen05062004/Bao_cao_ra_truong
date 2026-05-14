@@ -4,190 +4,318 @@
     ViewData["Title"] = "Hồ Sơ Cá Nhân";
 }
 
-<div class="container mt-5 mb-5">
-    <div class="row">
-        <!-- Sidebar Info -->
-        <div class="col-md-4">
-            <div class="card shadow-lg border-0 mb-4">
-                <div class="card-body text-center p-4">
-                    <!-- Avatar -->
-                    @if (!string.IsNullOrEmpty(Model.AvatarUrl))
-                    {
-                        <img src="@Model.AvatarUrl" class="rounded-circle mb-3 shadow"
-                             width="140" height="140" style="object-fit:cover"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
-                        <div class="rounded-circle bg-primary d-none align-items-center justify-content-center shadow mb-3"
-                             style="width:140px;height:140px;font-size:60px;color:white;margin:0 auto">
-                            @Model.FullName.Substring(0, 1).ToUpper()
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center shadow mb-3"
-                             style="width:140px;height:140px;font-size:60px;color:white">
-                            @Model.FullName.Substring(0, 1).ToUpper()
-                        </div>
-                    }
+<div class="container mt-4 mb-5">
 
-                    <h4 class="mb-1">@Model.FullName</h4>
-                    <p class="text-muted small mb-3">@Model.ReaderId</p>
+    <!-- ── CARD HEADER: Avatar + Tên + Mã + Nút sửa ── -->
+    <div class="profile-header-card mb-4">
+        <div class="d-flex align-items-center gap-4 flex-wrap">
 
-                    <div class="alert alert-info small mb-3">
-                        <i class="fas fa-info-circle me-1"></i>
-                        Thành viên từ: @Model.CreatedAt?.ToString("dd/MM/yyyy")
+            <!-- Avatar -->
+            <div class="avatar-wrapper position-relative">
+                @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+                {
+                    <img src="@Model.AvatarUrl" class="avatar-img"
+                         onerror="this.style.display='none';document.getElementById('avatarFallback').style.display='flex'" />
+                    <div id="avatarFallback" class="avatar-fallback" style="display:none">
+                        @Model.FullName.Substring(0, 1).ToUpper()
                     </div>
+                }
+                else
+                {
+                    <div id="avatarFallback" class="avatar-fallback">
+                        @Model.FullName.Substring(0, 1).ToUpper()
+                    </div>
+                }
+                <a href="@Url.Action("EditProfile", "Account")" class="avatar-edit-btn" title="Chỉnh sửa">
+                    <i class="fas fa-pen"></i>
+                </a>
+            </div>
 
-                    <a href="@Url.Action("EditProfile", "Account")" class="btn btn-primary btn-sm w-100 mb-2">
-                        <i class="fas fa-edit me-1"></i> Chỉnh Sửa Thông Tin
-                    </a>
-                    <a href="@Url.Action("DeleteAccount", "Account")" class="btn btn-outline-danger btn-sm w-100">
-                        <i class="fas fa-trash me-1"></i> Xóa Tài Khoản
-                    </a>
+            <!-- Thông tin chính -->
+            <div class="flex-grow-1">
+                <h4 class="mb-1 fw-bold">@Model.FullName</h4>
+                <div class="d-flex flex-wrap gap-3 text-muted small mb-1">
+                    <span><i class="fas fa-id-card me-1"></i>@Model.ReaderId</span>
+                    @if (!string.IsNullOrEmpty(Model.Gender))
+                    {
+                        <span><i class="fas fa-venus-mars me-1"></i>@Model.Gender</span>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Address))
+                    {
+                        <span><i class="fas fa-map-marker-alt me-1"></i>@Model.Address</span>
+                    }
+                </div>
+                <div class="text-muted small">
+                    <i class="fas fa-calendar-alt me-1"></i>
+                    Thành viên từ: @(Model.CreatedAt?.ToString("dd/MM/yyyy") ?? "—")
                 </div>
             </div>
 
-            <!-- Thống Kê Nhanh -->
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-primary text-white fw-bold">
-                    <i class="fas fa-chart-bar me-2"></i>Thống Kê
-                </div>
-                <div class="card-body">
-                    <div class="row text-center mb-3">
-                        <div class="col-6">
-                            <div class="stat-item">
-                                <div class="stat-number text-primary fw-bold" style="font-size:24px">@Model.TotalBorrow</div>
-                                <small class="text-muted">Tổng Mượn</small>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="stat-item">
-                                <div class="stat-number text-info fw-bold" style="font-size:24px">@Model.BorrowingCount</div>
-                                <small class="text-muted">Đang Mượn</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row text-center">
-                        <div class="col-6">
-                            <div class="stat-item">
-                                <div class="stat-number text-danger fw-bold" style="font-size:24px">@Model.OverdueCount</div>
-                                <small class="text-muted">Quá Hạn</small>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="stat-item">
-                                <div class="stat-number text-success fw-bold" style="font-size:24px">@Model.ReturnedCount</div>
-                                <small class="text-muted">Đã Trả</small>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Badge + Nút -->
+            <div class="d-flex flex-column align-items-end gap-2">
+                <span class="badge-active">
+                    <i class="fas fa-circle me-1" style="font-size:8px;vertical-align:middle"></i>
+                    Độc giả tích cực
+                </span>
+                <div class="d-flex gap-2">
+                    <a href="@Url.Action("EditProfile", "Account")" class="btn btn-primary btn-sm">
+                        <i class="fas fa-edit me-1"></i> Chỉnh sửa
+                    </a>
+                    <a href="@Url.Action("DeleteAccount", "Account")" class="btn btn-outline-danger btn-sm">
+                        <i class="fas fa-trash me-1"></i> Xóa tài khoản
+                    </a>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Main Content -->
-        <div class="col-md-8">
-            <!-- Thông Tin Cá Nhân -->
-            <div class="card shadow-lg border-0 mb-4">
-                <div class="card-header bg-primary text-white fw-bold">
-                    <i class="fas fa-user me-2"></i>Thông Tin Cá Nhân
+    <!-- ── TABS ── -->
+    <ul class="nav profile-tabs mb-4" id="profileTabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#tab-info">
+                <i class="fas fa-user me-1"></i> Thông tin cá nhân
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="@Url.Action("BorrowHistory", "Borrow")">
+                <i class="fas fa-history me-1"></i> Lịch sử mượn sách
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="tab-info">
+            <div class="row g-4">
+
+                <!-- Thông tin liên lạc -->
+                <div class="col-12">
+                    <div class="info-card">
+                        <div class="info-card-title">
+                            <span class="info-card-bar"></span> Thông tin liên lạc
+                        </div>
+                        <div class="row g-4 mt-1">
+                            <div class="col-md-3 col-6">
+                                <div class="info-field-label">EMAIL</div>
+                                <div class="info-field-value">
+                                    @if (!string.IsNullOrEmpty(Model.Email))
+                                    {
+                                        @Model.Email
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="info-field-label">SỐ ĐIỆN THOẠI</div>
+                                <div class="info-field-value">
+                                    @if (!string.IsNullOrEmpty(Model.Phone))
+                                    {
+                                        @* Hiển thị số kiểu ẩn: 0908 ••• •89 *@
+                                        @(Model.Phone.Length >= 4
+                                            ? Model.Phone.Substring(0, 4) + " ••• •" + Model.Phone.Substring(Model.Phone.Length - 2)
+                                            : Model.Phone)
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="info-field-label">ĐỊA CHỈ</div>
+                                <div class="info-field-value">@(Model.Address ?? "—")</div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="info-field-label">NGÀY SINH</div>
+                                <div class="info-field-value">
+                                    @(Model.DoB?.ToString("dd/MM/yyyy") ?? "—")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label class="fw-semibold text-muted small">Mã Bạn Đọc:</label>
-                            <p class="fs-5">@Model.ReaderId</p>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="fw-semibold text-muted small">Họ và Tên:</label>
-                            <p class="fs-5">@Model.FullName</p>
-                        </div>
-                    </div>
 
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label class="fw-semibold text-muted small">Email:</label>
-                            <p class="fs-5">
-                                @if (!string.IsNullOrEmpty(Model.Email))
-                                {
-                                    <a href="mailto:@Model.Email">@Model.Email</a>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">—</span>
-                                }
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="fw-semibold text-muted small">Số Điện Thoại:</label>
-                            <p class="fs-5">@(Model.Phone ?? "—")</p>
-                        </div>
-                    </div>
-
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label class="fw-semibold text-muted small">Giới Tính:</label>
-                            <p class="fs-5">@(Model.Gender ?? "—")</p>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="fw-semibold text-muted small">Ngày Sinh:</label>
-                            <p class="fs-5">@(Model.DoB?.ToString("dd/MM/yyyy") ?? "—")</p>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="fw-semibold text-muted small">Địa Chỉ:</label>
-                        <p class="fs-5">@(Model.Address ?? "—")</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Liên Kết Nhanh -->
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-info text-white fw-bold">
-                    <i class="fas fa-link me-2"></i>Liên Kết Nhanh
-                </div>
-                <div class="card-body">
+                <!-- Thống kê -->
+                <div class="col-12">
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <a href="@Url.Action("BorrowHistory", "Borrow")" class="btn btn-outline-primary w-100">
-                                <i class="fas fa-history me-2"></i>Lịch Sử Mượn
-                            </a>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-card stat-blue">
+                                <div class="stat-number">@Model.TotalBorrow</div>
+                                <div class="stat-label">SÁCH ĐÃ MƯỢN</div>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <a href="@Url.Action("Index", "Search")" class="btn btn-outline-success w-100">
-                                <i class="fas fa-search me-2"></i>Tìm Sách
-                            </a>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-card stat-green">
+                                <div class="stat-number">@Model.BorrowingCount</div>
+                                <div class="stat-label">ĐANG MƯỢN</div>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <a href="@Url.Action("Index", "Borrow")" class="btn btn-outline-info w-100">
-                                <i class="fas fa-book me-2"></i>Mượn Sách
-                            </a>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-card stat-orange">
+                                <div class="stat-number">@Model.OverdueCount</div>
+                                <div class="stat-label">QUÁ HẠN</div>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary w-100">
-                                <i class="fas fa-home me-2"></i>Trang Chủ
-                            </a>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-card stat-purple">
+                                <div class="stat-number">@Model.ReturnedCount</div>
+                                <div class="stat-label">ĐÃ TRẢ</div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
 </div>
 
 <style>
-    .stat-item {
-        padding: 10px;
-        border-radius: 8px;
-        background-color: #f8f9fa;
+    /* ── Header card ── */
+    .profile-header-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 28px 32px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.08);
     }
 
-    .card {
+    /* ── Avatar ── */
+    .avatar-wrapper { position: relative; flex-shrink: 0; }
+
+    .avatar-img, .avatar-fallback {
+        width: 90px; height: 90px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #e8edf3;
+    }
+
+    .avatar-fallback {
+        background: #0d6efd;
+        color: #fff;
+        font-size: 36px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .avatar-edit-btn {
+        position: absolute;
+        bottom: 2px; right: 2px;
+        width: 26px; height: 26px;
+        background: #0d6efd;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 11px;
+        display: flex; align-items: center; justify-content: center;
+        text-decoration: none;
+        box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    }
+
+    .avatar-edit-btn:hover { background: #0b5ed7; color: #fff; }
+
+    /* ── Badge active ── */
+    .badge-active {
+        background: #e8f5e9;
+        color: #2e7d32;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* ── Tabs ── */
+    .profile-tabs {
+        border-bottom: 2px solid #e9ecef;
+        gap: 4px;
+    }
+
+    .profile-tabs .nav-link {
+        color: #6c757d;
+        font-weight: 500;
+        padding: 10px 20px;
         border: none;
-        border-radius: 12px;
+        border-bottom: 3px solid transparent;
+        border-radius: 0;
+        margin-bottom: -2px;
+        transition: all .2s;
     }
 
-    .card-header {
-        border-radius: 12px 12px 0 0 !important;
+    .profile-tabs .nav-link:hover { color: #0d6efd; }
+
+    .profile-tabs .nav-link.active {
+        color: #0d6efd;
+        border-bottom-color: #0d6efd;
+        background: transparent;
     }
+
+    /* ── Info card ── */
+    .info-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px 28px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+
+    .info-card-title {
+        font-weight: 700;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 4px;
+    }
+
+    .info-card-bar {
+        display: inline-block;
+        width: 4px; height: 20px;
+        background: #0d6efd;
+        border-radius: 2px;
+    }
+
+    .info-field-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #9ba4b0;
+        letter-spacing: .5px;
+        margin-bottom: 4px;
+    }
+
+    .info-field-value {
+        font-size: 15px;
+        color: #212529;
+        font-weight: 500;
+    }
+
+    /* ── Stat cards ── */
+    .stat-card {
+        border-radius: 12px;
+        padding: 20px 16px;
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 6px;
+    }
+
+    .stat-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .5px;
+    }
+
+    .stat-blue   { background: #e8f0fe; color: #1a56db; }
+    .stat-green  { background: #e8f5e9; color: #2e7d32; }
+    .stat-orange { background: #fff3e0; color: #e65100; }
+    .stat-purple { background: #f3e5f5; color: #6a1b9a; }
+
+    .stat-blue .stat-label   { color: #1a56db; opacity: .7; }
+    .stat-green .stat-label  { color: #2e7d32; opacity: .7; }
+    .stat-orange .stat-label { color: #e65100; opacity: .7; }
+    .stat-purple .stat-label { color: #6a1b9a; opacity: .7; }
 </style>
