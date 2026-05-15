@@ -1,3 +1,4 @@
+using Client.ViewModels;
 using Core.Shared.Entities;
 using Core.Shared.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,8 @@ public class SearchController : Controller
     private readonly IBookService _bookService;
     private readonly IAiSearchService _aiSearchService;
 
+    private const int PageSize = 9;
+
     public SearchController(IBookService bookService, IAiSearchService aiSearchService)
     {
         _bookService = bookService;
@@ -22,29 +25,62 @@ public class SearchController : Controller
     // ── Tìm kiếm thường ──────────────────────────────────────────────────────
 
     /// <summary>
-    /// Trang tìm kiếm và danh sách sách (không đổi so với bản cũ).
+    /// Trang danh sách sách với bộ lọc đa danh mục, tìm kiếm và phân trang.
+    /// categoryIds: List[int] — ASP.NET Core tự bind từ ?categoryIds=1&categoryIds=3
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> Index(string searchTerm = "", int categoryId = 0)
+    public async Task<IActionResult> Index(
+        List<int> categoryIds,
+        string keyword = "",
+        string sort = "newest",
+        int page = 1)
     {
         try
         {
+            // 1. Lấy sách theo điều kiện lọc
             List<Book> books;
 
-            if (!string.IsNullOrEmpty(searchTerm))
-                books = await _bookService.SearchBooksAsync(searchTerm);
-            else if (categoryId > 0)
-                books = await _bookService.GetBooksByCategoryAsync(categoryId);
+            if (!string.IsNullOrWhiteSpace(keyword))
+                books = await _bookService.SearchBooksAsync(keyword.Trim());
+            else if (categoryIds.Any())
+                books = await _bookService.GetBooksByMultipleCategoriesAsync(categoryIds);
             else
-                books = await _bookService.GetAvailableBooksAsync();
+                books = await _bookService.GetAllBooksAsync();
 
-            await PopulateViewBagAsync(searchTerm, categoryId);
-            return View(books);
+            // 2. Sắp xếp
+            books = sort == "oldest"
+                ? books.OrderBy(b => b.PublishYear).ToList()
+                : books.OrderByDescending(b => b.PublishYear).ToList();
+
+            // 3. Phân trang
+            int total = books.Count;
+            int totalPgs = (int)Math.Ceiling(total / (double)PageSize);
+            page = Math.Max(1, Math.Min(page, Math.Max(1, totalPgs)));
+            var paged = books.Skip((page - 1) * PageSize).Take(PageSize).ToList();
+
+            // 4. Build ViewModel
+            var vm = new BookListViewModel
+            {
+                Books = paged,
+                Categories = await _bookService.GetAllCategoriesAsync(),
+                SelectedCategoryIds = categoryIds,
+                Keyword = keyword,
+                Sort = sort,
+                CurrentPage = page,
+                TotalPages = totalPgs == 0 ? 1 : totalPgs,
+                TotalCount = total,
+                PageSize = PageSize,
+            };
+
+            return View(vm);
         }
         catch (Exception ex)
         {
             TempData["ErrorMessage"] = "Lỗi khi tải danh sách sách: " + ex.Message;
-            return View(new List<Book>());
+            return View(new BookListViewModel
+            {
+                Categories = await _bookService.GetAllCategoriesAsync()
+            });
         }
     }
 
@@ -69,17 +105,32 @@ public class SearchController : Controller
             // 2. Dùng keyword đã được AI tinh lọc để tìm trong DB
             var books = await _bookService.SearchBooksAsync(aiResult.Keyword);
 
-            // 3. Truyền thông tin AI xuống view
-            await PopulateViewBagAsync(aiResult.Keyword, 0);
-            ViewBag.AiInterpretedQuery = aiResult.InterpretedQuery;
-            ViewBag.OriginalAiQuery = aiQuery;
-            ViewBag.IsAiSearch = true;
+            // 3. Sắp xếp mặc định newest
+            books = books.OrderByDescending(b => b.PublishYear).ToList();
 
-            // Nếu AI fallback về tìm kiếm thường thì không hiển thị nhãn AI
-            if (!aiResult.IsSuccess)
-                ViewBag.IsAiSearch = false;
+            // 4. Phân trang
+            int total = books.Count;
+            int totalPgs = (int)Math.Ceiling(total / (double)PageSize);
+            var paged = books.Take(PageSize).ToList();
 
-            return View("Index", books);
+            // 5. Build ViewModel
+            var vm = new BookListViewModel
+            {
+                Books = paged,
+                Categories = await _bookService.GetAllCategoriesAsync(),
+                SelectedCategoryIds = new List<int>(),
+                Keyword = aiResult.Keyword,
+                Sort = "newest",
+                CurrentPage = 1,
+                TotalPages = totalPgs == 0 ? 1 : totalPgs,
+                TotalCount = total,
+                PageSize = PageSize,
+                AiInterpretedQuery = aiResult.InterpretedQuery,
+                OriginalAiQuery = aiQuery,
+                IsAiSearch = aiResult.IsSuccess,
+            };
+
+            return View("Index", vm);
         }
         catch (Exception ex)
         {
@@ -88,7 +139,7 @@ public class SearchController : Controller
         }
     }
 
-    // ── Các action cũ giữ nguyên ─────────────────────────────────────────────
+    // ── Chi tiết sách ─────────────────────────────────────────────────────────
 
     [HttpGet]
     public async Task<IActionResult> Details(string id)
@@ -113,6 +164,8 @@ public class SearchController : Controller
         }
     }
 
+    // ── API endpoints (AJAX) ──────────────────────────────────────────────────
+
     [HttpGet]
     public async Task<IActionResult> FilterByCategory(int categoryId)
     {
@@ -120,7 +173,7 @@ public class SearchController : Controller
         {
             var books = categoryId > 0
                 ? await _bookService.GetBooksByCategoryAsync(categoryId)
-                : await _bookService.GetAvailableBooksAsync();
+                : await _bookService.GetAllBooksAsync();
             return Json(books);
         }
         catch { return Json(new List<Book>()); }
@@ -136,14 +189,5 @@ public class SearchController : Controller
             return Json(await _bookService.SearchBooksAsync(term));
         }
         catch { return Json(new List<Book>()); }
-    }
-
-    // ── Helper ───────────────────────────────────────────────────────────────
-
-    private async Task PopulateViewBagAsync(string searchTerm, int categoryId)
-    {
-        ViewBag.Categories = await _bookService.GetAllCategoriesAsync();
-        ViewBag.SearchTerm = searchTerm;
-        ViewBag.SelectedCategory = categoryId;
     }
 }

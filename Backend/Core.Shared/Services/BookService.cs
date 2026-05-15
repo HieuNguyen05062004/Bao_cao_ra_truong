@@ -35,6 +35,18 @@ public class BookService : IBookService
         return await _repository.GetByCategoryAsync(categoryId);
     }
 
+    /// <summary>
+    /// Lọc sách theo nhiều danh mục (OR logic).
+    /// Nếu list rỗng → trả về tất cả sách.
+    /// </summary>
+    public async Task<List<Book>> GetBooksByMultipleCategoriesAsync(List<int> categoryIds)
+    {
+        if (categoryIds == null || !categoryIds.Any())
+            return await _repository.GetAllAsync();
+
+        return await _repository.GetByMultipleCategoriesAsync(categoryIds);
+    }
+
     public async Task<List<Book>> GetAvailableBooksAsync()
         => await _repository.GetAvailableAsync();
 
@@ -66,7 +78,6 @@ public class BookService : IBookService
         if (book.Title.Length > 255)
             return (false, "Tên sách không được quá 255 ký tự.");
 
-        // Tự sinh BookId nếu không có — format BK + 5 số, đảm bảo không trùng
         if (string.IsNullOrWhiteSpace(book.BookId))
         {
             string newId;
@@ -76,7 +87,6 @@ public class BookService : IBookService
         }
         else
         {
-            // Trường hợp truyền ID thủ công (import hàng loạt) → kiểm tra trùng
             if (await _repository.ExistsAsync(book.BookId))
                 return (false, $"Mã sách '{book.BookId}' đã tồn tại trong hệ thống.");
         }
@@ -88,9 +98,7 @@ public class BookService : IBookService
         if (string.IsNullOrWhiteSpace(book.Status))
             book.Status = "Có thể mượn";
 
-        var ids = categoryIds ?? new List<int>();
-
-        var result = await _repository.AddAsync(book, ids);
+        var result = await _repository.AddAsync(book, categoryIds ?? new List<int>());
         return result
             ? (true, "Thêm sách thành công.")
             : (false, "Thêm sách thất bại. Vui lòng thử lại.");
@@ -117,9 +125,7 @@ public class BookService : IBookService
         if (book.Quantity < 0)
             return (false, "Số lượng sách không được âm.");
 
-        var ids = categoryIds ?? new List<int>();
-
-        var result = await _repository.UpdateAsync(book, ids);
+        var result = await _repository.UpdateAsync(book, categoryIds ?? new List<int>());
         return result
             ? (true, "Cập nhật sách thành công.")
             : (false, "Cập nhật sách thất bại. Vui lòng thử lại.");

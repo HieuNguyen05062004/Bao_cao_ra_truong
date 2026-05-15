@@ -45,8 +45,20 @@ public class BookRepository
     public async Task<List<Book>> GetByCategoryAsync(int categoryId)
     {
         return await _context.Books
-            .Include(b => b.BookCategories)
+            .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
             .Where(b => b.BookCategories.Any(bc => bc.CategoryId == categoryId))
+            .OrderBy(b => b.Title)
+            .ToListAsync();
+    }
+
+    /// <summary>
+    /// Lọc sách theo nhiều danh mục cùng lúc (OR logic — sách thuộc bất kỳ danh mục nào trong list).
+    /// </summary>
+    public async Task<List<Book>> GetByMultipleCategoriesAsync(List<int> categoryIds)
+    {
+        return await _context.Books
+            .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
+            .Where(b => b.BookCategories.Any(bc => categoryIds.Contains(bc.CategoryId)))
             .OrderBy(b => b.Title)
             .ToListAsync();
     }
@@ -84,21 +96,8 @@ public class BookRepository
         return await _context.Books.AnyAsync(b => b.BookId == bookId);
     }
 
-    /// <summary>
-    /// Kiểm tra sách có đang được mượn THỰC SỰ không.
-    ///
-    /// Dùng WHITELIST: chỉ chặn xóa khi phiếu có status đang trong quá trình mượn.
-    /// Các status kết thúc ("Đã Trả", "Bị Từ Chối", "Đã trả", "Từ chối"...)
-    /// đều KHÔNG chặn xóa.
-    ///
-    /// Các status "đang mượn thực sự":
-    ///   - "Chờ Duyệt"     : yêu cầu chưa được xử lý
-    ///   - "Đã Duyệt"      : đã duyệt nhưng chưa lấy sách
-    ///   - "Đang Mượn Sách": đang giữ sách
-    /// </summary>
     public async Task<bool> IsBookBorrowedAsync(string bookId)
     {
-        // Danh sách status "đang trong quá trình" — chặn xóa
         var activeStatuses = new[]
         {
             "Chờ Duyệt",
@@ -196,13 +195,6 @@ public class BookRepository
         }
     }
 
-    /// <summary>
-    /// Xóa sách theo đúng thứ tự FK:
-    /// 1. Xóa BorrowDetails (không có CASCADE trong SQL schema)
-    /// 2. Xóa BookCategories
-    /// 3. Xóa Book
-    /// Toàn bộ trong 1 transaction.
-    /// </summary>
     public async Task<bool> DeleteAsync(string bookId)
     {
         using var transaction = await _context.Database.BeginTransactionAsync();
@@ -214,14 +206,10 @@ public class BookRepository
 
             if (book == null) return false;
 
-            // Bước 1: Xóa lịch sử mượn trong BorrowDetails
             await _context.Database.ExecuteSqlRawAsync(
                 "DELETE FROM BorrowDetails WHERE BookID = {0}", bookId);
 
-            // Bước 2: Xóa BookCategories
             _context.BookCategories.RemoveRange(book.BookCategories);
-
-            // Bước 3: Xóa sách
             _context.Books.Remove(book);
 
             await _context.SaveChangesAsync();
