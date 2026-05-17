@@ -1,116 +1,226 @@
-@model List<Core.Shared.Entities.BorrowTicket>
-
+@model IEnumerable<Core.Shared.Entities.BorrowTicket>
 @{
-    ViewData["Title"] = "Quản Lý Mượn Sách";
+    ViewData["Title"] = "Quản Lý Phiếu Mượn";
+    var selectedStatus = ViewBag.SelectedStatus as string ?? "";
+    var keyword = ViewBag.Keyword as string ?? "";
+    var statusList = ViewBag.StatusList as string[] ?? Array.Empty<string>();
 }
 
-<div class="container-fluid mt-4">
-    <div class="card shadow-lg">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">
-                <i class="fas fa-book-reader me-2"></i> Quản Lý Yêu Cầu Mượn Sách
-            </h4>
-        </div>
+@* ── Helper: màu badge theo trạng thái ── *@
+@functions {
+    static string BadgeClass(string? status) => status switch
+    {
+        "Chờ duyệt" => "bg-warning text-dark",
+        "Đã duyệt" => "bg-info text-dark",
+        "Đang mượn" => "bg-primary",
+        "Đã trả" => "bg-success",
+        "Bị từ chối" => "bg-danger",
+        _ => "bg-secondary"
+    };
 
-        <div class="card-body p-4">
-            <!-- Filter Status -->
-            <div class="mb-4">
-                <label class="form-label fw-semibold">Lọc theo trạng thái:</label>
-                <div class="btn-group" role="group">
-                    <a href="@Url.Action("Index", "Borrow")" class="btn btn-outline-secondary">
-                        Tất cả
-                    </a>
-                    <a href="@Url.Action("Index", "Borrow", new { status = "Pending" })" class="btn btn-outline-warning">
-                        Chờ Duyệt
-                    </a>
-                    <a href="@Url.Action("Index", "Borrow", new { status = "Approved" })" class="btn btn-outline-success">
-                        Đã Duyệt
-                    </a>
-                    <a href="@Url.Action("Index", "Borrow", new { status = "Borrowing" })" class="btn btn-outline-primary">
-                        <i class="fas fa-book me-1"></i>Đang Mượn Sách
-                    </a>
-                    <a href="@Url.Action("Index", "Borrow", new { status = "Returned" })" class="btn btn-outline-info">
-                        Đã Trả
-                    </a>
-                    <a href="@Url.Action("Index", "Borrow", new { status = "Rejected" })" class="btn btn-outline-danger">
-                        Bị Từ Chối
+    static string RowClass(string? status) => status switch
+    {
+        "Chờ duyệt" => "table-warning",
+        "Đã duyệt" => "table-info",
+        "Đang mượn" => "table-primary",
+        "Bị từ chối" => "table-danger",
+        _ => ""
+    };
+}
+
+<div class="container-fluid py-4">
+
+    @* ── Tiêu đề ── *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-journal-bookmark me-2 text-primary"></i>Quản Lý Phiếu Mượn
+            </h2>
+            <p class="text-muted mb-0">Duyệt, theo dõi và quản lý toàn bộ phiếu mượn sách</p>
+        </div>
+    </div>
+
+    @* ── Thông báo ── *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @* ── Thống kê nhanh ── *@
+    <div class="row g-3 mb-4">
+        @{
+            var stats = new[]
+            {
+                ("Chờ duyệt",  (int)ViewBag.CountPending,   "bi-hourglass-split",  "warning",  "Chờ duyệt"),
+                ("Đã duyệt",   (int)ViewBag.CountApproved,  "bi-check-circle",     "info",     "Đã duyệt"),
+                ("Đang mượn",  (int)ViewBag.CountBorrowing, "bi-book-half",        "primary",  "Đang mượn"),
+                ("Đã trả",     (int)ViewBag.CountReturned,  "bi-archive",          "success",  "Đã trả"),
+                ("Bị từ chối", (int)ViewBag.CountRejected,  "bi-x-circle",         "danger",   "Bị từ chối"),
+            };
+        }
+        @foreach (var (label, count, icon, color, filterVal) in stats)
+        {
+            <div class="col-6 col-md-4 col-lg">
+                <a href="@Url.Action("Index", new { status = filterVal })"
+                       class="text-decoration-none">
+                    <div class="card border-0 shadow-sm h-100
+                        @(selectedStatus == filterVal ? $"border-{color} border-2" : "")">
+                        <div class="card-body py-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle bg-@color bg-opacity-10 p-2">
+                                    <i class="bi @icon text-@color fs-5"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold fs-4 lh-1">@count</div>
+                                    <small class="text-muted">@label</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+        @* Tất cả *@
+        <div class="col-6 col-md-4 col-lg">
+            <a href="@Url.Action("Index")" class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100
+                    @(selectedStatus == "" ? "border-dark border-2" : "")">
+                    <div class="card-body py-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle bg-secondary bg-opacity-10 p-2">
+                                <i class="bi bi-list-ul text-secondary fs-5"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold fs-4 lh-1">
+                                    @((int)ViewBag.CountPending + (int)ViewBag.CountApproved +
+                                      (int)ViewBag.CountBorrowing + (int)ViewBag.CountReturned +
+                                      (int)ViewBag.CountRejected)
+                                </div>
+                                <small class="text-muted">Tất cả</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    @* ── Tìm kiếm + lọc trạng thái ── *@
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-2 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Tìm kiếm</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" name="keyword" value="@keyword"
+                               class="form-control"
+                               placeholder="Tên bạn đọc, mã phiếu, tên sách…" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Trạng thái</label>
+                    <select name="status" class="form-select">
+                        <option value="">-- Tất cả --</option>
+                        @foreach (var s in statusList)
+                        {
+                            <option value="@s" selected="@(selectedStatus == s)">@s</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-fill">
+                        <i class="bi bi-funnel me-1"></i>Lọc
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary flex-fill">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>Xóa lọc
                     </a>
                 </div>
-            </div>
+            </form>
+        </div>
+    </div>
 
-            @if (Model.Any())
+    @* ── Bảng dữ liệu ── *@
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                    <span>Không có phiếu mượn nào.</span>
+                </div>
+            }
+            else
             {
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped">
+                    <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th width="8%">ID</th>
-                                <th width="12%">Bạn Đọc</th>
-                                <th width="10%">Ngày Mượn</th>
-                                <th width="12%">Ngày Trả Dự Kiến</th>
-                                <th width="12%">Trạng Thái</th>
-                                <th width="10%">Số Sách</th>
-                                <th width="12%">Nhân Viên</th>
-                                <th width="12%">Hành Động</th>
+                                <th class="ps-3">Mã phiếu</th>
+                                <th>Bạn đọc</th>
+                                <th>Sách mượn</th>
+                                <th>Ngày mượn</th>
+                                <th>Hạn trả</th>
+                                <th>Trạng thái</th>
+                                <th class="text-center pe-3">Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var ticket in Model)
                             {
-                                <tr>
+                                var isOverdue = ticket.DueDate.HasValue
+                                               && ticket.DueDate < DateTime.Now
+                                               && ticket.Status != "Đã trả"
+                                               && ticket.Status != "Bị từ chối";
+                                <tr class="@RowClass(ticket.Status)">
+                                    <td class="ps-3 fw-bold">#@ticket.TicketId</td>
                                     <td>
-                                        <strong>#@ticket.TicketId</strong>
+                                        <div class="fw-semibold">@(ticket.Reader?.FullName ?? "—")</div>
+                                        <small class="text-muted">@ticket.ReaderId</small>
                                     </td>
                                     <td>
-                                        <strong>@ticket.ReaderId</strong>
-                                        <br />
-                                        <small class="text-muted">@ticket.Reader?.FullName</small>
-                                    </td>
-                                    <td>
-                                        @ticket.BorrowDate?.ToString("dd/MM/yyyy HH:mm")
-                                    </td>
-                                    <td>
-                                        @ticket.DueDate?.ToString("dd/MM/yyyy")
-                                    </td>
-                                    <td>
-                                        @{
-                                            var statusBadgeClass = ticket.Status switch
-                                            {
-                                                "Pending" => "badge bg-warning text-dark",
-                                                "Approved" => ticket.ReturnDate.HasValue ? "badge bg-info" : "badge bg-primary",
-                                                "Returned" => "badge bg-info",
-                                                "Rejected" => "badge bg-danger",
-                                                _ => "badge bg-secondary"
-                                            };
-
-                                            var statusText = ticket.Status switch
-                                            {
-                                                "Pending" => "Chờ Duyệt",
-                                                "Approved" => ticket.ReturnDate.HasValue ? "Đã Trả" : "Đang Mượn Sách",
-                                                "Returned" => "Đã Trả",
-                                                "Rejected" => "Bị Từ Chối",
-                                                _ => ticket.Status
-                                            };
-                                        }
-                                        <span class="@statusBadgeClass">@statusText</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge bg-secondary">@ticket.Books.Count</span>
-                                    </td>
-                                    <td>
-                                        @if (!string.IsNullOrEmpty(ticket.StaffUsername))
+                                        @foreach (var book in ticket.Books.Take(2))
                                         {
-                                            <small>@ticket.StaffUsernameNavigation?.FullName</small>
+                                            <div class="text-truncate" style="max-width:200px"
+                                                 title="@book.Title">
+                                                <i class="bi bi-book me-1 text-muted"></i>@book.Title
+                                            </div>
                                         }
-                                        else
+                                        @if (ticket.Books.Count > 2)
                                         {
-                                            <small class="text-muted">-</small>
+                                            <small class="text-muted">+@(ticket.Books.Count - 2) cuốn khác</small>
                                         }
                                     </td>
+                                    <td>@ticket.BorrowDate?.ToString("dd/MM/yyyy")</td>
                                     <td>
-                                        <a href="@Url.Action("Details", "Borrow", new { id = ticket.TicketId })"
-                                           class="btn btn-sm btn-info">
-                                            <i class="fas fa-eye"></i> Chi Tiết
+                                        <span class="@(isOverdue ? "text-danger fw-bold" : "")">
+                                            @ticket.DueDate?.ToString("dd/MM/yyyy")
+                                            @if (isOverdue)
+                                            {
+                                                <i class="bi bi-exclamation-triangle-fill ms-1"
+                                                   title="Quá hạn"></i>
+                                            }
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @BadgeClass(ticket.Status)">
+                                            @ticket.Status
+                                        </span>
+                                    </td>
+                                    <td class="text-center pe-3">
+                                        <a asp-action="Details" asp-route-id="@ticket.TicketId"
+                                               class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye me-1"></i>Chi tiết
                                         </a>
                                     </td>
                                 </tr>
@@ -119,28 +229,7 @@
                     </table>
                 </div>
             }
-            else
-            {
-                <div class="alert alert-info text-center">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <strong>Không có yêu cầu mượn sách nào.</strong>
-                </div>
-            }
         </div>
     </div>
+
 </div>
-
-<style>
-    .table-hover tbody tr:hover {
-        background-color: #f5f5f5;
-    }
-
-    .badge {
-        padding: 8px 12px;
-        font-size: 0.9rem;
-    }
-
-    .btn-group .btn {
-        padding: 8px 16px;
-    }
-</style>

@@ -16,159 +16,159 @@ public class BorrowController : ClientBaseController
         _bookService = bookService;
     }
 
-    /// <summary>
-    /// Kiểm tra login
-    /// </summary>
-    private IActionResult RequireLogin()
+    // ── Kiểm tra đăng nhập ───────────────────────────────────────────────
+    private IActionResult? RequireLogin()
     {
         if (!HttpContext.Session.IsReaderLoggedIn())
         {
-            TempData["Warning"] = "Vui lòng đăng nhập để mượn sách";
+            TempData["Warning"] = "Vui lòng đăng nhập để mượn sách.";
             return RedirectToAction("Login", "Account");
         }
-        return null!;
+        return null;
     }
 
-    /// <summary>
-    /// Hiển thị form mượn sách với thông tin sách được chọn
-    /// </summary>
-    [HttpPost]
+    // ─────────────────────────────────────────────────────────────────────
+    // GET /Borrow/CreateBorrowRequest?bookIds=B001,B002
+    // Hiển thị form mượn sách — dùng GET để link từ trang chi tiết sách
+    // ─────────────────────────────────────────────────────────────────────
+    [HttpGet]
     public async Task<IActionResult> CreateBorrowRequest(string bookIds)
     {
         var loginCheck = RequireLogin();
         if (loginCheck != null) return loginCheck;
 
-        try
+        if (string.IsNullOrWhiteSpace(bookIds))
         {
-            // Parse danh sách BookIds từ query string
-            var selectedBookIds = bookIds?
-                .Split(',')
-                .Where(id => !string.IsNullOrWhiteSpace(id))
-                .Select(id => id.Trim())
-                .Distinct()
-                .ToList() ?? new List<string>();
-
-            if (selectedBookIds.Count == 0)
-                return BadRequest("Vui lòng chọn ít nhất một cuốn sách.");
-
-            // Lấy thông tin sách
-            var books = new List<Core.Shared.Entities.Book>();
-            foreach (var bookId in selectedBookIds)
-            {
-                var book = await _bookService.GetBookByIdAsync(bookId);
-                if (book != null)
-                    books.Add(book);
-            }
-
-            if (books.Count == 0)
-                return BadRequest("Không tìm thấy sách được chọn.");
-
-            // Lấy thông tin bạn đọc từ session
-            var readerId = HttpContext.Session.GetReaderId();
-            var readerName = HttpContext.Session.GetReaderName();
-
-            // Tạo view model
-            var model = new BorrowRequestViewModel
-            {
-                ReaderId = readerId!,
-                ReaderName = readerName!,
-                SelectedBookIds = selectedBookIds,
-                SelectedBookTitles = books.Select(b => b.Title).ToList(),
-                BorrowDate = DateTime.Today,
-                DueDate = DateTime.Today.AddDays(7)
-            };
-
-            return View(model);
+            TempData["ErrorMessage"] = "Vui lòng chọn ít nhất một cuốn sách.";
+            return RedirectToAction("Index", "Search");
         }
-        catch (Exception ex)
+
+        var selectedBookIds = bookIds
+            .Split(',')
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Select(id => id.Trim())
+            .Distinct()
+            .ToList();
+
+        var books = new List<Core.Shared.Entities.Book>();
+        foreach (var bookId in selectedBookIds)
         {
-            return BadRequest($"Lỗi: {ex.Message}");
+            var book = await _bookService.GetBookByIdAsync(bookId);
+            if (book != null) books.Add(book);
         }
+
+        if (books.Count == 0)
+        {
+            TempData["ErrorMessage"] = "Không tìm thấy sách được chọn.";
+            return RedirectToAction("Index", "Search");
+        }
+
+        var model = new BorrowRequestViewModel
+        {
+            ReaderId = HttpContext.Session.GetReaderId()!,
+            ReaderName = HttpContext.Session.GetReaderName()!,
+            SelectedBookIds = selectedBookIds,
+            SelectedBookTitles = books.Select(b => b.Title).ToList(),
+            BorrowDate = DateTime.Today,
+            DueDate = DateTime.Today.AddDays(7)
+        };
+
+        return View(model);
     }
 
-    /// <summary>
-    /// Gửi yêu cầu mượn sách
-    /// </summary>
+    // ─────────────────────────────────────────────────────────────────────
+    // POST /Borrow/SubmitBorrowRequest
+    // Gửi yêu cầu mượn
+    // ─────────────────────────────────────────────────────────────────────
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SubmitBorrowRequest(BorrowRequestViewModel model)
     {
-        try
+        var loginCheck = RequireLogin();
+        if (loginCheck != null) return loginCheck;
+
+        // Đảm bảo ReaderId luôn lấy từ Session (tránh giả mạo)
+        model.ReaderId = HttpContext.Session.GetReaderId()!;
+        model.ReaderName = HttpContext.Session.GetReaderName()!;
+
+        if (string.IsNullOrEmpty(model.ReaderId))
         {
-            if (model == null || string.IsNullOrEmpty(model.ReaderId))
-                return BadRequest("Thông tin không hợp lệ");
+            TempData["ErrorMessage"] = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
+            return RedirectToAction("Login", "Account");
+        }
 
-            // Validate ngày
-            if (model.BorrowDate >= model.DueDate)
-                return BadRequest("Ngày mượn phải trước ngày trả");
-
-            if (model.BorrowDate < DateTime.Today)
-                return BadRequest("Ngày mượn không được là ngày quá khứ");
-
-            // Tạo yêu cầu mượn
-            var (success, message, ticketId) = await _borrowService.CreateBorrowRequestAsync(
-                model.ReaderId,
-                model.SelectedBookIds,
-                model.BorrowDate,
-                model.DueDate
-            );
-
-            if (success)
-            {
-                TempData["SuccessMessage"] = "Yêu cầu mượn sách đã được gửi thành công!";
-                return RedirectToAction(nameof(BorrowHistory));
-            }
-
-            TempData["ErrorMessage"] = message;
+        // Validate ngày — cho phép ngày hôm nay
+        if (model.DueDate <= model.BorrowDate)
+        {
+            TempData["ErrorMessage"] = "Ngày trả dự kiến phải sau ngày mượn.";
             return View("CreateBorrowRequest", model);
         }
-        catch (Exception ex)
+
+        if (model.BorrowDate < DateTime.Today)
         {
-            TempData["ErrorMessage"] = $"Lỗi: {ex.Message}";
+            TempData["ErrorMessage"] = "Ngày mượn không được là ngày trong quá khứ.";
             return View("CreateBorrowRequest", model);
         }
+
+        if (!model.SelectedBookIds.Any())
+        {
+            TempData["ErrorMessage"] = "Vui lòng chọn ít nhất một cuốn sách.";
+            return View("CreateBorrowRequest", model);
+        }
+
+        var (success, message, ticketId) = await _borrowService.CreateBorrowRequestAsync(
+            model.ReaderId,
+            model.SelectedBookIds,
+            model.BorrowDate,
+            model.DueDate
+        );
+
+        if (success)
+        {
+            TempData["SuccessMessage"] = "Yêu cầu mượn sách đã được gửi! Vui lòng chờ Admin duyệt.";
+            return RedirectToAction(nameof(BorrowHistory));
+        }
+
+        TempData["ErrorMessage"] = message;
+        return View("CreateBorrowRequest", model);
     }
 
-    /// <summary>
-    /// Xem lịch sử mượn sách của người dùng
-    /// </summary>
+    // ─────────────────────────────────────────────────────────────────────
+    // GET /Borrow/BorrowHistory
+    // Lịch sử mượn sách — luôn lấy readerId từ Session
+    // ─────────────────────────────────────────────────────────────────────
     [HttpGet]
-    public async Task<IActionResult> BorrowHistory(string readerId)
+    public async Task<IActionResult> BorrowHistory()
     {
-        try
-        {
-            // TODO: Lấy readerId từ Session hoặc User Identity
-            if (string.IsNullOrEmpty(readerId))
-                readerId = "R001";  // Placeholder
+        var loginCheck = RequireLogin();
+        if (loginCheck != null) return loginCheck;
 
-            var borrowTickets = await _borrowService.GetBorrowTicketsByReaderIdAsync(readerId);
-            return View(borrowTickets);
-        }
-        catch (Exception ex)
-        {
-            TempData["ErrorMessage"] = $"Lỗi: {ex.Message}";
-            return View(new List<Core.Shared.Entities.BorrowTicket>());
-        }
+        var readerId = HttpContext.Session.GetReaderId()!;
+
+        var tickets = await _borrowService.GetBorrowTicketsByReaderIdAsync(readerId);
+        return View(tickets.ToList());
     }
 
-    /// <summary>
-    /// Chi tiết yêu cầu mượn
-    /// </summary>
+    // ─────────────────────────────────────────────────────────────────────
+    // GET /Borrow/BorrowDetail/{ticketId}
+    // ─────────────────────────────────────────────────────────────────────
     [HttpGet]
     public async Task<IActionResult> BorrowDetail(int ticketId)
     {
-        try
-        {
-            var borrowTicket = await _borrowService.GetBorrowTicketByIdAsync(ticketId);
-            if (borrowTicket == null)
-                return NotFound();
+        var loginCheck = RequireLogin();
+        if (loginCheck != null) return loginCheck;
 
-            return View(borrowTicket);
-        }
-        catch (Exception ex)
+        var ticket = await _borrowService.GetBorrowTicketByIdAsync(ticketId);
+        if (ticket == null) return NotFound();
+
+        // Ngăn bạn đọc xem phiếu của người khác
+        var readerId = HttpContext.Session.GetReaderId();
+        if (ticket.ReaderId != readerId)
         {
-            TempData["ErrorMessage"] = $"Lỗi: {ex.Message}";
+            TempData["ErrorMessage"] = "Bạn không có quyền xem phiếu mượn này.";
             return RedirectToAction(nameof(BorrowHistory));
         }
+
+        return View(ticket);
     }
 }

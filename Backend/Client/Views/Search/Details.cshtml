@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "Chi tiết sách";
+    var isLoggedIn = !string.IsNullOrEmpty(Context.Session.GetString("ReaderId"));
 }
 
 <div class="container mt-4">
@@ -56,19 +57,21 @@
                                     <strong>Thể loại:</strong>
                                     <p>
                                         @{
-                                            var categoryNames = Model.BookCategories?.Select(bc => bc.Category?.CategoryName).Where(c => c != null).ToList();
-                                            if (categoryNames?.Count > 0)
+                                            var categoryNames = Model.BookCategories?
+                                                .Select(bc => bc.Category?.CategoryName)
+                                                .Where(c => c != null).ToList();
+                                        }
+                                        @if (categoryNames?.Count > 0)
+                                        {
+                                            foreach (var catName in categoryNames)
                                             {
-                                                foreach (var catName in categoryNames)
-                                                {
-                                                    <span class="badge bg-primary">@catName</span>
-                                                    <text> </text>
-                                                }
+                                                <span class="badge bg-primary">@catName</span>
+                                                <text> </text>
                                             }
-                                            else
-                                            {
-                                                <span class="text-muted">-</span>
-                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
                                         }
                                     </p>
                                 </div>
@@ -87,14 +90,35 @@
                                     </p>
                                 </div>
 
-                                <div class="mt-4 d-flex gap-2">
+                                <div class="mt-4 d-flex gap-2 flex-wrap">
                                     <a href="@Url.Action("Index", "Search")" class="btn btn-secondary">
                                         <i class="fas fa-arrow-left"></i> Quay lại
                                     </a>
+
                                     @if (Model.Quantity > 0)
                                     {
-                                        <button class="btn btn-primary" onclick="alert('Chức năng mượn sách đang được phát triển')">
-                                            <i class="fas fa-book"></i> Gửi yêu cầu mượn
+                                        @if (isLoggedIn)
+                                        {
+                                            @* Đã đăng nhập → mượn ngay *@
+                                            <a href="@Url.Action("CreateBorrowRequest", "Borrow",
+                                                                                                                                                       new { bookIds = Model.BookId })"
+                                                   class="btn btn-primary">
+                                                <i class="fas fa-book-reader me-1"></i> Gửi yêu cầu mượn
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            @* Chưa đăng nhập → về Login *@
+                                            <a href="@Url.Action("Login", "Account")"
+                                                   class="btn btn-primary">
+                                                <i class="fas fa-sign-in-alt me-1"></i> Đăng nhập để mượn
+                                            </a>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-secondary" disabled>
+                                            <i class="fas fa-times-circle me-1"></i> Sách tạm hết
                                         </button>
                                     }
                                 </div>

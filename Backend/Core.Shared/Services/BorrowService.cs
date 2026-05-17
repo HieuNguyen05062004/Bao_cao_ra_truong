@@ -8,6 +8,13 @@ public class BorrowService : IBorrowService
 {
     private readonly BorrowRepository _repo;
 
+    // ── Hằng số trạng thái ───────────────────────────────────────────────
+    public const string StatusPending = "Chờ duyệt";
+    public const string StatusApproved = "Đã duyệt";
+    public const string StatusBorrowing = "Đang mượn";
+    public const string StatusReturned = "Đã trả";
+    public const string StatusRejected = "Bị từ chối";
+
     public BorrowService(BorrowRepository repo)
     {
         _repo = repo;
@@ -47,13 +54,16 @@ public class BorrowService : IBorrowService
         if (!bookIds.Any())
             return (false, "Vui lòng chọn ít nhất một cuốn sách.", 0);
 
+        if (borrowDate >= dueDate)
+            return (false, "Ngày mượn phải trước ngày trả dự kiến.", 0);
+
         var books = await _repo.GetBooksByIdsAsync(bookIds);
 
         if (books.Count != bookIds.Count)
             return (false, "Một số sách không tồn tại trong hệ thống.", 0);
 
         // Kiểm tra số lượng tồn kho
-        var outOfStock = books.Where(b => b.Quantity <= 0).ToList();
+        var outOfStock = books.Where(b => (b.Quantity ?? 0) <= 0).ToList();
         if (outOfStock.Any())
         {
             var titles = string.Join(", ", outOfStock.Select(b => b.Title));
@@ -65,15 +75,15 @@ public class BorrowService : IBorrowService
             ReaderId = readerId,
             BorrowDate = borrowDate,
             DueDate = dueDate,
-            Status = "Pending",  // Chờ Admin duyệt
+            Status = StatusPending,   // "Chờ duyệt"
             Books = books
         };
 
         await _repo.AddAsync(ticket);
-        return (true, "Yêu cầu mượn đã được gửi.", ticket.TicketId);
+        return (true, "Yêu cầu mượn đã được gửi. Vui lòng chờ Admin duyệt.", ticket.TicketId);
     }
 
-    // ── Admin: Duyệt yêu cầu ─────────────────────────────────────────────
+    // ── Admin: Duyệt yêu cầu → "Đã duyệt" ───────────────────────────────
 
     public async Task<(bool Success, string Message)> ApproveBorrowRequestAsync(
         int ticketId, string staffUsername)
@@ -82,29 +92,51 @@ public class BorrowService : IBorrowService
         if (ticket is null)
             return (false, "Phiếu mượn không tồn tại.");
 
-        if (ticket.Status != "Pending")
+        if (ticket.Status != StatusPending)
             return (false, $"Phiếu đang ở trạng thái '{ticket.Status}', không thể duyệt.");
 
-        // Kiểm tra lại số lượng sách lúc duyệt
-        var outOfStock = ticket.Books.Where(b => b.Quantity <= 0).ToList();
+        // Kiểm tra lại tồn kho tại thời điểm duyệt
+        var outOfStock = ticket.Books.Where(b => (b.Quantity ?? 0) <= 0).ToList();
         if (outOfStock.Any())
         {
             var titles = string.Join(", ", outOfStock.Select(b => b.Title));
             return (false, $"Sách đã hết khi duyệt: {titles}");
         }
 
-        // Giảm số lượng sách
+        // Giảm số lượng sách, cập nhật Status sách
         foreach (var book in ticket.Books)
+        {
             book.Quantity -= 1;
+            book.Status = (book.Quantity ?? 0) <= 0 ? "Hết sách" : "Có thể mượn";
+        }
 
-        ticket.Status = "Approved";
+        ticket.Status = StatusApproved;   // "Đã duyệt"
         ticket.StaffUsername = staffUsername;
 
         await _repo.UpdateAsync(ticket);
-        return (true, "Đã duyệt phiếu mượn.");
+        return (true, "Đã duyệt phiếu mượn thành công.");
     }
 
-    // ── Admin: Từ chối yêu cầu ───────────────────────────────────────────
+    // ── Admin: Xác nhận đã giao sách → "Đang mượn" ───────────────────────
+
+    public async Task<(bool Success, string Message)> ConfirmBorrowingAsync(
+        int ticketId, string staffUsername)
+    {
+        var ticket = await _repo.GetByIdAsync(ticketId);
+        if (ticket is null)
+            return (false, "Phiếu mượn không tồn tại.");
+
+        if (ticket.Status != StatusApproved)
+            return (false, $"Phiếu đang ở trạng thái '{ticket.Status}', không thể xác nhận giao sách.");
+
+        ticket.Status = StatusBorrowing;  // "Đang mượn"
+        ticket.StaffUsername = staffUsername;
+
+        await _repo.UpdateAsync(ticket);
+        return (true, "Đã xác nhận giao sách cho bạn đọc.");
+    }
+
+    // ── Admin: Từ chối yêu cầu → "Bị từ chối" ────────────────────────────
 
     public async Task<(bool Success, string Message)> RejectBorrowRequestAsync(
         int ticketId, string reason)
@@ -113,16 +145,17 @@ public class BorrowService : IBorrowService
         if (ticket is null)
             return (false, "Phiếu mượn không tồn tại.");
 
-        if (ticket.Status != "Pending")
+        if (ticket.Status != StatusPending)
             return (false, $"Phiếu đang ở trạng thái '{ticket.Status}', không thể từ chối.");
 
-        ticket.Status = "Rejected";
+        ticket.Status = StatusRejected;  // "Bị từ chối"
+        // Không thay đổi Quantity sách
 
         await _repo.UpdateAsync(ticket);
         return (true, "Đã từ chối phiếu mượn.");
     }
 
-    // ── Admin: Xác nhận trả sách ─────────────────────────────────────────
+    // ── Admin: Xác nhận trả sách → "Đã trả" ──────────────────────────────
 
     public async Task<(bool Success, string Message)> ReturnBooksAsync(int ticketId)
     {
@@ -130,21 +163,24 @@ public class BorrowService : IBorrowService
         if (ticket is null)
             return (false, "Phiếu mượn không tồn tại.");
 
+        if (ticket.Status != StatusBorrowing && ticket.Status != StatusApproved)
+            return (false, $"Phiếu đang ở trạng thái '{ticket.Status}', không thể xác nhận trả.");
+
         if (ticket.ReturnDate != null)
             return (false, "Phiếu này đã được trả trước đó.");
 
-        if (ticket.Status != "Approved")
-            return (false, "Chỉ có thể trả sách với phiếu đã được duyệt.");
-
         ticket.ReturnDate = DateTime.Now;
-        ticket.Status = DateTime.Now > ticket.DueDate ? "Trả trễ" : "Returned";
+        ticket.Status = StatusReturned;  // "Đã trả"
 
-        // Hoàn lại số lượng sách
+        // Hoàn lại số lượng sách, cập nhật Status sách
         foreach (var book in ticket.Books)
+        {
             book.Quantity += 1;
+            book.Status = "Có thể mượn";
+        }
 
         await _repo.UpdateAsync(ticket);
-        return (true, "Đã xác nhận trả sách.");
+        return (true, "Đã xác nhận trả sách thành công.");
     }
 
     // ── Xóa phiếu ────────────────────────────────────────────────────────
@@ -155,8 +191,8 @@ public class BorrowService : IBorrowService
         if (ticket is null)
             return "Phiếu mượn không tồn tại.";
 
-        if (ticket.ReturnDate == null && ticket.Status == "Approved")
-            return "Không thể xóa phiếu đang mượn. Vui lòng xử lý trả sách trước.";
+        if (ticket.Status == StatusBorrowing || ticket.Status == StatusApproved)
+            return "Không thể xóa phiếu đang hoạt động. Vui lòng xử lý trả sách trước.";
 
         await _repo.DeleteAsync(ticket);
         return null;

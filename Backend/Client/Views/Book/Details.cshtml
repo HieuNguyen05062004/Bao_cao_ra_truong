@@ -1,0 +1,145 @@
+﻿@model Core.Shared.Entities.Book
+@{
+    ViewData["Title"] = Model.Title;
+    var available = (Model.Quantity ?? 0) > 0 && Model.Status == "Có thể mượn";
+    var isLoggedIn = ViewBag.IsLoggedIn as bool? ?? false;
+}
+
+<div class="container py-5" style="max-width: 960px">
+
+    @* ── Breadcrumb ── *@
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Danh sách sách</a></li>
+            <li class="breadcrumb-item active text-truncate" style="max-width:300px">
+                @Model.Title
+            </li>
+        </ol>
+    </nav>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Warning"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show">
+            <i class="bi bi-exclamation-circle me-2"></i>@TempData["Warning"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row g-5">
+
+        @* ── Cột trái: ảnh bìa ── *@
+        <div class="col-md-4 text-center">
+            <div class="book-cover-wrap shadow rounded-3 mx-auto" style="max-width:280px">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" alt="@Model.Title"
+                         class="img-fluid rounded-3 w-100"
+                         style="max-height:380px; object-fit:cover" />
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center bg-light rounded-3"
+                         style="height:320px">
+                        <i class="bi bi-book text-muted" style="font-size:5rem"></i>
+                    </div>
+                }
+            </div>
+
+            @* Badge số lượng *@
+            <div class="mt-3">
+                @if (available)
+                {
+                    <span class="badge bg-success fs-6 px-3 py-2">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Còn @Model.Quantity cuốn
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-danger fs-6 px-3 py-2">
+                        <i class="bi bi-x-circle me-1"></i>Hết sách
+                    </span>
+                }
+            </div>
+        </div>
+
+        @* ── Cột phải: thông tin + nút mượn ── *@
+        <div class="col-md-8">
+            <h2 class="fw-bold mb-2">@Model.Title</h2>
+
+            @* Danh mục *@
+            @if (Model.BookCategories.Any())
+            {
+                <div class="mb-3">
+                    @foreach (var bc in Model.BookCategories)
+                    {
+                        <span class="badge bg-primary bg-opacity-10 text-primary me-1 px-3 py-2">
+                            @bc.Category?.CategoryName
+                        </span>
+                    }
+                </div>
+            }
+
+            @* Thông tin chi tiết *@
+            <dl class="row mb-4">
+                <dt class="col-sm-4 text-muted">Tác giả</dt>
+                <dd class="col-sm-8 fw-semibold">@(Model.Author ?? "Không rõ")</dd>
+
+                <dt class="col-sm-4 text-muted">Nhà xuất bản</dt>
+                <dd class="col-sm-8">@(Model.Publisher ?? "—")</dd>
+
+                <dt class="col-sm-4 text-muted">Năm xuất bản</dt>
+                <dd class="col-sm-8">@(Model.PublishYear?.ToString() ?? "—")</dd>
+
+                <dt class="col-sm-4 text-muted">Mã sách</dt>
+                <dd class="col-sm-8"><code>@Model.BookId</code></dd>
+            </dl>
+
+            <hr />
+
+            @* ── Nút hành động ── *@
+            <div class="d-flex flex-wrap gap-3 mt-4">
+                @if (available)
+                {
+                    @if (isLoggedIn)
+                    {
+                        @* Đã đăng nhập → mượn ngay *@
+                        <a href="@Url.Action("CreateBorrowRequest", "Borrow",
+                                                                                           new { bookIds = Model.BookId })"
+                               class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-bookmark-plus me-2"></i>Mượn sách này
+                        </a>
+                    }
+                    else
+                    {
+                        @* Chưa đăng nhập → về Login *@
+                        <a asp-controller="Account" asp-action="Login"
+                               class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập để mượn
+                        </a>
+                        <small class="text-muted align-self-center">
+                            Bạn cần đăng nhập để mượn sách.
+                        </small>
+                    }
+                }
+                else
+                {
+                    <button class="btn btn-secondary btn-lg px-4" disabled>
+                        <i class="bi bi-x-circle me-2"></i>Sách tạm hết
+                    </button>
+                }
+
+                <a asp-action="Index" class="btn btn-outline-secondary btn-lg px-4">
+                    <i class="bi bi-arrow-left me-2"></i>Quay lại
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

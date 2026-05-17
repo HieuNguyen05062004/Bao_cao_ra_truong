@@ -1,183 +1,141 @@
 @model Core.Shared.Entities.BorrowTicket
-
 @{
-    ViewData["Title"] = "Chi Tiết Yêu Cầu Mượn";
+    ViewData["Title"] = $"Phiếu Mượn #{Model.TicketId}";
 }
 
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-10 offset-md-1">
-            <div class="card shadow-lg mb-4">
-                <div class="card-header bg-info text-white">
-                    <h4 class="mb-0">
-                        <i class="fas fa-book-open me-2"></i> Chi Tiết Yêu Cầu Mượn #@Model.TicketId
-                    </h4>
-                </div>
+@functions {
+    static (string bg, string text, string icon) StatusStyle(string? status) => status switch
+    {
+        "Chờ duyệt" => ("warning", "dark", "bi-hourglass-split"),
+        "Đã duyệt" => ("info", "dark", "bi-check-circle"),
+        "Đang mượn" => ("primary", "white", "bi-book-half"),
+        "Đã trả" => ("success", "white", "bi-archive"),
+        "Bị từ chối" => ("danger", "white", "bi-x-circle"),
+        _ => ("secondary", "white", "bi-question-circle")
+    };
+}
 
-                <div class="card-body p-4">
-                    <!-- Trạng thái -->
-                    <div class="row mb-4">
-                        <div class="col-md-12">
-                            @{
-                                var statusBadgeClass = Model.Status switch
-                                {
-                                    "Pending" => "badge bg-warning text-dark p-3",
-                                    "Approved" => "badge bg-success p-3",
-                                    "Returned" => "badge bg-info p-3",
-                                    "Rejected" => "badge bg-danger p-3",
-                                    _ => "badge bg-secondary p-3"
-                                };
+@{
+    var (bgColor, txtColor, statusIcon) = StatusStyle(Model.Status);
+}
 
-                                var statusText = Model.Status switch
-                                {
-                                    "Pending" => "Chờ Duyệt",
-                                    "Approved" => "Đã Duyệt",
-                                    "Returned" => "Đã Trả",
-                                    "Rejected" => "Bị Từ Chối",
-                                    _ => Model.Status
-                                };
-                            }
-                            <p><strong>Trạng Thái:</strong> <span class="@statusBadgeClass">@statusText</span></p>
-                        </div>
-                    </div>
+<div class="container mt-5" style="max-width:860px">
 
-                    <!-- Thông tin bạn đọc -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <p>
-                                <strong><i class="fas fa-id-card me-2 text-primary"></i> Mã Bạn Đọc:</strong>
-                                <br />
-                                @Model.ReaderId
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <p>
-                                <strong><i class="fas fa-user me-2 text-primary"></i> Tên Bạn Đọc:</strong>
-                                <br />
-                                @Model.Reader?.FullName ?? "Không xác định"
-                            </p>
-                        </div>
-                    </div>
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 
-                    <!-- Thông tin mượn/trả -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <p>
-                                <strong><i class="fas fa-calendar-check me-2 text-success"></i> Ngày Mượn:</strong>
-                                <br />
-                                @Model.BorrowDate?.ToString("dd/MM/yyyy HH:mm")
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <p>
-                                <strong><i class="fas fa-calendar-times me-2 text-warning"></i> Ngày Trả Dự Kiến:</strong>
-                                <br />
-                                @Model.DueDate?.ToString("dd/MM/yyyy")
-                            </p>
-                        </div>
-                    </div>
+    <div class="card shadow-lg mb-4">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-journal-bookmark me-2"></i>
+                Chi Tiết Phiếu Mượn <strong>#@Model.TicketId</strong>
+            </h5>
+            <span class="badge bg-@bgColor text-@txtColor fs-6 px-3 py-2">
+                <i class="bi @statusIcon me-1"></i>@Model.Status
+            </span>
+        </div>
 
-                    <!-- Ngày trả thực tế -->
+        <div class="card-body p-4">
+
+            @* ── Thông tin phiếu ── *@
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <p class="mb-2">
+                        <span class="text-muted">Ngày mượn:</span><br />
+                        <strong>@Model.BorrowDate?.ToString("dd/MM/yyyy HH:mm")</strong>
+                    </p>
+                    <p class="mb-2">
+                        <span class="text-muted">Hạn trả dự kiến:</span><br />
+                        <strong>@Model.DueDate?.ToString("dd/MM/yyyy")</strong>
+                    </p>
                     @if (Model.ReturnDate.HasValue)
                     {
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <p>
-                                    <strong><i class="fas fa-check-circle me-2 text-success"></i> Ngày Trả Thực Tế:</strong>
-                                    <br />
-                                    @Model.ReturnDate?.ToString("dd/MM/yyyy HH:mm")
-                                </p>
-                            </div>
-                        </div>
+                        <p class="mb-2">
+                            <span class="text-muted">Ngày trả thực tế:</span><br />
+                            <strong class="text-success">
+                                @Model.ReturnDate.Value.ToString("dd/MM/yyyy HH:mm")
+                            </strong>
+                        </p>
                     }
-
-                    <!-- Nhân viên phê duyệt -->
+                </div>
+                <div class="col-md-6">
+                    <p class="mb-2">
+                        <span class="text-muted">Bạn đọc:</span><br />
+                        <strong>@(Model.Reader?.FullName ?? Model.ReaderId)</strong>
+                    </p>
                     @if (!string.IsNullOrEmpty(Model.StaffUsername))
                     {
-                        <div class="row mb-4">
-                            <div class="col-md-12">
-                                <p>
-                                    <strong><i class="fas fa-user-tie me-2 text-primary"></i> Nhân Viên Duyệt:</strong>
-                                    <br />
-                                    @Model.StaffUsernameNavigation?.FullName ?? Model.StaffUsername
-                                </p>
-                            </div>
-                        </div>
+                        <p class="mb-2">
+                            <span class="text-muted">Nhân viên xử lý:</span><br />
+                            <strong>@(Model.StaffUsernameNavigation?.FullName ?? Model.StaffUsername)</strong>
+                        </p>
                     }
+                </div>
+            </div>
 
-                    <hr class="my-4" />
+            <hr />
 
-                    <!-- Danh sách sách mượn -->
-                    <h5 class="mb-3">
-                        <i class="fas fa-list me-2"></i> Danh Sách Sách Mượn
-                    </h5>
+            @* ── Danh sách sách ── *@
+            <h6 class="fw-bold mb-3">
+                <i class="bi bi-book me-2 text-primary"></i>
+                Sách Mượn <span class="badge bg-primary">@Model.Books.Count</span>
+            </h6>
 
-                    @if (Model.Books.Any())
+            @if (Model.Books.Any())
+            {
+                <div class="row g-3">
+                    @foreach (var book in Model.Books)
                     {
-                        <div class="row">
-                            @foreach (var book in Model.Books)
-                            {
-                                <div class="col-md-6 mb-4">
-                                    <div class="card border-0 shadow-sm">
+                        <div class="col-md-6">
+                            <div class="card border h-100">
+                                <div class="row g-0 h-100">
+                                    <div class="col-4 d-flex align-items-center justify-content-center
+                                        bg-light rounded-start" style="min-height:110px">
                                         @if (!string.IsNullOrEmpty(book.ImageUrl))
                                         {
-                                            <img src="@book.ImageUrl" class="card-img-top" alt="@book.Title"
-                                                 style="height: 200px; object-fit: cover;">
+                                            <img src="@book.ImageUrl" alt="@book.Title"
+                                                 class="img-fluid rounded-start"
+                                                 style="max-height:110px;object-fit:cover" />
                                         }
                                         else
                                         {
-                                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
-                                                 style="height: 200px;">
-                                                <i class="fas fa-book fa-3x text-muted"></i>
-                                            </div>
+                                            <i class="bi bi-book fa-2x text-muted fs-1"></i>
                                         }
-                                        <div class="card-body">
-                                            <h6 class="card-title fw-bold">@book.Title</h6>
-                                            <p class="card-text mb-2">
-                                                <small class="text-muted">
-                                                    <strong>Tác giả:</strong> @(book.Author ?? "Không xác định")
-                                                </small>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="card-body py-2 px-3">
+                                            <p class="fw-bold mb-1 text-truncate" title="@book.Title">
+                                                @book.Title
                                             </p>
-                                            <p class="card-text mb-0">
-                                                <small class="text-muted">
-                                                    <strong>Nhà xuất bản:</strong> @(book.Publisher ?? "Không xác định")
-                                                </small>
+                                            <p class="text-muted small mb-1">
+                                                @(book.Author ?? "Không rõ tác giả")
+                                            </p>
+                                            <p class="text-muted small mb-0">
+                                                @(book.Publisher ?? "")
                                             </p>
                                         </div>
                                     </div>
                                 </div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i> Không có sách trong yêu cầu này.
+                            </div>
                         </div>
                     }
                 </div>
+            }
+            else
+            {
+                <p class="text-muted">Không có sách trong phiếu này.</p>
+            }
+        </div>
 
-                <div class="card-footer p-4 bg-light">
-                    <a href="@Url.Action("BorrowHistory", "Borrow")" class="btn btn-primary">
-                        <i class="fas fa-arrow-left me-2"></i> Quay Lại
-                    </a>
-                </div>
-            </div>
+        <div class="card-footer bg-light">
+            <a asp-action="BorrowHistory" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Quay lại lịch sử
+            </a>
         </div>
     </div>
 </div>
-
-<style>
-    .card {
-        border-radius: 8px;
-    }
-
-    .card-img-top {
-        border-radius: 8px 8px 0 0;
-    }
-
-    .badge {
-        padding: 8px 12px;
-        font-size: 0.95rem;
-    }
-</style>

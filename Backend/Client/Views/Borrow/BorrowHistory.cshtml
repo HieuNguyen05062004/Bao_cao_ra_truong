@@ -1,115 +1,109 @@
-@model List<Core.Shared.Entities.BorrowTicket>
-
+@model IEnumerable<Core.Shared.Entities.BorrowTicket>
 @{
     ViewData["Title"] = "Lịch Sử Mượn Sách";
 }
 
+@functions {
+    static (string css, string label) StatusStyle(string? status) => status switch
+    {
+        "Chờ duyệt" => ("bg-warning text-dark", "Chờ duyệt"),
+        "Đã duyệt" => ("bg-info text-dark", "Đã duyệt"),
+        "Đang mượn" => ("bg-primary", "Đang mượn"),
+        "Đã trả" => ("bg-success", "Đã trả"),
+        "Bị từ chối" => ("bg-danger", "Bị từ chối"),
+        _ => ("bg-secondary", status ?? "—")
+    };
+}
+
 <div class="container mt-5">
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-lg">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">
-                        <i class="fas fa-history me-2"></i> Lịch Sử Mượn Sách
-                    </h4>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow-lg">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">
+                <i class="bi bi-clock-history me-2"></i> Lịch Sử Mượn Sách
+            </h4>
+        </div>
+
+        <div class="card-body p-4">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Mã phiếu</th>
+                                <th>Ngày mượn</th>
+                                <th>Hạn trả</th>
+                                <th>Trạng thái</th>
+                                <th class="text-center">Số sách</th>
+                                <th class="text-center">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ticket in Model)
+                            {
+                                var (css, label) = StatusStyle(ticket.Status);
+                                var isOverdue = ticket.DueDate.HasValue
+                                                   && ticket.DueDate < DateTime.Now
+                                                   && ticket.Status != "Đã trả"
+                                                   && ticket.Status != "Bị từ chối";
+                                <tr>
+                                    <td><strong>#@ticket.TicketId</strong></td>
+                                    <td>@ticket.BorrowDate?.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <span class="@(isOverdue ? "text-danger fw-bold" : "")">
+                                            @ticket.DueDate?.ToString("dd/MM/yyyy")
+                                            @if (isOverdue)
+                                            {
+                                                <i class="bi bi-exclamation-triangle-fill ms-1"
+                                                   title="Quá hạn"></i>
+                                            }
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @css">@label</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-secondary">@ticket.Books.Count</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a asp-action="BorrowDetail" asp-route-ticketId="@ticket.TicketId"
+                                               class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye me-1"></i>Chi tiết
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
-
-                <div class="card-body p-4">
-                    @if (Model.Any())
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped">
-                                <thead class="table-primary">
-                                    <tr>
-                                        <th width="10%">Mã Yêu Cầu</th>
-                                        <th width="20%">Ngày Mượn</th>
-                                        <th width="20%">Ngày Trả Dự Kiến</th>
-                                        <th width="15%">Trạng Thái</th>
-                                        <th width="15%">Số Sách</th>
-                                        <th width="20%">Hành Động</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var ticket in Model)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <strong>#@ticket.TicketId</strong>
-                                            </td>
-                                            <td>
-                                                @ticket.BorrowDate?.ToString("dd/MM/yyyy HH:mm")
-                                            </td>
-                                            <td>
-                                                @ticket.DueDate?.ToString("dd/MM/yyyy")
-                                            </td>
-                                            <td>
-                                                @{
-                                                    var statusBadgeClass = ticket.Status switch
-                                                    {
-                                                        "Pending" => "badge bg-warning text-dark",
-                                                        "Approved" => "badge bg-success",
-                                                        "Returned" => "badge bg-info",
-                                                        "Rejected" => "badge bg-danger",
-                                                        _ => "badge bg-secondary"
-                                                    };
-
-                                                    var statusText = ticket.Status switch
-                                                    {
-                                                        "Pending" => "Chờ Duyệt",
-                                                        "Approved" => "Đã Duyệt",
-                                                        "Returned" => "Đã Trả",
-                                                        "Rejected" => "Bị Từ Chối",
-                                                        _ => ticket.Status
-                                                    };
-                                                }
-                                                <span class="@statusBadgeClass">@statusText</span>
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="badge bg-secondary">@ticket.Books.Count</span>
-                                            </td>
-                                            <td>
-                                                <a href="@Url.Action("BorrowDetail", "Borrow", new { ticketId = ticket.TicketId })"
-                                                   class="btn btn-sm btn-info">
-                                                    <i class="fas fa-eye me-1"></i> Chi Tiết
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="alert alert-info text-center">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <strong>Bạn chưa có yêu cầu mượn sách nào.</strong>
-                        </div>
-                    }
-
-                    <div class="mt-4">
-                        <a href="@Url.Action("Index", "Search")" class="btn btn-primary">
-                            <i class="fas fa-plus me-2"></i> Mượn Sách Mới
-                        </a>
-                    </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Bạn chưa có yêu cầu mượn sách nào.
                 </div>
-            </div>
+            }
+
+            <a asp-controller="Search" asp-action="Index" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-2"></i>Mượn sách mới
+            </a>
         </div>
     </div>
 </div>
-
-<style>
-    .table-hover tbody tr:hover {
-        background-color: #f5f5f5;
-    }
-
-    .badge {
-        padding: 8px 12px;
-        font-size: 0.95rem;
-    }
-
-    .btn-sm {
-        padding: 6px 12px;
-        font-size: 0.9rem;
-    }
-</style>
