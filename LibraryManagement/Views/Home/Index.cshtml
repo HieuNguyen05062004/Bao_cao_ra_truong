@@ -1,0 +1,203 @@
+@{
+    ViewData["Title"] = "Trang chủ";
+    var latestBooks = ViewBag.LatestBooks as List<LibraryManagement.Models.Book> ?? new List<LibraryManagement.Models.Book>();
+    var categories = ViewBag.Categories as List<LibraryManagement.Models.Category> ?? new List<LibraryManagement.Models.Category>();
+}
+
+@if (User.Identity?.IsAuthenticated != true)
+{
+<div class="py-5 text-center" style="background: linear-gradient(135deg, #2c3e50, #3498db); color: white; margin: -24px -24px 30px -24px; padding: 60px 24px !important; border-radius: 0 0 20px 20px;">
+    <h1 class="display-4 fw-bold mb-3"><i class="bi bi-book-half me-3"></i>Thư viện số</h1>
+    <p class="lead mb-4">Hệ thống quản lý thư viện hiện đại với tính năng tìm kiếm thông minh</p>
+    <div class="d-flex justify-content-center gap-3">
+        <a asp-controller="Search" asp-action="Index" class="btn btn-light btn-lg px-4">
+            <i class="bi bi-search me-2"></i>Tìm kiếm sách
+        </a>
+        <a asp-controller="Account" asp-action="Register" class="btn btn-outline-light btn-lg px-4">
+            <i class="bi bi-person-plus me-2"></i>Đăng ký ngay
+        </a>
+    </div>
+</div>
+}
+else if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+{
+<div class="mb-4">
+    <h4 class="fw-bold"><i class="bi bi-speedometer2 me-2 text-primary"></i>Bảng điều khiển</h4>
+    <p class="text-muted">Chào mừng trở lại, @User.Identity?.Name!</p>
+</div>
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <a asp-controller="Book" asp-action="Index" class="text-decoration-none">
+            <div class="card stat-card primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small">Quản lý sách</div>
+                            <div class="fw-bold">Danh sách sách</div>
+                        </div>
+                        <i class="bi bi-journals fs-1 text-primary opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a asp-controller="Borrow" asp-action="Index" class="text-decoration-none">
+            <div class="card stat-card success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small">Quản lý</div>
+                            <div class="fw-bold">Mượn/Trả sách</div>
+                        </div>
+                        <i class="bi bi-arrow-left-right fs-1 text-success opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a asp-controller="Borrow" asp-action="Overdue" class="text-decoration-none">
+            <div class="card stat-card danger">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small">Cảnh báo</div>
+                            <div class="fw-bold">Sách quá hạn</div>
+                        </div>
+                        <i class="bi bi-exclamation-triangle fs-1 text-danger opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a asp-controller="Statistics" asp-action="Index" class="text-decoration-none">
+            <div class="card stat-card warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small">Báo cáo</div>
+                            <div class="fw-bold">Thống kê</div>
+                        </div>
+                        <i class="bi bi-graph-up fs-1 text-warning opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+}
+else if (User.IsInRole("Reader"))
+{
+<div class="mb-4">
+    <h4 class="fw-bold"><i class="bi bi-house me-2 text-primary"></i>Chào mừng, @User.Identity?.Name!</h4>
+    <p class="text-muted">Khám phá kho sách của thư viện</p>
+</div>
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <a asp-controller="Search" asp-action="Index" class="text-decoration-none">
+            <div class="card stat-card primary">
+                <div class="card-body text-center py-4">
+                    <i class="bi bi-search fs-1 text-primary mb-2"></i>
+                    <div class="fw-bold">Tìm kiếm sách</div>
+                    <div class="text-muted small">Tìm theo tên, tác giả, thể loại</div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-controller="Borrow" asp-action="MyBorrows" class="text-decoration-none">
+            <div class="card stat-card success">
+                <div class="card-body text-center py-4">
+                    <i class="bi bi-journal-bookmark fs-1 text-success mb-2"></i>
+                    <div class="fw-bold">Sách đang mượn</div>
+                    <div class="text-muted small">Xem danh sách sách đang mượn</div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-controller="Statistics" asp-action="Personal" class="text-decoration-none">
+            <div class="card stat-card warning">
+                <div class="card-body text-center py-4">
+                    <i class="bi bi-bar-chart fs-1 text-warning mb-2"></i>
+                    <div class="fw-bold">Thống kê cá nhân</div>
+                    <div class="text-muted small">Lịch sử mượn/trả</div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+}
+
+<!-- Latest books section -->
+<div class="card">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-stars me-2 text-warning"></i>Sách mới nhất</h5>
+        <a asp-controller="Search" asp-action="Index" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
+    </div>
+    <div class="card-body">
+        @if (latestBooks.Any())
+        {
+            <div class="row g-3">
+                @foreach (var book in latestBooks)
+                {
+                    <div class="col-md-4 col-lg-2">
+                        <div class="card book-card h-100 text-center p-2">
+                            <div style="height: 120px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                                <i class="bi bi-book text-white" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <div class="small fw-bold text-truncate" title="@book.Title">@book.Title</div>
+                            <div class="small text-muted text-truncate">@book.Author</div>
+                            <div class="mt-1">
+                                <span class="badge @(book.AvailableQuantity > 0 ? "bg-success" : "bg-danger") small">
+                                    @(book.AvailableQuantity > 0 ? $"Còn {book.AvailableQuantity}" : "Hết sách")
+                                </span>
+                            </div>
+                            @if (User.IsInRole("Reader") && book.AvailableQuantity > 0)
+                            {
+                                <a asp-controller="Borrow" asp-action="Borrow" asp-route-bookId="@book.Id" 
+                                   class="btn btn-primary btn-sm mt-2 w-100">
+                                    <i class="bi bi-bookmark-plus"></i> Mượn
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted text-center py-3">Chưa có sách nào trong hệ thống</p>
+        }
+    </div>
+</div>
+
+@if (User.Identity?.IsAuthenticated != true)
+{
+<!-- Features section -->
+<div class="row g-4 mt-2">
+    <div class="col-md-4">
+        <div class="card text-center p-4">
+            <i class="bi bi-search fs-1 text-primary mb-3"></i>
+            <h5>Tìm kiếm thông minh</h5>
+            <p class="text-muted">Tìm sách bằng ngôn ngữ tự nhiên với hỗ trợ AI</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center p-4">
+            <i class="bi bi-arrow-left-right fs-1 text-success mb-3"></i>
+            <h5>Quản lý mượn/trả</h5>
+            <p class="text-muted">Theo dõi lịch sử mượn và trả sách dễ dàng</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center p-4">
+            <i class="bi bi-graph-up fs-1 text-warning mb-3"></i>
+            <h5>Thống kê chi tiết</h5>
+            <p class="text-muted">Báo cáo thống kê theo ngày, tháng, năm</p>
+        </div>
+    </div>
+</div>
+}

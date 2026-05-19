@@ -1,0 +1,117 @@
+@model List<BorrowRecord>
+@{
+    ViewData["Title"] = "Quản lý mượn/trả sách";
+}
+
+@{
+    string GetStatusClass(BorrowRecord r) {
+        if (r.Status == BorrowStatus.Returned || r.Status == BorrowStatus.Overdue) 
+            return r.Status == BorrowStatus.Overdue ? "danger" : "success";
+        return r.DueDate < DateTime.Today ? "danger" : "primary";
+    }
+    string GetStatusLabel(BorrowRecord r) {
+        if (r.Status == BorrowStatus.Returned) return "Đã trả";
+        if (r.Status == BorrowStatus.Overdue) return "Trả quá hạn";
+        return r.DueDate < DateTime.Today ? "Quá hạn" : "Đang mượn";
+    }
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1"><i class="bi bi-arrow-left-right me-2 text-primary"></i>Quản lý mượn/trả sách</h4>
+        <p class="text-muted mb-0">Tổng: @Model.Count bản ghi</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Overdue" class="btn btn-outline-danger">
+            <i class="bi bi-exclamation-triangle me-1"></i>Xem quá hạn
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-white py-3">
+        <div class="row g-2">
+            <div class="col-md-4">
+                <input type="text" id="searchInput" class="form-control" placeholder="Tìm theo tên sách, bạn đọc..." />
+            </div>
+            <div class="col-md-3">
+                <select id="statusFilter" class="form-select">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="Đang mượn">Đang mượn</option>
+                    <option value="Đã trả">Đã trả</option>
+                    <option value="Quá hạn">Quá hạn</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0" id="borrowTable">
+            <thead class="table-light">
+                <tr>
+                    <th>Bạn đọc</th>
+                    <th>Sách</th>
+                    <th>Ngày mượn</th>
+                    <th>Hạn trả</th>
+                    <th>Ngày trả</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="fw-semibold">@r.User?.FullName</div>
+                            <div class="text-muted small">@r.User?.Email</div>
+                        </td>
+                        <td>
+                            <div class="fw-semibold">@r.Book?.Title</div>
+                            <div class="text-muted small">@r.Book?.Author</div>
+                        </td>
+                        <td>@r.BorrowDate.ToString("dd/MM/yyyy")</td>
+                        <td class="@(r.Status == BorrowStatus.Borrowing && r.DueDate < DateTime.Today ? "text-danger fw-bold" : "")">
+                            @r.DueDate.ToString("dd/MM/yyyy")
+                        </td>
+                        <td>@(r.ReturnDate.HasValue ? r.ReturnDate.Value.ToString("dd/MM/yyyy") : "—")</td>
+                        <td>
+                            <span class="badge bg-@GetStatusClass(r)">@GetStatusLabel(r)</span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <a asp-action="Details" asp-route-id="@r.Id" class="btn btn-sm btn-outline-info" title="Chi tiết">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                @if (r.Status == BorrowStatus.Borrowing)
+                                {
+                                    <a asp-action="Return" asp-route-id="@r.Id" class="btn btn-sm btn-outline-success" title="Xác nhận trả">
+                                        <i class="bi bi-arrow-return-left"></i>
+                                    </a>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+document.getElementById('searchInput').addEventListener('input', filterTable);
+document.getElementById('statusFilter').addEventListener('change', filterTable);
+
+function filterTable() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const status = document.getElementById('statusFilter').value;
+    document.querySelectorAll('#borrowTable tbody tr').forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const statusCell = row.querySelector('td:nth-child(6)')?.textContent.trim() ?? '';
+        const matchSearch = !search || text.includes(search);
+        const matchStatus = !status || statusCell.includes(status);
+        row.style.display = (matchSearch && matchStatus) ? '' : 'none';
+    });
+}
+</script>
+}

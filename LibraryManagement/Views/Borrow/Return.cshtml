@@ -1,0 +1,100 @@
+@model BorrowRecord
+@{
+    ViewData["Title"] = "Xác nhận trả sách";
+    var isOverdue = Model.DueDate < DateTime.Today;
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="fw-bold mb-0"><i class="bi bi-arrow-return-left me-2 text-success"></i>Xác nhận trả sách</h4>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card mb-3 @(isOverdue ? "border-danger" : "")">
+            <div class="card-header @(isOverdue ? "bg-danger text-white" : "bg-white") py-3">
+                <h6 class="mb-0 fw-bold">
+                    @if (isOverdue)
+                    {
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <span>Sách đã quá hạn @(DateTime.Today - Model.DueDate).Days ngày!</span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-info-circle me-2 text-info"></i>
+                        <span>Thông tin mượn sách</span>
+                    }
+                </h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr><td class="fw-semibold text-muted">Sách</td><td class="fw-bold">@Model.Book?.Title</td></tr>
+                    <tr><td class="fw-semibold text-muted">Tác giả</td><td>@Model.Book?.Author</td></tr>
+                    <tr><td class="fw-semibold text-muted">Bạn đọc</td><td>@Model.User?.FullName</td></tr>
+                    <tr><td class="fw-semibold text-muted">Ngày mượn</td><td>@Model.BorrowDate.ToString("dd/MM/yyyy")</td></tr>
+                    <tr>
+                        <td class="fw-semibold text-muted">Hạn trả</td>
+                        <td class="@(isOverdue ? "text-danger fw-bold" : "")">
+                            @Model.DueDate.ToString("dd/MM/yyyy")
+                            @if (isOverdue) { <span class="badge bg-danger ms-2">Quá hạn</span> }
+                        </td>
+                    </tr>
+                    <tr><td class="fw-semibold text-muted">Ngày trả</td><td class="fw-bold">@DateTime.Today.ToString("dd/MM/yyyy") (Hôm nay)</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body p-4">
+                <form asp-action="Return" asp-route-id="@Model.Id" method="post" id="returnForm">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Ghi chú (tùy chọn)</label>
+                        <textarea name="notes" class="form-control" rows="2" placeholder="Ghi chú về tình trạng sách..."></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-success px-4" onclick="confirmReturn()">
+                            <i class="bi bi-check-circle me-2"></i>Xác nhận trả
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận trả sách</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                @if (isOverdue)
+                {
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Sách này trả <strong>quá hạn @(DateTime.Today - Model.DueDate).Days ngày</strong>.
+                    </div>
+                }
+                Xác nhận trả sách <strong>@Model.Book?.Title</strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-success" onclick="document.getElementById('returnForm').submit()">
+                    <i class="bi bi-check-lg me-1"></i>Có, xác nhận trả
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function confirmReturn() {
+    new bootstrap.Modal(document.getElementById('confirmModal')).show();
+}
+</script>
+}

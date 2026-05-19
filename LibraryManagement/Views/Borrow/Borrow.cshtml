@@ -1,0 +1,87 @@
+@model BorrowRequestViewModel
+@{
+    ViewData["Title"] = "Mượn sách";
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-controller="Search" asp-action="Index" class="btn btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="fw-bold mb-0"><i class="bi bi-bookmark-plus me-2 text-primary"></i>Mượn sách</h4>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h6 class="fw-bold mb-2"><i class="bi bi-book me-2 text-primary"></i>Thông tin sách</h6>
+                <div class="fw-semibold fs-5">@Model.BookTitle</div>
+                <div class="text-muted">@Model.BookAuthor</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold">Thông tin mượn sách</h5>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Borrow" method="post" id="borrowForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="BookId" />
+                    <input type="hidden" asp-for="BookTitle" />
+                    <input type="hidden" asp-for="BookAuthor" />
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="BorrowDate" class="form-label fw-semibold">Ngày mượn</label>
+                        <input asp-for="BorrowDate" class="form-control" type="date" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="DueDate" class="form-label fw-semibold">Ngày trả dự kiến</label>
+                        <input asp-for="DueDate" class="form-control" type="date" />
+                        <div class="form-text">Mặc định là 14 ngày kể từ ngày mượn</div>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="Notes" class="form-label fw-semibold">Ghi chú (tùy chọn)</label>
+                        <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Ghi chú thêm..."></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-primary px-4" onclick="confirmBorrow()">
+                            <i class="bi bi-bookmark-check me-2"></i>Xác nhận mượn
+                        </button>
+                        <a asp-controller="Search" asp-action="Index" class="btn btn-outline-secondary px-4">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận mượn sách</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn mượn sách <strong>@Model.BookTitle</strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('borrowForm').submit()">
+                    <i class="bi bi-check-lg me-1"></i>Có, mượn sách
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+    function confirmBorrow() {
+        new bootstrap.Modal(document.getElementById('confirmModal')).show();
+    }
+    </script>
+}
