@@ -10,7 +10,7 @@
         "projectUniqueName": "/home/runner/work/Bao_cao_ra_truong/Bao_cao_ra_truong/LibraryManagement/LibraryManagement.csproj",
         "projectName": "LibraryManagement",
         "projectPath": "/home/runner/work/Bao_cao_ra_truong/Bao_cao_ra_truong/LibraryManagement/LibraryManagement.csproj",
-        "packagesPath": "/home/runner/.nuget/packages/",
+        "packagesPath": "/tmp/codeql-scratch-34d7297ed44906e8/dbs/csharp/working/packages",
         "outputPath": "/home/runner/work/Bao_cao_ra_truong/Bao_cao_ra_truong/LibraryManagement/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -76,6 +76,20 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.linux-x64",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"

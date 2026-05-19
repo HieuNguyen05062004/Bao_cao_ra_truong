@@ -38,20 +38,29 @@
             <i class="bi bi-book-half"></i> Thư viện số
         </div>
         <nav class="flex-grow-1 pt-2">
-            <a class="nav-link d-flex align-items-center" asp-controller="Home" asp-action="Index">
+            @{
+                string IsActive(string controller, string? action = null) {
+                    var c = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+                    var a = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+                    if (action != null)
+                        return (c.Equals(controller, StringComparison.OrdinalIgnoreCase) && a.Equals(action, StringComparison.OrdinalIgnoreCase)) ? "active" : "";
+                    return c.Equals(controller, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+                }
+            }
+            <a class="nav-link d-flex align-items-center @IsActive("Home","Index")" asp-controller="Home" asp-action="Index">
                 <i class="bi bi-house me-2"></i> Trang chủ
             </a>
-            <a class="nav-link d-flex align-items-center" asp-controller="Search" asp-action="Index">
+            <a class="nav-link d-flex align-items-center @IsActive("Search")" asp-controller="Search" asp-action="Index">
                 <i class="bi bi-search me-2"></i> Tìm kiếm sách
             </a>
 
             @if (User.IsInRole("Reader"))
             {
                 <div class="sidebar-section mt-3">Bạn đọc</div>
-                <a class="nav-link d-flex align-items-center" asp-controller="Borrow" asp-action="MyBorrows">
+                <a class="nav-link d-flex align-items-center @IsActive("Borrow","MyBorrows")" asp-controller="Borrow" asp-action="MyBorrows">
                     <i class="bi bi-journal-bookmark me-2"></i> Sách đang mượn
                 </a>
-                <a class="nav-link d-flex align-items-center" asp-controller="Statistics" asp-action="Personal">
+                <a class="nav-link d-flex align-items-center @IsActive("Statistics","Personal")" asp-controller="Statistics" asp-action="Personal">
                     <i class="bi bi-bar-chart me-2"></i> Thống kê cá nhân
                 </a>
             }
@@ -59,19 +68,22 @@
             @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
             {
                 <div class="sidebar-section mt-3">Quản lý thư viện</div>
-                <a class="nav-link d-flex align-items-center" asp-controller="Book" asp-action="Index">
+                <a class="nav-link d-flex align-items-center @IsActive("Book")" asp-controller="Book" asp-action="Index">
                     <i class="bi bi-journals me-2"></i> Quản lý sách
                 </a>
-                <a class="nav-link d-flex align-items-center" asp-controller="Category" asp-action="Index">
+                <a class="nav-link d-flex align-items-center @IsActive("Category")" asp-controller="Category" asp-action="Index">
                     <i class="bi bi-tags me-2"></i> Quản lý danh mục
                 </a>
-                <a class="nav-link d-flex align-items-center" asp-controller="Borrow" asp-action="Index">
+                <a class="nav-link d-flex align-items-center @IsActive("Borrow","Index")" asp-controller="Borrow" asp-action="Index">
                     <i class="bi bi-arrow-left-right me-2"></i> Mượn/Trả sách
                 </a>
-                <a class="nav-link d-flex align-items-center" asp-controller="Borrow" asp-action="Overdue">
+                <a class="nav-link d-flex align-items-center @IsActive("Borrow","Create")" asp-controller="Borrow" asp-action="Create">
+                    <i class="bi bi-bookmark-plus me-2"></i> Tạo phiếu mượn
+                </a>
+                <a class="nav-link d-flex align-items-center @IsActive("Borrow","Overdue")" asp-controller="Borrow" asp-action="Overdue">
                     <i class="bi bi-exclamation-triangle me-2"></i> Sách quá hạn
                 </a>
-                <a class="nav-link d-flex align-items-center" asp-controller="Statistics" asp-action="Index">
+                <a class="nav-link d-flex align-items-center @IsActive("Statistics","Index")" asp-controller="Statistics" asp-action="Index">
                     <i class="bi bi-graph-up me-2"></i> Thống kê
                 </a>
             }
@@ -79,7 +91,7 @@
             @if (User.IsInRole("Admin"))
             {
                 <div class="sidebar-section mt-3">Hệ thống</div>
-                <a class="nav-link d-flex align-items-center" asp-controller="UserManagement" asp-action="Index">
+                <a class="nav-link d-flex align-items-center @IsActive("UserManagement")" asp-controller="UserManagement" asp-action="Index">
                     <i class="bi bi-people me-2"></i> Quản lý tài khoản
                 </a>
             }

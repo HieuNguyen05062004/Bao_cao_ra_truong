@@ -18,9 +18,12 @@ namespace LibraryManagement.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(new SearchViewModel());
+            // Show all books on initial load
+            var result = await _searchService.BasicSearchAsync(null, null, null);
+            result.SearchType = "initial";
+            return View(result);
         }
 
         [HttpGet]

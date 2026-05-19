@@ -1,0 +1,11 @@
+## .NET / ASP.NET Core
+**/bin/
+**/obj/
+*.user
+*.suo
+.vs/
+.vscode/
+
+## SQLite WAL files (volatile runtime files)
+*.db-shm
+*.db-wal

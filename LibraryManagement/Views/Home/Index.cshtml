@@ -32,8 +32,9 @@ else if (User.IsInRole("Admin") || User.IsInRole("Staff"))
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="text-muted small">Quản lý sách</div>
-                            <div class="fw-bold">Danh sách sách</div>
+                            <div class="text-muted small">Tổng số sách</div>
+                            <div class="fw-bold fs-3">@ViewBag.TotalBooks</div>
+                            <div class="text-muted small">@ViewBag.TotalCategories danh mục</div>
                         </div>
                         <i class="bi bi-journals fs-1 text-primary opacity-50"></i>
                     </div>
@@ -47,8 +48,9 @@ else if (User.IsInRole("Admin") || User.IsInRole("Staff"))
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="text-muted small">Quản lý</div>
-                            <div class="fw-bold">Mượn/Trả sách</div>
+                            <div class="text-muted small">Đang mượn</div>
+                            <div class="fw-bold fs-3">@ViewBag.TotalBorrowing</div>
+                            <div class="text-muted small">lượt mượn hiện tại</div>
                         </div>
                         <i class="bi bi-arrow-left-right fs-1 text-success opacity-50"></i>
                     </div>
@@ -62,8 +64,9 @@ else if (User.IsInRole("Admin") || User.IsInRole("Staff"))
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="text-muted small">Cảnh báo</div>
-                            <div class="fw-bold">Sách quá hạn</div>
+                            <div class="text-muted small">Quá hạn</div>
+                            <div class="fw-bold fs-3 @(ViewBag.TotalOverdue > 0 ? "text-danger" : "")">@ViewBag.TotalOverdue</div>
+                            <div class="text-muted small">sách chưa được trả</div>
                         </div>
                         <i class="bi bi-exclamation-triangle fs-1 text-danger opacity-50"></i>
                     </div>
@@ -72,18 +75,36 @@ else if (User.IsInRole("Admin") || User.IsInRole("Staff"))
         </a>
     </div>
     <div class="col-md-3">
-        <a asp-controller="Statistics" asp-action="Index" class="text-decoration-none">
+        <a asp-controller="UserManagement" asp-action="Index" class="text-decoration-none">
             <div class="card stat-card warning">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="text-muted small">Báo cáo</div>
-                            <div class="fw-bold">Thống kê</div>
+                            <div class="text-muted small">Bạn đọc</div>
+                            <div class="fw-bold fs-3">@ViewBag.TotalReaders</div>
+                            <div class="text-muted small">@ViewBag.TotalStaff nhân viên</div>
                         </div>
-                        <i class="bi bi-graph-up fs-1 text-warning opacity-50"></i>
+                        <i class="bi bi-people fs-1 text-warning opacity-50"></i>
                     </div>
                 </div>
             </div>
+        </a>
+    </div>
+</div>
+<div class="row g-2 mb-4">
+    <div class="col-auto">
+        <a asp-controller="Book" asp-action="Create" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>Thêm sách
+        </a>
+    </div>
+    <div class="col-auto">
+        <a asp-controller="Borrow" asp-action="Create" class="btn btn-success btn-sm">
+            <i class="bi bi-bookmark-plus me-1"></i>Tạo phiếu mượn
+        </a>
+    </div>
+    <div class="col-auto">
+        <a asp-controller="Statistics" asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-graph-up me-1"></i>Xem thống kê
         </a>
     </div>
 </div>

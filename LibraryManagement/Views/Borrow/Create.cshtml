@@ -1,0 +1,152 @@
+@model AdminBorrowCreateViewModel
+@{
+    ViewData["Title"] = "Tạo phiếu mượn";
+    var books = ViewBag.Books as List<LibraryManagement.Models.Book> ?? new();
+    var readers = ViewBag.Readers as List<LibraryManagement.Models.ApplicationUser> ?? new();
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="fw-bold mb-0"><i class="bi bi-bookmark-plus me-2 text-success"></i>Tạo phiếu mượn sách</h4>
+</div>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post" id="borrowForm">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Bạn đọc <span class="text-danger">*</span></label>
+                        <select name="UserId" class="form-select" required>
+                            <option value="">-- Chọn bạn đọc --</option>
+                            @foreach (var reader in readers)
+                            {
+                                if (Model.UserId == reader.Id)
+                                {
+                                    <option value="@reader.Id" selected>@reader.FullName (@reader.Email)</option>
+                                }
+                                else
+                                {
+                                    <option value="@reader.Id">@reader.FullName (@reader.Email)</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Sách <span class="text-danger">*</span></label>
+                        <select name="BookId" class="form-select" required id="bookSelect" onchange="updateBookInfo(this)">
+                            <option value="">-- Chọn sách --</option>
+                            @foreach (var book in books)
+                            {
+                                var avail = book.AvailableQuantity.ToString();
+                                var cat = book.Category?.Name ?? "";
+                                if (Model.BookId == book.Id)
+                                {
+                                    <option value="@book.Id" data-available="@avail" data-category="@cat" selected>@book.Title — @book.Author (Còn: @avail)</option>
+                                }
+                                else
+                                {
+                                    <option value="@book.Id" data-available="@avail" data-category="@cat">@book.Title — @book.Author (Còn: @avail)</option>
+                                }
+                            }
+                        </select>
+                        <div id="bookInfo" class="mt-2 text-muted small"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="BorrowDate" class="form-label fw-semibold">Ngày mượn</label>
+                            <input asp-for="BorrowDate" type="date" class="form-control"
+                                   max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DueDate" class="form-label fw-semibold">Hạn trả</label>
+                            <input asp-for="DueDate" type="date" class="form-control"
+                                   min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Notes" class="form-label fw-semibold">Ghi chú</label>
+                        <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Ghi chú về tình trạng sách, yêu cầu đặc biệt..."></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-success px-4" onclick="confirmBorrow()">
+                            <i class="bi bi-check-circle me-2"></i>Tạo phiếu mượn
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-2 text-info"></i>Lưu ý</h6>
+                <ul class="small text-muted mb-0">
+                    <li class="mb-1">Chỉ sách <strong>còn số lượng</strong> mới có thể mượn</li>
+                    <li class="mb-1">Mỗi bạn đọc chỉ mượn <strong>mỗi cuốn một lần</strong></li>
+                    <li class="mb-1">Số lượng sách sẽ <strong>tự động giảm</strong> sau khi tạo phiếu</li>
+                    <li>Hạn trả mặc định là <strong>14 ngày</strong> kể từ ngày mượn</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận tạo phiếu mượn</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">Bạn có chắc chắn muốn tạo phiếu mượn này?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-success" onclick="document.getElementById('borrowForm').submit()">
+                    <i class="bi bi-check-lg me-1"></i>Có, tạo phiếu
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+    function confirmBorrow() {
+        if (!document.getElementById('borrowForm').checkValidity()) {
+            document.getElementById('borrowForm').reportValidity();
+            return;
+        }
+        new bootstrap.Modal(document.getElementById('confirmModal')).show();
+    }
+
+    function updateBookInfo(sel) {
+        const opt = sel.options[sel.selectedIndex];
+        const info = document.getElementById('bookInfo');
+        if (opt.value) {
+            const avail = opt.dataset.available;
+            const cat = opt.dataset.category;
+            info.innerHTML = `<span class="badge bg-success me-2">Còn ${avail} cuốn</span><span class="badge bg-secondary">${cat || 'Chưa phân loại'}</span>`;
+        } else {
+            info.innerHTML = '';
+        }
+    }
+
+    // Trigger on page load if pre-selected
+    window.addEventListener('load', function() {
+        const sel = document.getElementById('bookSelect');
+        if (sel.value) updateBookInfo(sel);
+    });
+    </script>
+}

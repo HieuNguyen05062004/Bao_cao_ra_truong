@@ -25,9 +25,15 @@ namespace LibraryManagement.Controllers
             if (!string.IsNullOrWhiteSpace(role))
                 users = await _userManager.GetUsersInRoleAsync(role);
             else
-                users = _userManager.Users.ToList();
+                users = _userManager.Users.OrderBy(u => u.FullName).ToList();
+
+            // Build a dictionary of user ID -> roles for display
+            var userRoles = new Dictionary<string, IList<string>>();
+            foreach (var user in users)
+                userRoles[user.Id] = await _userManager.GetRolesAsync(user);
 
             ViewBag.SelectedRole = role;
+            ViewBag.UserRoles = userRoles;
             return View(users);
         }
 

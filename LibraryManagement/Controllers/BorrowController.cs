@@ -142,5 +142,57 @@ namespace LibraryManagement.Controllers
             var records = await _borrowService.GetOverdueAsync();
             return View(records);
         }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<IActionResult> Create(int? bookId)
+        {
+            var books = await _bookService.GetAllAsync();
+            ViewBag.Books = books.Where(b => b.AvailableQuantity > 0).ToList();
+
+            var readerRole = await _userManager.GetUsersInRoleAsync("Reader");
+            ViewBag.Readers = readerRole.OrderBy(u => u.FullName).ToList();
+
+            var model = new AdminBorrowCreateViewModel
+            {
+                BookId = bookId ?? 0,
+                BorrowDate = DateTime.Today,
+                DueDate = DateTime.Today.AddDays(14)
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<IActionResult> Create(AdminBorrowCreateViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var books = await _bookService.GetAllAsync();
+                ViewBag.Books = books.Where(b => b.AvailableQuantity > 0).ToList();
+                ViewBag.Readers = (await _userManager.GetUsersInRoleAsync("Reader"))
+                    .OrderBy(u => u.FullName).ToList();
+                return View(model);
+            }
+
+            try
+            {
+                var record = await _borrowService.BorrowBookAsync(
+                    model.UserId, model.BookId, model.BorrowDate, model.DueDate, model.Notes);
+                var book = await _bookService.GetByIdAsync(model.BookId);
+                TempData["Success"] = $"Tạo phiếu mượn sách '{book?.Title}' thành công!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                var books = await _bookService.GetAllAsync();
+                ViewBag.Books = books.Where(b => b.AvailableQuantity > 0).ToList();
+                ViewBag.Readers = (await _userManager.GetUsersInRoleAsync("Reader"))
+                    .OrderBy(u => u.FullName).ToList();
+                return View(model);
+            }
+        }
     }
 }
