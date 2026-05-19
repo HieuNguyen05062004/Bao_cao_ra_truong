@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết phiếu mượn - SmartLibrary</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="admin-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <i class="fas fa-book-reader"></i>
+          <span>SmartLib Admin</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="index.html" class="nav-item"
+            ><i class="fas fa-chart-line"></i> Dashboard</a
+          >
+          <a href="ql-sach.html" class="nav-item"
+            ><i class="fas fa-book"></i> Quản lý sách</a
+          >
+          <a href="ql-danh-muc.html" class="nav-item"
+            ><i class="fas fa-list"></i> Thể loại</a
+          >
+          <a href="ql-ban-doc.html" class="nav-item"
+            ><i class="fas fa-users"></i> Bạn đọc</a
+          >
+          <a href="muon-tra.html" class="nav-item active"
+            ><i class="fas fa-exchange-alt"></i> Mượn & Trả</a
+          >
+          <a href="bao-cao.html" class="nav-item"
+            ><i class="fas fa-file-alt"></i> Báo cáo</a
+          >
+        </nav>
+      </aside>
+
+      <main class="main-content">
+        <header class="top-header">
+          <div class="breadcrumb">
+            <a href="muon-tra.html" class="btn btn-sm btn-outline"
+              ><i class="fas fa-arrow-left"></i> Quay lại</a
+            >
+          </div>
+          <div class="header-user" id="ticket-actions">
+            <!-- Actions like Approve/Reject will be rendered here -->
+          </div>
+        </header>
+
+        <div class="dashboard-body">
+          <div class="page-header">
+            <h1 class="page-title">
+              Phiếu mượn #<span id="detail-ticket-id">--</span>
+            </h1>
+            <span id="detail-ticket-status" class="badge">--</span>
+          </div>
+
+          <div
+            class="row g-4"
+            style="display: flex; gap: 24px; margin-bottom: 24px"
+          >
+            <!-- Ticket Info -->
+            <div class="card" style="flex: 1">
+              <div class="card-header"><h3>Thông tin phiếu</h3></div>
+              <div class="card-body">
+                <div class="detail-item">
+                  <label>Ngày mượn:</label>
+                  <span id="detail-borrow-date">--</span>
+                </div>
+                <div class="detail-item">
+                  <label>Hạn trả:</label> <span id="detail-due-date">--</span>
+                </div>
+                <div class="detail-item">
+                  <label>Ngày trả thực tế:</label>
+                  <span id="detail-return-date">--</span>
+                </div>
+                <div class="detail-item">
+                  <label>Nhân viên xử lý:</label>
+                  <span id="detail-staff">--</span>
+                </div>
+              </div>
+            </div>
+            <!-- Reader Info -->
+            <div class="card" style="flex: 1">
+              <div class="card-header"><h3>Bạn đọc</h3></div>
+              <div class="card-body">
+                <div class="detail-item">
+                  <label>Mã bạn đọc:</label>
+                  <span id="detail-reader-id">--</span>
+                </div>
+                <div class="detail-item">
+                  <label>Họ tên:</label> <span id="detail-reader-name">--</span>
+                </div>
+                <div class="detail-item">
+                  <label>Email:</label> <span id="detail-reader-email">--</span>
+                </div>
+                <div class="detail-item">
+                  <label>SĐT:</label> <span id="detail-reader-phone">--</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Books Table -->
+          <div class="card">
+            <div class="card-header"><h3>Danh sách sách mượn</h3></div>
+            <div class="card-body">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Mã sách</th>
+                    <th>Tên sách</th>
+                    <th>Tác giả</th>
+                    <th>Trạng thái kho</th>
+                  </tr>
+                </thead>
+                <tbody id="detail-books-list">
+                  <!-- Rendered by app.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Reuse confirmation modal and toast from muon-tra.html if needed on this page too -->
+    <div class="modal-overlay" id="confirm-modal">
+      <div class="modal-container modal-sm">
+        <div class="modal-header">
+          <h2 id="confirm-modal-title">Xác nhận</h2>
+          <button class="close-modal-btn" data-modal-target="confirm-modal">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body text-center">
+          <div class="modal-icon-wrapper">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <p id="confirm-modal-message"></p>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-outline close-modal-btn"
+            data-modal-target="confirm-modal"
+          >
+            Hủy
+          </button>
+          <button type="button" class="btn btn-primary" id="confirm-action-btn">
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

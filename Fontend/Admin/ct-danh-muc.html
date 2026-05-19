@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết danh mục - SmartLibrary</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <i class="fas fa-book-reader"></i>
+          <span>SmartLib Admin</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="index.html" class="nav-item">
+            <i class="fas fa-chart-line"></i> Dashboard
+          </a>
+          <a href="ql-sach.html" class="nav-item">
+            <i class="fas fa-book"></i> Quản lý sách
+          </a>
+          <a href="ql-danh-muc.html" class="nav-item active">
+            <i class="fas fa-list"></i> Thể loại
+          </a>
+          <a href="ql-ban-doc.html" class="nav-item">
+            <i class="fas fa-users"></i> Bạn đọc
+          </a>
+          <a href="muon-tra.html" class="nav-item">
+            <i class="fas fa-exchange-alt"></i> Mượn & Trả
+          </a>
+          <a href="bao-cao.html" class="nav-item">
+            <i class="fas fa-file-alt"></i> Báo cáo
+          </a>
+        </nav>
+        <div class="sidebar-user">
+          <div class="user-profile">
+            <img
+              src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff"
+              alt="Avatar"
+            />
+            <span>Quản trị viên</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <!-- Header -->
+        <header class="top-header">
+          <div class="header-search">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Tìm kiếm sách trong danh mục..." />
+          </div>
+          <div class="header-user"></div>
+        </header>
+
+        <div class="dashboard-body">
+          <div class="page-header">
+            <div class="breadcrumb">
+              <a href="ql-danh-muc.html" class="btn btn-sm btn-outline">
+                <i class="fas fa-arrow-left"></i> Quay lại
+              </a>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary" onclick="alert('In danh sách')">
+                <i class="fas fa-print"></i> Xuất báo cáo
+              </button>
+            </div>
+          </div>
+
+          <h1 class="page-title">
+            Danh mục: <span id="detail-category-name">...</span>
+          </h1>
+
+          <!-- Category Info Summary -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue"><i class="fas fa-hashtag"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">Mã danh mục</span>
+                <h2 class="stat-value" id="detail-category-id">#--</h2>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green"><i class="fas fa-book"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">Tổng số sách</span>
+                <h2 class="stat-value" id="detail-category-total">0</h2>
+              </div>
+            </div>
+          </div>
+
+          <!-- Books in Category Table -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Danh sách sách thuộc danh mục</h3>
+            </div>
+            <div class="card-body">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Mã sách</th>
+                    <th>Tên sách</th>
+                    <th>Tác giả</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="category-books-list">
+                  <!-- Dữ liệu sẽ được đổ vào đây từ app.js khớp với BookSummaryViewModel -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>

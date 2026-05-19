@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết bạn đọc - SmartLibrary</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <i class="fas fa-book-reader"></i>
+          <span>SmartLib Admin</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="index.html" class="nav-item">
+            <i class="fas fa-chart-line"></i> Dashboard
+          </a>
+          <a href="ql-sach.html" class="nav-item">
+            <i class="fas fa-book"></i> Quản lý sách
+          </a>
+          <a href="ql-danh-muc.html" class="nav-item">
+            <i class="fas fa-list"></i> Thể loại
+          </a>
+          <a href="ql-ban-doc.html" class="nav-item active">
+            <i class="fas fa-users"></i> Bạn đọc
+          </a>
+          <a href="muon-tra.html" class="nav-item">
+            <i class="fas fa-exchange-alt"></i> Mượn & Trả
+          </a>
+          <a href="bao-cao.html" class="nav-item">
+            <i class="fas fa-file-alt"></i> Báo cáo
+          </a>
+        </nav>
+      </aside>
+
+      <main class="main-content">
+        <!-- Header -->
+        <header class="top-header">
+          <div class="page-title">
+            <i class="fas fa-user-tag"></i> Chi tiết bạn đọc
+          </div>
+          <div class="header-user">
+            <a href="ql-ban-doc.html" class="btn btn-outline">
+              <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+          </div>
+        </header>
+
+        <div class="dashboard-body">
+          <!-- Stats Summary for Reader -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue"><i class="fas fa-book"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">Tổng sách đã mượn</span>
+                <h2 class="stat-value" id="reader-total-borrowed">12</h2>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green"><i class="fas fa-clock"></i></div>
+              <div class="stat-info">
+                <span class="stat-label">Đang mượn</span>
+                <h2 class="stat-value" id="reader-current-borrowing">2</h2>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon red">
+                <i class="fas fa-exclamation-circle"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Phiếu quá hạn</span>
+                <h2 class="stat-value" id="reader-overdue">0</h2>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reader Profile Section -->
+          <div class="card" style="margin-bottom: 24px">
+            <div class="card-body">
+              <div class="book-details-grid">
+                <div class="detail-img-container">
+                  <img
+                    id="detail-reader-img"
+                    src=""
+                    alt="Reader Avatar"
+                    class="detail-img"
+                    style="border-radius: 50%"
+                  />
+                </div>
+                <div class="detail-info-container">
+                  <div class="detail-item">
+                    <label>Mã bạn đọc:</label
+                    ><span id="detail-reader-id">...</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Họ tên:</label
+                    ><span id="detail-reader-name">...</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Ngày sinh:</label
+                    ><span id="detail-reader-dob">...</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Email:</label
+                    ><span id="detail-reader-email">...</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Số điện thoại:</label
+                    ><span id="detail-reader-phone">...</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Địa chỉ:</label
+                    ><span id="detail-reader-address">...</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Trạng thái:</label
+                    ><span id="detail-reader-status" class="badge badge-success"
+                      >Hoạt động</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Borrowing History Table -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Lịch sử mượn trả của bạn đọc</h3>
+            </div>
+            <div class="card-body">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID Phiếu</th>
+                    <th>Tên sách</th>
+                    <th>Ngày mượn</th>
+                    <th>Hạn trả</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="reader-borrow-history">
+                  <!-- Dữ liệu sẽ được đổ vào đây từ app.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>

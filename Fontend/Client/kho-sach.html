@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kho Sách - SmartLibrary AI</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <nav class="container nav-bar">
+        <div class="logo">
+          <a href="index.html">
+            <i class="fas fa-book-reader"></i>
+            <span>SmartLibrary AI</span>
+          </a>
+        </div>
+        <button id="mobile-menu-btn" class="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <ul class="nav-links" id="nav-menu">
+          <li class="nav-mobile-brand">
+            <a href="index.html">
+              <i class="fas fa-book-reader"></i>
+              <span>SmartLibrary AI</span>
+            </a>
+          </li>
+          <li><a href="index.html">Trang chủ</a></li>
+          <li><a href="kho-sach.html" class="active">Kho sách</a></li>
+          <li><a href="lich-su-muon.html">Phiếu mượn</a></li>
+        </ul>
+        <div class="user-menu">
+          <button class="btn btn-outline btn-sm">Đăng nhập</button>
+          <button class="btn btn-accent btn-sm">Đăng ký</button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Search Bar Section -->
+    <section class="page-header">
+      <div class="container">
+        <div class="search-box-wrapper">
+          <div class="search-box" id="search-box">
+            <button
+              id="search-mode-toggle"
+              class="mode-toggle"
+              title="Chuyển sang Tìm kiếm Cơ bản"
+            >
+              <i class="fas fa-magic"></i>
+            </button>
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Hỏi AI: 'Tìm cho tôi sách về lập trình Python'..."
+            />
+            <button class="btn btn-accent" id="search-btn">Tìm kiếm AI</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content with Sidebar -->
+    <main class="container main-layout mt-xl">
+      <aside class="sidebar">
+        <div class="filter-section">
+          <h3 class="filter-title">
+            <i class="fas fa-filter"></i> Bộ lọc danh mục
+          </h3>
+          <ul class="category-list" id="category-filter-list">
+            <li>
+              <label class="filter-item">
+                <input type="checkbox" name="category" value="all" checked />
+                <span>Tất cả thể loại</span>
+              </label>
+            </li>
+            <!-- Danh mục sẽ được load từ app.js -->
+            <li class="loading-text">Đang tải danh mục...</li>
+          </ul>
+        </div>
+
+        <div class="filter-section mt-lg">
+          <h3 class="filter-title">
+            <i class="fas fa-sort-amount-down"></i> Sắp xếp
+          </h3>
+          <select class="form-select" id="sort-books">
+            <option value="newest">Mới nhất</option>
+            <option value="az">Tiêu đề A-Z</option>
+            <option value="trending">Mượn nhiều nhất</option>
+          </select>
+        </div>
+      </aside>
+
+      <section class="main-content">
+        <div class="section-header">
+          <h2 class="section-title">Tất cả sách</h2>
+          <span class="results-count" id="results-count">Đang tải...</span>
+        </div>
+
+        <div class="grid grid-cols-4" id="all-books-grid">
+          <!-- Danh sách sách sẽ render từ app.js -->
+          <div class="loading">Đang tải kho sách...</div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination mt-xl" id="pagination"></div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-xl">
+      <div class="container footer-grid">
+        <div class="footer-about">
+          <div class="logo">
+            <a href="index.html">
+              <i class="fas fa-book-reader"></i>
+              <span>SmartLibrary AI</span>
+            </a>
+          </div>
+          <p class="mt-md">
+            Hệ thống thư viện thông minh ứng dụng công nghệ AI giúp tối ưu hóa
+            việc quản lý và tìm kiếm tri thức cho mọi người.
+          </p>
+        </div>
+        <div class="footer-links">
+          <h4>Liên kết nhanh</h4>
+          <ul class="mt-md">
+            <li><a href="index.html">Trang chủ</a></li>
+            <li><a href="kho-sach.html">Kho sách</a></li>
+            <li><a href="lich-su-muon.html">Lịch sử mượn</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h4>Liên hệ</h4>
+          <ul class="mt-md">
+            <li><i class="fas fa-map-marker-alt"></i> 123 Đường ABC, Hà Nội</li>
+            <li><i class="fas fa-phone"></i> 0123 456 789</li>
+            <li><i class="fas fa-envelope"></i> support@smartlib.ai</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom mt-xl">
+        <p>&copy; 2024 SmartLibrary AI. All rights reserved.</p>
+      </div>
+    </footer>
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết sách - SmartLibrary</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="admin-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <i class="fas fa-book-reader"></i> <span>SmartLib Admin</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="index.html" class="nav-item"
+            ><i class="fas fa-chart-line"></i> Dashboard</a
+          >
+          <a href="ql-sach.html" class="nav-item active"
+            ><i class="fas fa-book"></i> Quản lý sách</a
+          >
+          <a href="ql-danh-muc.html" class="nav-item"
+            ><i class="fas fa-list"></i> Thể loại</a
+          >
+          <a href="ql-ban-doc.html" class="nav-item"
+            ><i class="fas fa-users"></i> Bạn đọc</a
+          >
+        </nav>
+      </aside>
+      <main class="main-content">
+        <header class="top-header">
+          <div class="page-title">
+            <i class="fas fa-info-circle"></i> Chi tiết sách
+          </div>
+          <div class="header-user">
+            <a href="ql-sach.html" class="btn btn-outline"
+              ><i class="fas fa-arrow-left"></i> Quay lại</a
+            >
+          </div>
+        </header>
+        <div class="dashboard-body">
+          <div class="card">
+            <div class="card-body">
+              <div class="book-details-grid">
+                <div class="detail-img-container">
+                  <img
+                    id="detail-img"
+                    src=""
+                    alt="Book Cover"
+                    class="detail-img"
+                  />
+                </div>
+                <div class="detail-info-container">
+                  <div class="detail-item">
+                    <label>Mã sách:</label><span id="detail-id"></span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Tên sách:</label><span id="detail-title"></span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Tác giả:</label><span id="detail-author"></span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Nhà xuất bản:</label
+                    ><span id="detail-publisher"></span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Năm xuất bản:</label><span id="detail-year"></span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Thể loại:</label><span id="detail-category"></span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Số lượng:</label><span id="detail-stock"></span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Trạng thái:</label
+                    ><span id="detail-status" class="badge"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="card-footer"
+              style="
+                padding: 20px;
+                border-top: 1px solid var(--border);
+                display: flex;
+                gap: 10px;
+                justify-content: flex-end;
+              "
+            >
+              <button
+                class="btn btn-edit"
+                onclick="alert('Tính năng đang phát triển')"
+              >
+                <i class="fas fa-edit"></i> Chỉnh sửa
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>

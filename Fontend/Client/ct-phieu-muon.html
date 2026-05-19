@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết phiếu mượn - SmartLibrary AI</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body id="ticket-detail-page">
+    <!-- Header -->
+    <header class="header">
+      <nav class="container nav-bar">
+        <div class="logo">
+          <a href="index.html">
+            <i class="fas fa-book-reader"></i>
+            <span>SmartLibrary AI</span>
+          </a>
+        </div>
+        <button id="mobile-menu-btn" class="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <ul class="nav-links" id="nav-menu">
+          <li class="nav-mobile-brand">
+            <a href="index.html">
+              <i class="fas fa-book-reader"></i>
+              <span>SmartLibrary AI</span>
+            </a>
+          </li>
+          <li><a href="index.html">Trang chủ</a></li>
+          <li><a href="kho-sach.html">Kho sách</a></li>
+          <li><a href="lich-su-muon.html" class="active">Phiếu mượn</a></li>
+        </ul>
+        <div class="user-menu">
+          <button class="btn btn-outline btn-sm">Đăng nhập</button>
+          <button class="btn btn-accent btn-sm">Đăng ký</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container mt-xl">
+      <!-- Nút Quay lại -->
+      <div class="mb-lg">
+        <a href="lich-su-muon.html" class="btn btn-outline btn-sm">
+          <i class="fas fa-arrow-left"></i> Quay lại lịch sử
+        </a>
+      </div>
+
+      <section class="card p-xl mb-xl">
+        <div
+          class="section-header mb-lg"
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+          "
+        >
+          <h2 class="section-title" style="margin: 0">
+            Phiếu Mượn:
+            <span id="display-ticket-id" class="text-accent">...</span>
+          </h2>
+          <span id="display-status" class="status-badge">Đang tải...</span>
+        </div>
+
+        <!-- Thông tin chung -->
+        <div class="grid grid-cols-2" style="gap: 30px">
+          <div class="info-item">
+            <label class="text-secondary small fw-bold"
+              >Tên bạn đọc (Tài khoản)</label
+            >
+            <p class="mt-xs fs-lg" id="display-reader-name">...</p>
+          </div>
+          <div class="info-item">
+            <label class="text-secondary small fw-bold">Ngày mượn</label>
+            <p class="mt-xs fs-lg" id="display-borrow-date">...</p>
+          </div>
+          <div class="info-item">
+            <label class="text-secondary small fw-bold">Hạn trả dự kiến</label>
+            <p class="mt-xs fs-lg text-danger" id="display-due-date">...</p>
+          </div>
+          <div class="info-item">
+            <label class="text-secondary small fw-bold">Ngày trả thực tế</label>
+            <p class="mt-xs fs-lg" id="display-return-date">-</p>
+          </div>
+        </div>
+
+        <!-- Danh sách sách trong phiếu -->
+        <div class="mt-xl">
+          <h3 class="section-subtitle">
+            <i class="fas fa-book me-2"></i> Danh sách sách mượn
+          </h3>
+          <div
+            class="card p-0 mt-md overflow-hidden"
+            style="border: 1px solid #e2e8f0"
+          >
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Tên sách</th>
+                  <th class="text-center" style="width: 150px">Số lượng</th>
+                </tr>
+              </thead>
+              <tbody id="ticket-books-table">
+                <!-- Sẽ render từ JS -->
+                <tr>
+                  <td colspan="2" class="text-center p-md">
+                    Đang tải danh sách sách...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý sách - SmartLibrary</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="admin-container">
+      <!-- Sidebar (Kế thừa từ index.html) -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <i class="fas fa-book-reader"></i>
+          <span>SmartLib Admin</span>
+          <button class="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="index.html" class="nav-item">
+            <i class="fas fa-chart-line"></i> Dashboard
+          </a>
+          <a href="ql-sach.html" class="nav-item active">
+            <i class="fas fa-book"></i> Quản lý sách
+          </a>
+          <a href="ql-danh-muc.html" class="nav-item">
+            <i class="fas fa-list"></i> Thể loại
+          </a>
+          <a href="ql-ban-doc.html" class="nav-item">
+            <i class="fas fa-users"></i> Bạn đọc
+          </a>
+          <a href="muon-tra.html" class="nav-item">
+            <i class="fas fa-exchange-alt"></i> Mượn & Trả
+          </a>
+          <a href="bao-cao.html" class="nav-item">
+            <i class="fas fa-file-alt"></i> Báo cáo
+          </a>
+        </nav>
+      </aside>
+
+      <main class="main-content">
+        <!-- Header -->
+        <header class="top-header">
+          <button class="sidebar-toggle" id="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="header-search">
+            <i class="fas fa-search"></i>
+            <input
+              type="text"
+              id="book-search"
+              placeholder="Tìm tên sách, tác giả..."
+            />
+          </div>
+          <div class="header-user">
+            <button class="btn btn-primary" id="btn-add-book">
+              <i class="fas fa-plus"></i> Thêm sách mới
+            </button>
+          </div>
+        </header>
+
+        <div class="dashboard-body">
+          <div class="page-header">
+            <h1 class="page-title">Quản lý kho sách</h1>
+            <div class="filters">
+              <select class="form-select" id="filter-category">
+                <option value="">Tất cả thể loại</option>
+                <option value="cntt">Công nghệ thông tin</option>
+                <option value="kt">Kinh tế</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Book Table -->
+          <div class="card">
+            <div class="card-body">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Mã sách</th>
+                    <th>Ảnh</th>
+                    <th>Tên sách</th>
+                    <th>Tác giả</th>
+                    <th>Thể loại</th>
+                    <th>Số lượng</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="book-list">
+                  <!-- Dữ liệu sách sẽ render ở đây -->
+                </tbody>
+              </table>
+
+              <!-- Pagination -->
+              <div class="pagination">
+                <span>Hiển thị 1-10 trên 1,248 sách</span>
+                <div class="pages">
+                  <button class="btn btn-sm btn-outline">
+                    <i class="fas fa-chevron-left"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline active">1</button>
+                  <button class="btn btn-sm btn-outline">2</button>
+                  <button class="btn btn-sm btn-outline">3</button>
+                  <button class="btn btn-sm btn-outline">
+                    <i class="fas fa-chevron-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Modal Thêm/Sửa Sách (Sử dụng chung) -->
+    <div class="modal-overlay" id="book-modal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h2 id="modal-title">Thêm sách mới</h2>
+          <button class="close-modal-btn" data-modal-target="book-modal">
+            &times;
+          </button>
+        </div>
+        <form id="book-form">
+          <input type="hidden" id="edit-id" />
+          <div class="form-group">
+            <label>Tên sách</label>
+            <input
+              type="text"
+              id="form-title"
+              required
+              placeholder="Nhập tên sách..."
+            />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tác giả</label>
+              <input
+                type="text"
+                id="form-author"
+                required
+                placeholder="Tên tác giả"
+              />
+            </div>
+            <div class="form-group">
+              <label>Thể loại</label>
+              <select id="form-category">
+                <option value="CNTT">CNTT</option>
+                <option value="Kinh tế">Kinh tế</option>
+                <option value="Ngoại ngữ">Ngoại ngữ</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nhà xuất bản</label>
+              <input
+                type="text"
+                id="form-publisher"
+                placeholder="Tên nhà xuất bản"
+              />
+            </div>
+            <div class="form-group">
+              <label>Năm xuất bản</label>
+              <input
+                type="number"
+                id="form-publish-year"
+                min="1000"
+                max="2100"
+                placeholder="Năm"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Số lượng</label>
+              <input type="number" id="form-stock" min="0" required />
+            </div>
+            <div class="form-group">
+              <label>Ảnh bìa</label>
+              <input
+                type="file"
+                id="form-img"
+                accept="image/*"
+                aria-describedby="file-help"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline close-modal-btn"
+              data-modal-target="book-modal"
+            >
+              Hủy
+            </button>
+            <button type="submit" class="btn btn-primary" id="submit-button">
+              Lưu thông tin
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Xác nhận chung -->
+    <div class="modal-overlay" id="confirm-modal">
+      <div class="modal-container modal-sm">
+        <div class="modal-header">
+          <h2 id="confirm-modal-title">Xác nhận hành động</h2>
+          <button class="close-modal-btn" data-modal-target="confirm-modal">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body text-center">
+          <div class="modal-icon-wrapper">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <p id="confirm-modal-message">
+            Bạn có chắc chắn muốn thực hiện hành động này?
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-outline"
+            data-modal-target="confirm-modal"
+          >
+            Hủy
+          </button>
+          <button type="button" class="btn btn-danger" id="confirm-action-btn">
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

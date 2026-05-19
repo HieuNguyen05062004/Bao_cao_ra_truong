@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý mượn trả - SmartLibrary</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="admin-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <i class="fas fa-book-reader"></i>
+          <span>SmartLib Admin</span>
+          <button class="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="index.html" class="nav-item"
+            ><i class="fas fa-chart-line"></i> Dashboard</a
+          >
+          <a href="ql-sach.html" class="nav-item"
+            ><i class="fas fa-book"></i> Quản lý sách</a
+          >
+          <a href="ql-danh-muc.html" class="nav-item"
+            ><i class="fas fa-list"></i> Thể loại</a
+          >
+          <a href="ql-ban-doc.html" class="nav-item"
+            ><i class="fas fa-users"></i> Bạn đọc</a
+          >
+          <a href="muon-tra.html" class="nav-item active"
+            ><i class="fas fa-exchange-alt"></i> Mượn & Trả</a
+          >
+          <a href="bao-cao.html" class="nav-item"
+            ><i class="fas fa-file-alt"></i> Báo cáo</a
+          >
+        </nav>
+        <div class="sidebar-user">
+          <div class="user-profile">
+            <img
+              src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff"
+              alt="Avatar"
+            />
+            <span>Quản trị viên</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="top-header">
+          <div class="header-search">
+            <i class="fas fa-search"></i>
+            <input
+              type="text"
+              id="borrow-search"
+              placeholder="Tìm ID phiếu, tên bạn đọc..."
+            />
+          </div>
+          <div class="header-user"></div>
+        </header>
+
+        <div class="dashboard-body">
+          <div class="page-header">
+            <h1 class="page-title">Quản lý mượn trả sách</h1>
+            <div class="filters">
+              <select class="form-select" id="filter-borrow-status">
+                <option value="">Tất cả trạng thái</option>
+                <option value="Chờ duyệt">Chờ duyệt</option>
+                <option value="Đã duyệt">Đã duyệt</option>
+                <option value="Đang mượn">Đang mượn</option>
+                <option value="Đã trả">Đã trả</option>
+                <option value="Bị từ chối">Bị từ chối</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Mã phiếu</th>
+                    <th>Bạn đọc</th>
+                    <th>Sách mượn</th>
+                    <th>Ngày mượn</th>
+                    <th>Hạn trả</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="borrow-ticket-list">
+                  <!-- Rendered by app.js -->
+                </tbody>
+              </table>
+              <div class="pagination">
+                <span>Hiển thị danh sách phiếu mượn</span>
+                <div class="pages">
+                  <button class="btn btn-sm btn-outline">
+                    <i class="fas fa-chevron-left"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline active">1</button>
+                  <button class="btn btn-sm btn-outline">
+                    <i class="fas fa-chevron-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Modal Xác nhận (Dùng chung) -->
+    <div class="modal-overlay" id="confirm-modal">
+      <div class="modal-container modal-sm">
+        <div class="modal-header">
+          <h2 id="confirm-modal-title">Xác nhận</h2>
+          <button class="close-modal-btn" data-modal-target="confirm-modal">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body text-center">
+          <div class="modal-icon-wrapper">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <p id="confirm-modal-message"></p>
+          <div
+            id="reject-reason-container"
+            style="display: none; margin-top: 15px; text-align: left"
+          >
+            <label class="form-label">Lý do từ chối:</label>
+            <textarea
+              id="reject-reason"
+              class="form-group"
+              style="width: 100%; min-height: 80px; padding: 10px"
+              placeholder="Nhập lý do..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-outline close-modal-btn"
+            data-modal-target="confirm-modal"
+          >
+            Hủy
+          </button>
+          <button type="button" class="btn btn-primary" id="confirm-action-btn">
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

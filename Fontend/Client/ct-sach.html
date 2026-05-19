@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết sách - SmartLibrary AI</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body id="book-detail-page">
+    <!-- Header -->
+    <header class="header">
+      <nav class="container nav-bar">
+        <div class="logo">
+          <a href="index.html">
+            <i class="fas fa-book-reader"></i>
+            <span>SmartLibrary AI</span>
+          </a>
+        </div>
+        <button id="mobile-menu-btn" class="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <ul class="nav-links" id="nav-menu">
+          <li class="nav-mobile-brand">
+            <a href="index.html">
+              <i class="fas fa-book-reader"></i>
+              <span>SmartLibrary AI</span>
+            </a>
+          </li>
+          <li><a href="index.html">Trang chủ</a></li>
+          <li><a href="kho-sach.html">Kho sách</a></li>
+          <li><a href="lich-su-muon.html">Phiếu mượn</a></li>
+        </ul>
+        <div class="user-menu">
+          <button class="btn btn-outline btn-sm">Đăng nhập</button>
+          <button class="btn btn-accent btn-sm">Đăng ký</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container mt-xl">
+      <!-- Nút Quay lại -->
+      <div class="mb-lg">
+        <a href="javascript:history.back()" class="btn btn-outline btn-sm">
+          <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+      </div>
+
+      <section class="card detail-container">
+        <div class="grid grid-cols-2">
+          <div class="detail-image-box">
+            <img
+              id="detail-img"
+              src="https://via.placeholder.com/400x600?text=Book+Cover"
+              alt="Book Cover"
+            />
+          </div>
+          <div class="detail-info-box">
+            <span class="book-tag success" id="detail-status">Sẵn có</span>
+            <div class="book-category mt-sm" id="detail-category">
+              CÔNG NGHỆ
+            </div>
+            <h1 class="detail-title mt-sm" id="detail-title">
+              Đang tải tên sách...
+            </h1>
+            <p class="book-meta mt-sm" id="detail-author">Tác giả: ...</p>
+
+            <div class="detail-description mt-lg">
+              <h3 class="section-subtitle">Tóm tắt nội dung</h3>
+              <p id="detail-desc" class="mt-sm">
+                Sách cung cấp kiến thức nền tảng và nâng cao về chuyên mục này.
+                Được trình bày một cách khoa học và dễ hiểu cho người mới bắt
+                đầu.
+              </p>
+            </div>
+
+            <div class="detail-stats mt-lg">
+              <div class="stat-pill">
+                <i class="fas fa-barcode"></i>
+                <span id="detail-id">Mã: ...</span>
+              </div>
+              <div class="stat-pill">
+                <i class="fas fa-building"></i>
+                <span id="detail-pub">NXB Giáo dục</span>
+              </div>
+            </div>
+
+            <!-- Nút Gửi yêu cầu mượn -->
+            <div class="mt-xl">
+              <button class="btn btn-accent btn-lg w-full" id="borrow-btn">
+                <i class="fas fa-shopping-cart"></i> Gửi yêu cầu mượn
+              </button>
+              <p class="mt-sm text-center text-secondary small">
+                <i class="fas fa-info-circle"></i> Thời gian mượn tối đa 14
+                ngày.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal Yêu Cầu Mượn Sách -->
+    <div id="borrow-modal" class="modal-overlay">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3><i class="fas fa-edit me-2"></i> Yêu Cầu Mượn Sách</h3>
+          <button class="close-modal" id="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form id="borrow-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Mã Bạn Đọc</label>
+                <input
+                  type="text"
+                  id="modal-reader-id"
+                  value="RR66520"
+                  readonly
+                />
+              </div>
+              <div class="form-group">
+                <label>Tên Bạn Đọc</label>
+                <input
+                  type="text"
+                  id="modal-reader-name"
+                  value="hieu"
+                  readonly
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Sách Được Chọn</label>
+              <input type="text" id="modal-book-title" readonly />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Ngày Mượn *</label>
+                <input type="date" id="modal-borrow-date" required />
+                <small class="text-secondary">Ngày bắt đầu mượn sách</small>
+              </div>
+              <div class="form-group">
+                <label>Ngày Trả Dự Kiến *</label>
+                <input type="date" id="modal-due-date" required />
+                <small class="text-secondary">Ngày dự kiến trả sách</small>
+              </div>
+            </div>
+            <div class="alert-info-modal mt-md">
+              <i class="fas fa-info-circle"></i>
+              Lưu ý: Sau khi gửi yêu cầu, nhân viên thư viện sẽ duyệt và cập
+              nhật số lượng sách. Bạn có thể theo dõi trạng thái yêu cầu trong
+              "Lịch sử mượn sách".
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline btn-sm" id="cancel-borrow">Hủy</button>
+          <button class="btn btn-accent btn-sm" id="confirm-borrow">
+            Gửi Yêu Cầu
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
