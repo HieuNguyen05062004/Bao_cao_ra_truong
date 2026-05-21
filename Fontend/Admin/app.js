@@ -58,6 +58,8 @@ class AdminDashboard {
         img: "https://via.placeholder.com/45x60",
         publisher: "NXB Giáo dục",
         publishYear: 2023,
+        description:
+          "Cuốn sách hướng dẫn chuyên sâu về các kỹ thuật lập trình C# hiện đại.",
       },
       {
         id: "S002",
@@ -69,6 +71,8 @@ class AdminDashboard {
         img: "https://via.placeholder.com/45x60",
         publisher: "NXB Khoa học",
         publishYear: 2022,
+        description:
+          "Phân tích và thiết kế các thuật toán tối ưu cho bài toán thực tế.",
       },
       {
         id: "S003",
@@ -80,6 +84,8 @@ class AdminDashboard {
         img: "https://via.placeholder.com/45x60",
         publisher: "NXB Thống kê",
         publishYear: 2024,
+        description:
+          "Kiến thức cơ bản về quy luật cung cầu và hành vi người tiêu dùng.",
       },
       {
         id: "S004",
@@ -91,6 +97,7 @@ class AdminDashboard {
         img: "https://via.placeholder.com/45x60",
         publisher: "NXB Tổng hợp",
         publishYear: 2021,
+        description: "Từ vựng và ngữ pháp chuyên ngành Công nghệ thông tin.",
       },
     ];
 
@@ -202,6 +209,9 @@ class AdminDashboard {
     this.renderBorrowTicketDetails();
     this.setupEventListeners();
     this.setupSidebarToggle();
+    this.renderBookDetailView(); // Thêm hàm này để chạy khi ở trang ct-sach.html
+    this.renderReaderDetailView(); // Thêm cho trang chi tiết bạn đọc
+    this.renderCategoryDetailView(); // Thêm cho trang chi tiết danh mục
     console.log("SmartLib Admin initialized.");
   }
 
@@ -249,7 +259,9 @@ class AdminDashboard {
                     </span>
                 </td>
                 <td>
-                    <button class="btn btn-sm btn-view" title="Chi tiết"><i class="fas fa-eye"></i></button>
+                    <a href="muon-tra.html" class="btn btn-sm btn-view" title="Chi tiết">
+                        <i class="fas fa-eye"></i>
+                    </a>
                 </td>
             </tr>
         `,
@@ -278,9 +290,9 @@ class AdminDashboard {
         </td>
         <td>
           <div class="actions">
-            <button class="btn btn-sm btn-view" onclick="app.viewBookDetails('${book.id}')" title="Xem chi tiết">
+            <a href="ct-sach.html?id=${book.id}" class="btn btn-sm btn-view" title="Xem chi tiết">
               <i class="fas fa-eye"></i>
-            </button>
+            </a>
             <button class="btn btn-sm btn-edit" onclick="app.openModal('${book.id}')" title="Sửa">
               <i class="fas fa-edit"></i>
             </button>
@@ -312,9 +324,9 @@ class AdminDashboard {
         <td><span class="badge badge-danger">${reader.overdueCount || 0}</span></td>
         <td>
           <div class="actions">
-            <button class="btn btn-sm btn-view" onclick="app.viewReaderDetails('${reader.id}')" title="Xem chi tiết">
+            <a href="ct-ban-doc.html?id=${reader.id}" class="btn btn-sm btn-view" title="Xem chi tiết">
               <i class="fas fa-eye"></i>
-            </button>
+            </a>
             <button class="btn btn-sm btn-edit" onclick="app.openReaderModal('${reader.id}')" title="Sửa">
               <i class="fas fa-edit"></i>
             </button>
@@ -342,9 +354,9 @@ class AdminDashboard {
         <td>${cat.bookCount}</td>
         <td>
           <div class="actions">
-            <button class="btn btn-sm btn-view" onclick="app.viewCategoryDetails(${cat.id})" title="Xem chi tiết">
+            <a href="ct-danh-muc.html?id=${cat.id}" class="btn btn-sm btn-view" title="Xem chi tiết">
               <i class="fas fa-eye"></i>
-            </button>
+            </a>
             <button class="btn btn-sm btn-edit" onclick="app.openCategoryModal(${cat.id})" title="Sửa">
               <i class="fas fa-edit"></i>
             </button>
@@ -606,6 +618,8 @@ class AdminDashboard {
         document.getElementById("form-img").value = book.img;
         document.getElementById("form-publisher").value = book.publisher;
         document.getElementById("form-publish-year").value = book.publishYear;
+        document.getElementById("form-description").value =
+          book.description || "";
         this.setSubmitButtonText("Lưu thay đổi");
       }
     } else {
@@ -683,6 +697,71 @@ class AdminDashboard {
       statusBadge.className = `badge ${book.stock > 0 ? "badge-success" : "badge-danger"}`;
 
       document.getElementById("details-modal").classList.add("active");
+    }
+  }
+
+  renderReaderDetailView() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const readerId = urlParams.get("id");
+    if (!readerId || !document.getElementById("detail-reader-id")) return;
+
+    const reader = this.readers.find((r) => r.id === readerId);
+    if (reader) {
+      document.getElementById("detail-reader-id").innerText = reader.id;
+      document.getElementById("detail-reader-name").innerText = reader.name;
+      document.getElementById("detail-reader-gender").innerText =
+        reader.gender || "Nam";
+      document.getElementById("detail-reader-dob").innerText = new Date(
+        reader.dob,
+      ).toLocaleDateString("vi-VN");
+      document.getElementById("detail-reader-email").innerText = reader.email;
+      document.getElementById("detail-reader-phone").innerText = reader.phone;
+      document.getElementById("detail-reader-address").innerText =
+        reader.address || "Chưa cập nhật";
+      document.getElementById("detail-reader-img").src = reader.img;
+
+      const statusBadge = document.getElementById("detail-reader-status");
+      statusBadge.innerText = reader.status;
+      statusBadge.className = `badge ${reader.status === "Hoạt động" ? "badge-success" : "badge-danger"}`;
+
+      // Đổ dữ liệu thống kê giả lập
+      document.getElementById("reader-total-borrowed").innerText =
+        reader.borrowingCount + 5;
+      document.getElementById("reader-current-borrowing").innerText =
+        reader.borrowingCount;
+      document.getElementById("reader-overdue").innerText = reader.overdueCount;
+    }
+  }
+
+  renderCategoryDetailView() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const catId = parseInt(urlParams.get("id"));
+    if (!catId || !document.getElementById("detail-category-id")) return;
+
+    const cat = this.categories.find((c) => c.id === catId);
+    if (cat) {
+      document.getElementById("detail-category-id").innerText = `#${cat.id}`;
+      document.getElementById("detail-category-name").innerText = cat.name;
+      document.getElementById("detail-category-total").innerText =
+        cat.bookCount;
+
+      const bookList = document.getElementById("category-books-list");
+      if (bookList) {
+        const filteredBooks = this.books.filter((b) => b.category === cat.name);
+        bookList.innerHTML = filteredBooks
+          .map(
+            (b) => `
+          <tr>
+            <td><strong>${b.id}</strong></td>
+            <td>${b.title}</td>
+            <td>${b.author}</td>
+            <td><span class="badge ${b.stock > 0 ? "badge-success" : "badge-danger"}">${b.status}</span></td>
+            <td><a href="ct-sach.html?id=${b.id}" class="btn btn-sm btn-view"><i class="fas fa-eye"></i></a></td>
+          </tr>
+        `,
+          )
+          .join("");
+      }
     }
   }
 
@@ -821,6 +900,7 @@ class AdminDashboard {
       img: imageUrl,
       publisher: document.getElementById("form-publisher").value,
       publishYear: parseInt(document.getElementById("form-publish-year").value),
+      description: document.getElementById("form-description").value,
       status:
         parseInt(document.getElementById("form-stock").value) > 0
           ? "Còn sách"

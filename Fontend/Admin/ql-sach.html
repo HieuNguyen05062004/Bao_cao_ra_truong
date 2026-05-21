@@ -41,6 +41,15 @@
             <i class="fas fa-file-alt"></i> Báo cáo
           </a>
         </nav>
+        <div class="sidebar-user">
+          <div class="user-profile">
+            <img
+              src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff"
+              alt="Avatar"
+            />
+            <span>Quản trị viên</span>
+          </div>
+        </div>
       </aside>
 
       <main class="main-content">
@@ -192,6 +201,15 @@
               />
             </div>
           </div>
+          <div class="form-group">
+            <label>Mô tả sách</label>
+            <textarea
+              id="form-description"
+              rows="4"
+              placeholder="Nhập mô tả chi tiết về nội dung sách..."
+              style="resize: vertical"
+            ></textarea>
+          </div>
           <div class="modal-footer">
             <button
               type="button"
@@ -205,6 +223,55 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Modal Xem Chi Tiết Sách -->
+    <div class="modal-overlay" id="details-modal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h2>Thông tin chi tiết sách</h2>
+          <button class="close-modal-btn" id="close-details-x">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="book-details-grid">
+            <div class="detail-img-container">
+              <img id="detail-img" src="" alt="Book Cover" class="detail-img" />
+            </div>
+            <div class="detail-info-container">
+              <div class="detail-item">
+                <label>Mã sách:</label><span id="detail-id"></span>
+              </div>
+              <div class="detail-item">
+                <label>Tên sách:</label><span id="detail-title"></span>
+              </div>
+              <div class="detail-item">
+                <label>Tác giả:</label><span id="detail-author"></span>
+              </div>
+              <div class="detail-item">
+                <label>Thể loại:</label><span id="detail-category"></span>
+              </div>
+              <div class="detail-item">
+                <label>Số lượng:</label><span id="detail-stock"></span>
+              </div>
+              <div class="detail-item">
+                <label>Trạng thái:</label
+                ><span id="detail-status" class="badge"></span>
+              </div>
+              <div class="detail-item">
+                <label>Nhà XB:</label><span id="detail-publisher"></span>
+              </div>
+              <div class="detail-item">
+                <label>Năm XB:</label><span id="detail-year"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="close-details-btn">
+            Đóng
+          </button>
+        </div>
       </div>
     </div>
 

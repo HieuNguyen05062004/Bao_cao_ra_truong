@@ -472,13 +472,15 @@ body {
   font-size: 0.9rem;
 }
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
   outline: none;
   transition: all 0.2s;
+  font-family: inherit;
 }
 
 .form-group input:focus,

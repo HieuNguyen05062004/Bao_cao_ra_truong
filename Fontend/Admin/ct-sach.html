@@ -14,7 +14,11 @@
     <div class="admin-container">
       <aside class="sidebar">
         <div class="sidebar-header">
-          <i class="fas fa-book-reader"></i> <span>SmartLib Admin</span>
+          <i class="fas fa-book-reader"></i>
+          <span>SmartLib Admin</span>
+          <button class="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
         </div>
         <nav class="sidebar-nav">
           <a href="index.html" class="nav-item"
@@ -29,7 +33,22 @@
           <a href="ql-ban-doc.html" class="nav-item"
             ><i class="fas fa-users"></i> Bạn đọc</a
           >
+          <a href="muon-tra.html" class="nav-item">
+            <i class="fas fa-exchange-alt"></i> Mượn & Trả
+          </a>
+          <a href="bao-cao.html" class="nav-item">
+            <i class="fas fa-file-alt"></i> Báo cáo
+          </a>
         </nav>
+        <div class="sidebar-user">
+          <div class="user-profile">
+            <img
+              src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff"
+              alt="Avatar"
+            />
+            <span>Quản trị viên</span>
+          </div>
+        </div>
       </aside>
       <main class="main-content">
         <header class="top-header">
@@ -94,12 +113,9 @@
                 justify-content: flex-end;
               "
             >
-              <button
-                class="btn btn-edit"
-                onclick="alert('Tính năng đang phát triển')"
-              >
+              <a id="edit-link" href="#" class="btn btn-edit">
                 <i class="fas fa-edit"></i> Chỉnh sửa
-              </button>
+              </a>
             </div>
           </div>
         </div>
