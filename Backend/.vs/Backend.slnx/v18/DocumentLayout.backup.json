@@ -1,7 +1,64 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "D:\\Quan_Ly_Thu_Vien\\Backend\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{AE7EEA74-2FE0-136F-D797-854FD87E022A}|Client\\Client.csproj|d:\\quan_ly_thu_vien\\backend\\client\\views\\book\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{AE7EEA74-2FE0-136F-D797-854FD87E022A}|Client\\Client.csproj|solutionrelative:client\\views\\book\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AE7EEA74-2FE0-136F-D797-854FD87E022A}|Client\\Client.csproj|d:\\quan_ly_thu_vien\\backend\\client\\views\\book\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{AE7EEA74-2FE0-136F-D797-854FD87E022A}|Client\\Client.csproj|solutionrelative:client\\views\\book\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Migrations\\20260521083606_InitialCreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Core.Shared\\Migrations\\20260521083606_InitialCreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Migrations\\20260521082351_UpdateModelThuVien.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Core.Shared\\Migrations\\20260521082351_UpdateModelThuVien.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AE7EEA74-2FE0-136F-D797-854FD87E022A}|Client\\Client.csproj|d:\\quan_ly_thu_vien\\backend\\client\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{AE7EEA74-2FE0-136F-D797-854FD87E022A}|Client\\Client.csproj|solutionrelative:client\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B61F11D7-3032-482C-B675-5911861A2C61}|Core.Shared\\Core.Shared.csproj|d:\\quan_ly_thu_vien\\backend\\core.shared\\entities\\book.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B61F11D7-3032-482C-B675-5911861A2C61}|Core.Shared\\Core.Shared.csproj|solutionrelative:core.shared\\entities\\book.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|d:\\quan_ly_thu_vien\\backend\\admin\\viewmodels\\bookviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|solutionrelative:admin\\viewmodels\\bookviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|d:\\quan_ly_thu_vien\\backend\\admin\\views\\book\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|solutionrelative:admin\\views\\book\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|d:\\quan_ly_thu_vien\\backend\\admin\\views\\book\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|solutionrelative:admin\\views\\book\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|d:\\quan_ly_thu_vien\\backend\\admin\\views\\book\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|solutionrelative:admin\\views\\book\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|d:\\quan_ly_thu_vien\\backend\\admin\\views\\book\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|solutionrelative:admin\\views\\book\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|d:\\quan_ly_thu_vien\\backend\\admin\\controllers\\bookcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|solutionrelative:admin\\controllers\\bookcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AE7EEA74-2FE0-136F-D797-854FD87E022A}|Client\\Client.csproj|d:\\quan_ly_thu_vien\\backend\\client\\controllers\\searchcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AE7EEA74-2FE0-136F-D797-854FD87E022A}|Client\\Client.csproj|solutionrelative:client\\controllers\\searchcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AE7EEA74-2FE0-136F-D797-854FD87E022A}|Client\\Client.csproj|d:\\quan_ly_thu_vien\\backend\\client\\views\\search\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{AE7EEA74-2FE0-136F-D797-854FD87E022A}|Client\\Client.csproj|solutionrelative:client\\views\\search\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,7 +66,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
@@ -22,6 +79,188 @@
             {
               "$type": "Bookmark",
               "Name": "ST:32:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Views\\Book\\Index.cshtml",
+              "RelativeDocumentMoniker": "Client\\Views\\Book\\Index.cshtml",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Views\\Book\\Index.cshtml",
+              "RelativeToolTip": "Client\\Views\\Book\\Index.cshtml",
+              "ViewState": "AgIAAOcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-21T09:23:06.989Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Details.cshtml",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Views\\Search\\Details.cshtml",
+              "RelativeDocumentMoniker": "Client\\Views\\Search\\Details.cshtml",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Views\\Search\\Details.cshtml",
+              "RelativeToolTip": "Client\\Views\\Search\\Details.cshtml",
+              "ViewState": "AgIAAFUAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-21T09:21:25.719Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "SearchController.cs",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Controllers\\SearchController.cs",
+              "RelativeDocumentMoniker": "Client\\Controllers\\SearchController.cs",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Controllers\\SearchController.cs",
+              "RelativeToolTip": "Client\\Controllers\\SearchController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-21T09:21:03.201Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Details.cshtml",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Views\\Book\\Details.cshtml",
+              "RelativeDocumentMoniker": "Client\\Views\\Book\\Details.cshtml",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Views\\Book\\Details.cshtml",
+              "RelativeToolTip": "Client\\Views\\Book\\Details.cshtml",
+              "ViewState": "AgIAAI4AAAAAAAAAAAAAAHMAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-21T08:57:03.973Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Details.cshtml",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Book\\Details.cshtml",
+              "RelativeDocumentMoniker": "Admin\\Views\\Book\\Details.cshtml",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Book\\Details.cshtml",
+              "RelativeToolTip": "Admin\\Views\\Book\\Details.cshtml",
+              "ViewState": "AgIAAGUAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-21T08:49:52.394Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Book\\Edit.cshtml",
+              "RelativeDocumentMoniker": "Admin\\Views\\Book\\Edit.cshtml",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Book\\Edit.cshtml",
+              "RelativeToolTip": "Admin\\Views\\Book\\Edit.cshtml",
+              "ViewState": "AgIAAGMAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-21T08:49:38.244Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Book\\Create.cshtml",
+              "RelativeDocumentMoniker": "Admin\\Views\\Book\\Create.cshtml",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Book\\Create.cshtml",
+              "RelativeToolTip": "Admin\\Views\\Book\\Create.cshtml",
+              "ViewState": "AgIAAFkAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-21T08:49:25.827Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "BookViewModel.cs",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\ViewModels\\BookViewModel.cs",
+              "RelativeDocumentMoniker": "Admin\\ViewModels\\BookViewModel.cs",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\ViewModels\\BookViewModel.cs",
+              "RelativeToolTip": "Admin\\ViewModels\\BookViewModel.cs",
+              "ViewState": "AgIAACcAAAAAAAAAAIBQwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-21T08:49:07.759Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "20260521083606_InitialCreate.cs",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Migrations\\20260521083606_InitialCreate.cs",
+              "RelativeDocumentMoniker": "Core.Shared\\Migrations\\20260521083606_InitialCreate.cs",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Migrations\\20260521083606_InitialCreate.cs",
+              "RelativeToolTip": "Core.Shared\\Migrations\\20260521083606_InitialCreate.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-21T08:36:06.607Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "BookController.cs",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\BookController.cs",
+              "RelativeDocumentMoniker": "Admin\\Controllers\\BookController.cs",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\BookController.cs",
+              "RelativeToolTip": "Admin\\Controllers\\BookController.cs",
+              "ViewState": "AgIAAJYAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-21T08:57:26.882Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Book\\Index.cshtml",
+              "RelativeDocumentMoniker": "Admin\\Views\\Book\\Index.cshtml",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Book\\Index.cshtml",
+              "RelativeToolTip": "Admin\\Views\\Book\\Index.cshtml",
+              "ViewState": "AgIAAHkCAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-21T08:52:23.677Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "20260521082351_UpdateModelThuVien.cs",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Migrations\\20260521082351_UpdateModelThuVien.cs",
+              "RelativeDocumentMoniker": "Core.Shared\\Migrations\\20260521082351_UpdateModelThuVien.cs",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Migrations\\20260521082351_UpdateModelThuVien.cs",
+              "RelativeToolTip": "Core.Shared\\Migrations\\20260521082351_UpdateModelThuVien.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAkwAsAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-21T08:23:52.001Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\appsettings.json",
+              "RelativeDocumentMoniker": "Client\\appsettings.json",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\appsettings.json",
+              "RelativeToolTip": "Client\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-21T08:20:06.09Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Book.cs",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Entities\\Book.cs",
+              "RelativeDocumentMoniker": "Core.Shared\\Entities\\Book.cs",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Entities\\Book.cs",
+              "RelativeToolTip": "Core.Shared\\Entities\\Book.cs",
+              "ViewState": "AgIAABwAAAAAAAAAAAAjwDcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-21T08:08:36.41Z",
+              "EditorCaption": ""
             }
           ]
         }

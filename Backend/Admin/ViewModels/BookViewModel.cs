@@ -37,6 +37,10 @@ public class BookViewModel
     [Display(Name = "Hình ảnh")]
     public IFormFile? ImageFile { get; set; }
 
+    [Display(Name = "Mô tả sách")]
+    [StringLength(1000, ErrorMessage = "Mô tả sách không được vượt quá 1000 ký tự")]
+    public string? Description { get; set; }
+
     /// <summary>
     /// Danh sách CategoryId đã chọn (many-to-many).
     /// </summary>

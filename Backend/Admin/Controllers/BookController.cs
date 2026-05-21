@@ -102,6 +102,7 @@ public class BookController : Controller
                 PublishYear = model.PublishYear,
                 Quantity = model.Quantity ?? 0,
                 Status = model.Status ?? "Có thể mượn",
+                Description = model.Description?.Trim(),
                 CreatedAt = DateTime.Now,
                 ImageUrl = model.ImageFile != null
                                   ? await SaveImageAsync(model.ImageFile)
@@ -147,6 +148,7 @@ public class BookController : Controller
                 Status = string.IsNullOrWhiteSpace(model.Status)
                                   ? "Có thể mượn"
                                   : model.Status,
+                Description = model.Description?.Trim(),
                 CreatedAt = DateTime.Now,
                 ImageUrl = model.ImageFile != null
                                   ? await SaveImageAsync(model.ImageFile)
@@ -189,6 +191,7 @@ public class BookController : Controller
                 PublishYear = book.PublishYear,
                 Quantity = book.Quantity,
                 Status = book.Status,
+                Description = book.Description,
                 ImageUrl = book.ImageUrl,
                 Categories = await _bookService.GetAllCategoriesAsync(),
                 CategoryIds = book.BookCategories.Select(bc => bc.CategoryId).ToList()
@@ -226,6 +229,7 @@ public class BookController : Controller
                 PublishYear = model.PublishYear,
                 Quantity = model.Quantity ?? 0,
                 Status = model.Status ?? "Có thể mượn",
+                Description = model.Description?.Trim(),
                 ImageUrl = model.ImageFile != null
                                   ? await SaveImageAsync(model.ImageFile)
                                   : model.ImageUrl ?? string.Empty
@@ -273,6 +277,7 @@ public class BookController : Controller
                 Status = string.IsNullOrWhiteSpace(model.Status)
                                   ? "Có thể mượn"
                                   : model.Status,
+                Description = model.Description?.Trim(),
                 // Nếu có ảnh mới thì lưu ảnh mới, ngược lại giữ URL ảnh cũ
                 ImageUrl = model.ImageFile != null
                                   ? await SaveImageAsync(model.ImageFile)
@@ -416,6 +421,7 @@ public class BookAjaxModel
     public int? PublishYear { get; set; }
     public int? Quantity { get; set; }
     public string? Status { get; set; }
+    public string? Description { get; set; }
     public string? ImageUrl { get; set; }  // URL ảnh cũ khi Edit
     public IFormFile? ImageFile { get; set; }  // File ảnh mới upload
     public List<int>? CategoryIds { get; set; }  // Nhiều danh mục từ chips

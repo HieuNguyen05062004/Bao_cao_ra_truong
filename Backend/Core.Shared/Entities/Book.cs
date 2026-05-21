@@ -31,6 +31,9 @@ public partial class Book
     [Column("ImageURL")]
     public string? ImageUrl { get; set; }
 
+    [StringLength(1000)]
+    public string? Description { get; set; }
+
     /// <summary>Thời điểm sách được thêm vào hệ thống — dùng để lấy sách mới nhất.</summary>
     public DateTime? CreatedAt { get; set; }
 

@@ -68,6 +68,14 @@
                         </div>
                     </div>
 
+                    <!-- Mô tả sách -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Mô tả sách</label>
+                        <textarea id="c_Description" class="form-control" rows="3"
+                                  placeholder="Nhập mô tả về sách..." maxlength="1000"></textarea>
+                        <small class="text-muted">Tối đa 1000 ký tự</small>
+                    </div>
+
                     <!-- ── Chips chọn danh mục (nhiều) ── -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Thể loại</label>
@@ -220,6 +228,14 @@
                             <input type="number" id="e_Quantity" class="form-control" min="0">
                             <div class="invalid-feedback">Số lượng không hợp lệ</div>
                         </div>
+                    </div>
+
+                    <!-- Mô tả sách (Edit) -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Mô tả sách</label>
+                        <textarea id="e_Description" class="form-control" rows="3"
+                                  placeholder="Nhập mô tả về sách..." maxlength="1000"></textarea>
+                        <small class="text-muted">Tối đa 1000 ký tự</small>
                     </div>
 
                     <!-- ── Chips chọn danh mục (Edit) ── -->
@@ -479,15 +495,16 @@
                                     <button class="btn btn-sm btn-warning" title="Sửa"
                                             onclick='openEdit(@Html.Raw(
                                                 System.Text.Json.JsonSerializer.Serialize(new {
-                                                    bookId    = book.BookId,
-                                                    title     = book.Title,
-                                                    author    = book.Author,
-                                                    publisher = book.Publisher,
-                                                    year      = book.PublishYear,
-                                                    catIds    = catIds,   // mảng nhiều ID
-                                                    qty       = book.Quantity,
-                                                    status    = book.Status,
-                                                    imageUrl  = book.ImageUrl
+                                                    bookId      = book.BookId,
+                                                    title       = book.Title,
+                                                    author      = book.Author,
+                                                    publisher   = book.Publisher,
+                                                    year        = book.PublishYear,
+                                                    catIds      = catIds,   // mảng nhiều ID
+                                                    qty         = book.Quantity,
+                                                    status      = book.Status,
+                                                    description = book.Description,
+                                                    imageUrl    = book.ImageUrl
                                                 })))'>
                                         <i class="fas fa-edit"></i>
                                     </button>
@@ -615,6 +632,7 @@ function resetCreate() {
     document.getElementById('c_Status').value      = 'Có thể mượn';
     document.getElementById('c_Quantity').value    = 1;
     document.getElementById('c_PublishYear').value = '';
+    document.getElementById('c_Description').value = '';
     document.getElementById('c_ImageFile').value   = '';
     document.getElementById('c_ImagePreview').classList.add('d-none');
     // Bỏ chọn tất cả chip Create
@@ -679,6 +697,7 @@ async function submitCreate() {
     fd.append('PublishYear', document.getElementById('c_PublishYear').value);
     fd.append('Quantity',    document.getElementById('c_Quantity').value);
     fd.append('Status',      document.getElementById('c_Status').value);
+    fd.append('Description', document.getElementById('c_Description').value.trim());
 
     // Gửi nhiều CategoryIds
     getSelectedChipIds('c_CategoryChips','create').forEach(id =>
@@ -719,6 +738,7 @@ function openEdit(book) {
     document.getElementById('e_PublishYear').value   = book.year      || '';
     document.getElementById('e_Quantity').value      = book.qty       ?? 0;
     document.getElementById('e_Status').value        = book.status    || 'Có thể mượn';
+    document.getElementById('e_Description').value   = book.description || '';
     document.getElementById('e_OldImageUrl').value   = book.imageUrl  || '';
     document.getElementById('e_ImageFile').value     = '';
 
@@ -781,6 +801,7 @@ async function submitEdit() {
     fd.append('PublishYear', document.getElementById('e_PublishYear').value);
     fd.append('Quantity',    document.getElementById('e_Quantity').value);
     fd.append('Status',      document.getElementById('e_Status').value);
+    fd.append('Description', document.getElementById('e_Description').value.trim());
     fd.append('ImageUrl',    document.getElementById('e_OldImageUrl').value);
 
     // Gửi nhiều CategoryIds từ chip edit

@@ -102,6 +102,21 @@
                 <dd class="col-sm-8"><code>@Model.BookId</code></dd>
             </dl>
 
+            @* Mô tả sách *@
+            @if (!string.IsNullOrEmpty(Model.Description))
+            {
+                <div class="card border-0 bg-light mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title text-muted mb-2">
+                            <i class="bi bi-file-text me-2"></i>Mô tả
+                        </h6>
+                        <p class="card-text" style="white-space: pre-wrap; line-height: 1.6;">
+                            @Model.Description
+                        </p>
+                    </div>
+                </div>
+            }
+
             <hr />
 
             @* ── Nút hành động ── *@

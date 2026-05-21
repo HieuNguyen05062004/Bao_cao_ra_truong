@@ -47,7 +47,8 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Mã phiếu</th>
-                                <th>Ngày mượn</th>
+                                <th>Tên sách</th>
+                                <th>Ngày mươn</th>
                                 <th>Hạn trả</th>
                                 <th>Trạng thái</th>
                                 <th class="text-center">Số sách</th>
@@ -64,6 +65,16 @@
                                                    && ticket.Status != "Bị từ chối";
                                 <tr>
                                     <td><strong>#@ticket.TicketId</strong></td>
+                                    <td>
+                                        @if (ticket.Books.Any())
+                                        {
+                                            @string.Join(", ", ticket.Books.Select(b => b.Title))
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">—</span>
+                                        }
+                                    </td>
                                     <td>@ticket.BorrowDate?.ToString("dd/MM/yyyy")</td>
                                     <td>
                                         <span class="@(isOverdue ? "text-danger fw-bold" : "")">

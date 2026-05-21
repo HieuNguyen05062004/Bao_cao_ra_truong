@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Core.Shared.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    [Migration("20260513142802_AddMissingColumns")]
-    partial class AddMissingColumns
+    [Migration("20260521083606_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -235,7 +235,9 @@ namespace Core.Shared.Migrations
                         .HasColumnName("AvatarURL");
 
                     b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
 
                     b.Property<DateOnly?>("DoB")
                         .HasColumnType("date");
