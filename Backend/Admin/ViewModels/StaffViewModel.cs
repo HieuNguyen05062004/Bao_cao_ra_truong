@@ -5,11 +5,9 @@ namespace Admin.ViewModels;
 
 public class StaffViewModel
 {
-    // ---------- Dùng cho Create ----------
-    [Required(ErrorMessage = "Vui lòng nhập tên đăng nhập.")]
-    [StringLength(50, ErrorMessage = "Tối đa 50 ký tự.")]
+    // Username sẽ được tự động tạo từ Email, không cần nhập
     [Display(Name = "Tên đăng nhập")]
-    public string Username { get; set; } = string.Empty;
+    public string? Username { get; set; }
 
     // Bắt buộc khi Create, tuỳ chọn khi Edit
     [DataType(DataType.Password)]
@@ -37,6 +35,7 @@ public class StaffViewModel
 
     // Dùng để hiển thị ảnh cũ khi Edit
     public string? AvatarUrl { get; set; }
+
 
     // ---------- Dùng cho Index (hiển thị) ----------
     public DateTime? CreatedAt { get; set; }

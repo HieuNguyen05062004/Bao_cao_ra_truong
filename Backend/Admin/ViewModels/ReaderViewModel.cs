@@ -62,9 +62,12 @@ public class ReaderDetailViewModel
 
     // Thống kê
     public int TotalBorrow { get; set; }
-    public int BorrowingCount { get; set; }
-    public int OverdueCount { get; set; }
-    public int ReturnedCount { get; set; }
+    public int PendingCount { get; set; }      // Chờ duyệt
+    public int ApprovedCount { get; set; }     // Đã duyệt
+    public int BorrowingCount { get; set; }    // Đang mượn
+    public int RejectedCount { get; set; }     // Bị từ chối
+    public int OverdueCount { get; set; }      // Quá hạn
+    public int ReturnedCount { get; set; }     // Đã trả
 
     // Danh sách phiếu mượn (sau khi lọc)
     public IEnumerable<BorrowTicket> BorrowTickets { get; set; } = new List<BorrowTicket>();

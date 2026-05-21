@@ -14,9 +14,10 @@
             <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
 
             <div class="mb-3">
-                <label asp-for="Username" class="form-label fw-semibold"></label>
-                <input asp-for="Username" class="form-control" placeholder="Ví dụ: nv001" />
-                <span asp-validation-for="Username" class="text-danger small"></span>
+                <label asp-for="Email" class="form-label fw-semibold"></label>
+                <input asp-for="Email" class="form-control" placeholder="example@email.com" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+                <small class="text-muted d-block mt-1">Tên đăng nhập sẽ được tự động tạo từ email</small>
             </div>
 
             <div class="mb-3">
@@ -36,12 +37,6 @@
                 <label asp-for="FullName" class="form-label fw-semibold"></label>
                 <input asp-for="FullName" class="form-control" placeholder="Họ và tên đầy đủ" />
                 <span asp-validation-for="FullName" class="text-danger small"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label fw-semibold"></label>
-                <input asp-for="Email" class="form-control" placeholder="example@email.com" />
-                <span asp-validation-for="Email" class="text-danger small"></span>
             </div>
 
             <div class="mb-3">

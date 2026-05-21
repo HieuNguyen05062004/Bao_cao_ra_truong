@@ -61,27 +61,39 @@
     {{-- Thống kê --}}
     <div class="col-md-8">
         <div class="row g-3">
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-2">
                 <div class="card border-0 shadow-sm text-center p-3">
-                    <div class="fs-2 fw-bold text-dark">@Model.TotalBorrow</div>
+                    <div class="fs-3 fw-bold text-dark">@Model.TotalBorrow</div>
                     <div class="text-muted small">Tổng phiếu</div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-2">
                 <div class="card border-0 shadow-sm text-center p-3">
-                    <div class="fs-2 fw-bold text-primary">@Model.BorrowingCount</div>
+                    <div class="fs-3 fw-bold text-warning">@Model.PendingCount</div>
+                    <div class="text-muted small">Chờ duyệt</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="card border-0 shadow-sm text-center p-3">
+                    <div class="fs-3 fw-bold text-info">@Model.ApprovedCount</div>
+                    <div class="text-muted small">Đã duyệt</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="card border-0 shadow-sm text-center p-3">
+                    <div class="fs-3 fw-bold text-primary">@Model.BorrowingCount</div>
                     <div class="text-muted small">Đang mượn</div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-2">
                 <div class="card border-0 shadow-sm text-center p-3">
-                    <div class="fs-2 fw-bold text-danger">@Model.OverdueCount</div>
+                    <div class="fs-3 fw-bold text-danger">@Model.OverdueCount</div>
                     <div class="text-muted small">Quá hạn</div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-2">
                 <div class="card border-0 shadow-sm text-center p-3">
-                    <div class="fs-2 fw-bold text-success">@Model.ReturnedCount</div>
+                    <div class="fs-3 fw-bold text-success">@Model.ReturnedCount</div>
                     <div class="text-muted small">Đã trả</div>
                 </div>
             </div>
@@ -96,7 +108,10 @@
                     var filters = new[]
                     {
                         ("all",       "Tất cả",     "secondary"),
+                        ("pending",   "Chờ duyệt",  "warning"),
+                        ("approved",  "Đã duyệt",   "info"),
                         ("borrowing", "Đang mượn",  "primary"),
+                        ("rejected",  "Bị từ chối", "dark"),
                         ("overdue",   "Quá hạn",    "danger"),
                         ("returned",  "Đã trả",     "success")
                     };
@@ -132,7 +147,16 @@
                         {
                             var isOverdue = ticket.ReturnDate == null &&
                                             ticket.DueDate < DateTime.Now;
-                            <tr class="@(isOverdue ? "table-danger" : "")">
+                            var (statusBg, statusText) = ticket.Status switch
+                            {
+                                "Chờ duyệt" => ("warning", "Chờ duyệt"),
+                                "Đã duyệt" => ("info", "Đã duyệt"),
+                                "Đang mượn" => ("primary", "Đang mượn"),
+                                "Bị từ chối" => ("danger", "Bị từ chối"),
+                                "Đã trả" => ("success", "Đã trả"),
+                                _ => ("secondary", ticket.Status ?? "—")
+                            };
+                            <tr class="@(isOverdue && ticket.Status == "Đang mượn" ? "table-danger" : "")">
                                 <td>#@ticket.TicketId</td>
                                 <td>
                                     @if (ticket.Books.Any())
@@ -148,18 +172,16 @@
                                 <td>@ticket.DueDate?.ToString("dd/MM/yyyy")</td>
                                 <td>@(ticket.ReturnDate?.ToString("dd/MM/yyyy") ?? "—")</td>
                                 <td class="text-center">
-                                    @if (ticket.ReturnDate != null)
-                                    {
-                                        <span class="badge bg-success">Đã trả</span>
-                                    }
-                                    else if (isOverdue)
-                                    {
-                                        <span class="badge bg-danger">Quá hạn</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-primary">Đang mượn</span>
-                                    }
+                                    <span class="badge bg-@statusBg">
+                                        @if (isOverdue && ticket.Status == "Đang mượn")
+                                        {
+                                            <i class="bi bi-exclamation-triangle-fill me-1"></i><text>Quá hạn</text>
+                                        }
+                                        else
+                                        {
+                                            @statusText
+                                        }
+                                    </span>
                                 </td>
                             </tr>
                         }

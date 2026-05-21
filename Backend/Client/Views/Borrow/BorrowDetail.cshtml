@@ -1,6 +1,10 @@
 @model Core.Shared.Entities.BorrowTicket
 @{
     ViewData["Title"] = $"Phiếu Mượn #{Model.TicketId}";
+    var isOverdue = Model.DueDate.HasValue
+                   && Model.DueDate < DateTime.Now
+                   && Model.Status != "Đã trả"
+                   && Model.Status != "Bị từ chối";
 }
 
 @functions {
@@ -30,14 +34,22 @@
     }
 
     <div class="card shadow-lg mb-4">
-        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h5 class="mb-0">
                 <i class="bi bi-journal-bookmark me-2"></i>
                 Chi Tiết Phiếu Mượn <strong>#@Model.TicketId</strong>
             </h5>
-            <span class="badge bg-@bgColor text-@txtColor fs-6 px-3 py-2">
-                <i class="bi @statusIcon me-1"></i>@Model.Status
-            </span>
+            <div class="d-flex gap-2 flex-wrap justify-content-end">
+                <span class="badge bg-@bgColor text-@txtColor fs-6 px-3 py-2">
+                    <i class="bi @statusIcon me-1"></i>@Model.Status
+                </span>
+                @if (isOverdue)
+                {
+                    <span class="badge bg-danger fs-6 px-3 py-2">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>Quá hạn
+                    </span>
+                }
+            </div>
         </div>
 
         <div class="card-body p-4">
@@ -133,9 +145,33 @@
         </div>
 
         <div class="card-footer bg-light">
-            <a asp-action="BorrowHistory" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left me-2"></i>Quay lại lịch sử
-            </a>
+            <div class="d-flex justify-content-between align-items-center">
+                <a asp-action="BorrowHistory" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Quay lại lịch sử
+                </a>
+                <button class="btn btn-outline-primary btn-sm" onclick="location.reload()">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Làm mới
+                </button>
+            </div>
         </div>
     </div>
+
+    @* Thông báo giúp client biết status có thể đã được admin cập nhật *@
+    @if (Model.Status == "Chờ duyệt" || Model.Status == "Đã duyệt")
+    {
+        <div class="alert alert-info alert-dismissible fade show mt-4">
+            <i class="bi bi-info-circle me-2"></i>
+            <strong>Lưu ý:</strong> 
+            @if (Model.Status == "Chờ duyệt")
+            {
+                <span>Phiếu đang chờ duyệt. Admin sẽ sớm xử lý. Nhấn <strong>"Làm mới"</strong> để cập nhật trạng thái.</span>
+            }
+            else if (Model.Status == "Đã duyệt")
+            {
+                <span>Phiếu đã được duyệt. Admin sẽ giao sách cho bạn. Nhấn <strong>"Làm mới"</strong> để cập nhật trạng thái.</span>
+            }
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 </div>
+

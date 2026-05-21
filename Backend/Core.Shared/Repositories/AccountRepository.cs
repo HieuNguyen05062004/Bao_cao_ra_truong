@@ -31,6 +31,12 @@ public class AccountRepository
             .FirstOrDefaultAsync(a => a.Username == username);
     }
 
+    public async Task<Account?> GetByEmailAsync(string email)
+    {
+        return await _context.Accounts
+            .FirstOrDefaultAsync(a => a.Email == email);
+    }
+
     public async Task<bool> ExistsAsync(string username)
     {
         return await _context.Accounts

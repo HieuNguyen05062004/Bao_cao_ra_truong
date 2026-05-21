@@ -27,7 +27,13 @@ public class AuthService : IAuthService
 
     public async Task<Account?> LoginAsync(string username, string password)
     {
+        // Cố gắng tìm tài khoản theo username trước, nếu không có thì tìm theo email
         var account = await _repo.GetByUsernameAsync(username);
+        if (account is null)
+        {
+            account = await _repo.GetByEmailAsync(username);
+        }
+
         if (account is null) return null;
 
         // Xác thực password đã hash bằng BCrypt

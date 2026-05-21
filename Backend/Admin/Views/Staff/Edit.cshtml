@@ -3,7 +3,7 @@
     ViewData["Title"] = "Chỉnh sửa tài khoản";
 }
 
-<h4>✏️ Chỉnh sửa tài khoản: <strong>@Model.Username</strong></h4>
+<h4>✏️ Chỉnh sửa tài khoản: <strong>@(Model.Username ?? "Nhân viên")</strong></h4>
 <hr />
 
 <div class="row">
@@ -14,23 +14,17 @@
 
             <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
 
-            @* Username chỉ đọc *@
             <div class="mb-3">
-                <label class="form-label fw-semibold">Tên đăng nhập</label>
-                <input value="@Model.Username" class="form-control" readonly disabled />
-                <input type="hidden" name="Username" value="@Model.Username" />
+                <label asp-for="Email" class="form-label fw-semibold"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+                <small class="text-muted d-block mt-1">Email không thể thay đổi sau khi tạo</small>
             </div>
 
             <div class="mb-3">
                 <label asp-for="FullName" class="form-label fw-semibold"></label>
                 <input asp-for="FullName" class="form-control" />
                 <span asp-validation-for="FullName" class="text-danger small"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label fw-semibold"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger small"></span>
             </div>
 
             <div class="mb-3">

@@ -33,7 +33,7 @@ public class AccountController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var account = await _authService.LoginAsync(model.Username, model.Password);
+        var account = await _authService.LoginAsync(model.Email, model.Password);
 
         if (account is null)
         {

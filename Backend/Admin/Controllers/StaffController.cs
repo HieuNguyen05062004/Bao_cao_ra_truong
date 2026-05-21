@@ -130,9 +130,12 @@ public class StaffController : Controller
         // Xử lý upload avatar
         string? avatarUrl = await SaveAvatarAsync(model.AvatarFile);
 
+        // Tự động tạo Username từ Email (lấy phần trước dấu @)
+        string username = model.Email.Trim().Split('@')[0];
+
         var account = new Core.Shared.Entities.Account
         {
-            Username = model.Username.Trim(),
+            Username = username,
             FullName = model.FullName.Trim(),
             Email = model.Email.Trim(),
             Role = model.Role,

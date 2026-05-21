@@ -83,9 +83,12 @@ public class ReaderController : Controller
 
         tickets = filter switch
         {
-            "borrowing" => tickets.Where(bt => bt.ReturnDate == null),
-            "overdue" => tickets.Where(bt => bt.ReturnDate == null && bt.DueDate < now),
-            "returned" => tickets.Where(bt => bt.ReturnDate != null),
+            "pending" => tickets.Where(bt => bt.Status == "Chờ duyệt"),
+            "approved" => tickets.Where(bt => bt.Status == "Đã duyệt"),
+            "borrowing" => tickets.Where(bt => bt.Status == "Đang mượn"),
+            "rejected" => tickets.Where(bt => bt.Status == "Bị từ chối"),
+            "overdue" => tickets.Where(bt => bt.Status == "Đang mượn" && bt.DueDate < now),
+            "returned" => tickets.Where(bt => bt.Status == "Đã trả"),
             _ => tickets
         };
 
@@ -100,9 +103,12 @@ public class ReaderController : Controller
             Email = reader.Email,
             AvatarUrl = reader.AvatarUrl,
             TotalBorrow = reader.BorrowTickets.Count,
-            BorrowingCount = reader.BorrowTickets.Count(bt => bt.ReturnDate == null),
-            OverdueCount = reader.BorrowTickets.Count(bt => bt.ReturnDate == null && bt.DueDate < now),
-            ReturnedCount = reader.BorrowTickets.Count(bt => bt.ReturnDate != null),
+            PendingCount = reader.BorrowTickets.Count(bt => bt.Status == "Chờ duyệt"),
+            ApprovedCount = reader.BorrowTickets.Count(bt => bt.Status == "Đã duyệt"),
+            BorrowingCount = reader.BorrowTickets.Count(bt => bt.Status == "Đang mượn"),
+            RejectedCount = reader.BorrowTickets.Count(bt => bt.Status == "Bị từ chối"),
+            OverdueCount = reader.BorrowTickets.Count(bt => bt.Status == "Đang mượn" && bt.DueDate < now),
+            ReturnedCount = reader.BorrowTickets.Count(bt => bt.Status == "Đã trả"),
             BorrowTickets = tickets.OrderByDescending(bt => bt.BorrowDate).ToList(),
             Filter = filter
         };
