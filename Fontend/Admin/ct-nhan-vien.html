@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết nhân viên - SmartLibrary</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="admin-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <i class="fas fa-book-reader"></i>
+          <span>SmartLib Admin</span>
+          <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="index.html" class="nav-item"
+            ><i class="fas fa-chart-line"></i> Dashboard</a
+          >
+          <a href="ql-sach.html" class="nav-item"
+            ><i class="fas fa-book"></i> Quản lý sách</a
+          >
+          <a href="ql-danh-muc.html" class="nav-item"
+            ><i class="fas fa-list"></i> Thể loại</a
+          >
+          <a href="ql-ban-doc.html" class="nav-item"
+            ><i class="fas fa-users"></i> Bạn đọc</a
+          >
+          <a href="ql-nhan-vien.html" class="nav-item active"
+            ><i class="fas fa-user-shield"></i> Nhân viên</a
+          >
+          <a href="muon-tra.html" class="nav-item"
+            ><i class="fas fa-exchange-alt"></i> Mượn & Trả</a
+          >
+          <a href="bao-cao.html" class="nav-item"
+            ><i class="fas fa-file-alt"></i> Báo cáo</a
+          >
+        </nav>
+        <div class="sidebar-user">
+          <div class="user-profile">
+            <img
+              src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff"
+              alt="Avatar"
+            />
+            <span>Quản trị viên</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="top-header">
+          <button class="sidebar-toggle" id="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="header-breadcrumb">
+            <span>Admin</span> / <span>Thông tin tài khoản</span>
+          </div>
+          <div class="header-user">
+            <a href="ql-nhan-vien.html" class="btn btn-outline">
+              <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+          </div>
+        </header>
+
+        <div class="dashboard-body">
+          <div class="page-header">
+            <h1 class="page-title" id="display-header-title">
+              👤 Chi tiết nhân viên
+            </h1>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Thông tin tài khoản</h3>
+            </div>
+            <div class="card-body">
+              <div class="book-details-grid">
+                <div class="detail-img-container text-center">
+                  <img
+                    id="staff-detail-img"
+                    src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff"
+                    alt="Avatar"
+                    class="detail-img"
+                    style="
+                      border-radius: 50%;
+                      width: 180px;
+                      height: 180px;
+                      object-fit: cover;
+                    "
+                  />
+                </div>
+                <div class="detail-info-container">
+                  <div class="detail-item">
+                    <label>Họ và tên</label>
+                    <span id="detail-staff-name">Quản trị viên</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Email</label>
+                    <span id="detail-staff-email">admin@thuvien.com</span>
+                  </div>
+                  <div class="detail-item">
+                    <label>Quyền hạn</label>
+                    <span id="detail-staff-role" class="badge badge-primary"
+                      >Quản trị viên</span
+                    >
+                  </div>
+                  <div class="detail-item">
+                    <label>Ngày tạo</label>
+                    <span id="detail-staff-created">21/05/2026 15:38</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="modal-footer"
+              style="padding: 24px; border-top: 1px solid var(--border)"
+            >
+              <button
+                class="btn btn-warning"
+                onclick="
+                  app.showToast('Chức năng sửa đang được phát triển', 'warning')
+                "
+              >
+                <i class="fas fa-edit"></i> Chỉnh sửa thông tin
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

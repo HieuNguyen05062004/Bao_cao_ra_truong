@@ -158,12 +158,35 @@
               />
             </div>
             <div class="form-group">
-              <label>Thể loại</label>
-              <select id="form-category">
-                <option value="CNTT">CNTT</option>
-                <option value="Kinh tế">Kinh tế</option>
-                <option value="Ngoại ngữ">Ngoại ngữ</option>
-              </select>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 5px;
+                "
+              >
+                <label style="margin-bottom: 0">Thể loại</label>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline"
+                  id="add-category-field"
+                  title="Thêm thể loại"
+                  style="padding: 2px 8px"
+                >
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+              <div id="category-fields-container">
+                <select
+                  class="form-category-select"
+                  style="margin-bottom: 8px; width: 100%"
+                >
+                  <option value="CNTT">CNTT</option>
+                  <option value="Kinh tế">Kinh tế</option>
+                  <option value="Ngoại ngữ">Ngoại ngữ</option>
+                </select>
+              </div>
             </div>
           </div>
           <div class="form-row">
@@ -311,5 +334,205 @@
     <div id="toast-container" class="toast-container"></div>
 
     <script src="app.js"></script>
+    <script>
+      // Helper functions for validation
+      function showError(input, message) {
+        const parent = input.closest(".form-group");
+        let error = parent.querySelector(".error-msg");
+        if (!error) {
+          error = document.createElement("span");
+          error.className = "error-msg";
+          error.style.color = "red";
+          error.style.fontSize = "0.8rem";
+          error.style.marginTop = "5px";
+          error.style.display = "block";
+          parent.appendChild(error);
+        }
+        error.textContent = message;
+        input.style.borderColor = "red";
+      }
+
+      function clearError(input) {
+        const parent = input.closest(".form-group");
+        const error = parent.querySelector(".error-msg");
+        if (error) error.remove();
+        input.style.borderColor = "";
+      }
+
+      const bookForm = document.getElementById("book-form");
+      const fields = {
+        title: document.getElementById("form-title"),
+        author: document.getElementById("form-author"),
+        publisher: document.getElementById("form-publisher"),
+        stock: document.getElementById("form-stock"),
+        img: document.getElementById("form-img"),
+        description: document.getElementById("form-description"),
+      };
+
+      function validateBookForm() {
+        let isValid = true;
+
+        // Tên sách: 5-20 ký tự
+        if (
+          fields.title.value.trim().length < 5 ||
+          fields.title.value.trim().length > 20
+        ) {
+          showError(
+            fields.title,
+            "Tên sách không được để trống và phải từ 5 - 20 ký tự.",
+          );
+          isValid = false;
+        } else {
+          clearError(fields.title);
+        }
+
+        // Tác giả: 5-20 ký tự
+        if (
+          fields.author.value.trim().length < 5 ||
+          fields.author.value.trim().length > 20
+        ) {
+          showError(
+            fields.author,
+            "Tên tác giả không được để trống và phải từ 5 - 20 ký tự.",
+          );
+          isValid = false;
+        } else {
+          clearError(fields.author);
+        }
+
+        // Nhà xuất bản: 5-20 ký tự
+        if (
+          fields.publisher.value.trim().length < 5 ||
+          fields.publisher.value.trim().length > 20
+        ) {
+          showError(
+            fields.publisher,
+            "Nhà xuất bản không được để trống và phải từ 5 - 20 ký tự.",
+          );
+          isValid = false;
+        } else {
+          clearError(fields.publisher);
+        }
+
+        // Thể loại: Ít nhất 1
+        const categoryContainer = document.getElementById(
+          "category-fields-container",
+        );
+        const categories = categoryContainer.querySelectorAll("select");
+        let hasCategory = Array.from(categories).some((s) => s.value !== "");
+        if (!hasCategory) {
+          showError(
+            categoryContainer,
+            "Vui lòng chọn ít nhất một thể loại sách.",
+          );
+          isValid = false;
+        } else {
+          clearError(categoryContainer);
+        }
+
+        // Hình ảnh bìa: Bắt buộc chọn tệp
+        // Nếu là mode "Thêm mới" (không có edit-id), bắt buộc phải có file
+        if (
+          !document.getElementById("edit-id").value &&
+          fields.img.files.length === 0
+        ) {
+          showError(fields.img, "Vui lòng tải lên hình ảnh bìa sách.");
+          isValid = false;
+        } else {
+          clearError(fields.img);
+        }
+
+        // Mô tả: 10-900 ký tự
+        if (
+          fields.description.value.trim().length < 10 ||
+          fields.description.value.trim().length > 900
+        ) {
+          showError(
+            fields.description,
+            "Mô tả không được để trống và phải từ 10 - 900 ký tự.",
+          );
+          isValid = false;
+        } else {
+          clearError(fields.description);
+        }
+
+        return isValid;
+      }
+
+      // Real-time validation
+      Object.values(fields).forEach((field) => {
+        if (field) {
+          field.addEventListener("input", () => {
+            if (field.id === "form-title") {
+              if (
+                field.value.trim().length >= 5 &&
+                field.value.trim().length <= 20
+              )
+                clearError(field);
+            }
+            if (field.id === "form-author") {
+              if (
+                field.value.trim().length >= 5 &&
+                field.value.trim().length <= 20
+              )
+                clearError(field);
+            }
+            if (field.id === "form-publisher") {
+              if (
+                field.value.trim().length >= 5 &&
+                field.value.trim().length <= 20
+              )
+                clearError(field);
+            }
+            if (field.id === "form-description") {
+              if (
+                field.value.trim().length >= 10 &&
+                field.value.trim().length <= 900
+              )
+                clearError(field);
+            }
+            if (field.id === "form-img" && field.files.length > 0)
+              clearError(field);
+          });
+        }
+      });
+
+      bookForm.addEventListener("submit", function (e) {
+        if (!validateBookForm()) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+
+      // Xử lý thêm nhiều danh mục cho sách (Dynamic Fields)
+      document
+        .getElementById("add-category-field")
+        ?.addEventListener("click", function () {
+          const container = document.getElementById(
+            "category-fields-container",
+          );
+          const firstSelect = container.querySelector("select");
+
+          const newFieldGroup = document.createElement("div");
+          newFieldGroup.style.display = "flex";
+          newFieldGroup.style.gap = "5px";
+          newFieldGroup.style.marginBottom = "8px";
+
+          const newSelect = firstSelect.cloneNode(true);
+          newSelect.style.flex = "1";
+          newSelect.style.marginBottom = "0";
+
+          const removeBtn = document.createElement("button");
+          removeBtn.type = "button";
+          removeBtn.className = "btn btn-outline";
+          removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+          removeBtn.style.padding = "5px 10px";
+          removeBtn.onclick = () => newFieldGroup.remove();
+
+          newFieldGroup.appendChild(newSelect);
+          newFieldGroup.appendChild(removeBtn);
+          container.appendChild(newFieldGroup);
+        });
+    </script>
   </body>
 </html>

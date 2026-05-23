@@ -330,5 +330,160 @@
     <div id="toast-container" class="toast-container"></div>
 
     <script src="app.js"></script>
+    <script>
+      function showError(input, message) {
+        const parent = input.closest(".form-group");
+        let error = parent.querySelector(".error-msg");
+        if (!error) {
+          error = document.createElement("span");
+          error.className = "error-msg";
+          error.style.color = "red";
+          error.style.fontSize = "0.8rem";
+          error.style.marginTop = "5px";
+          error.style.display = "block";
+          parent.appendChild(error);
+        }
+        error.textContent = message;
+        input.style.borderColor = "red";
+      }
+
+      function clearError(input) {
+        const parent = input.closest(".form-group");
+        const error = parent.querySelector(".error-msg");
+        if (error) error.remove();
+        input.style.borderColor = "";
+      }
+
+      const readerForm = document.getElementById("reader-form");
+      const rFields = {
+        name: document.getElementById("form-reader-name"),
+        phone: document.getElementById("form-reader-phone"),
+        gender: document.getElementById("form-reader-gender"),
+        dob: document.getElementById("form-reader-dob"),
+        email: document.getElementById("form-reader-email"),
+        address: document.getElementById("form-reader-address"),
+        img: document.getElementById("form-reader-img"),
+      };
+
+      function validateReaderForm() {
+        let isValid = true;
+
+        if (
+          rFields.name.value.trim().length < 5 ||
+          rFields.name.value.trim().length > 20
+        ) {
+          showError(
+            rFields.name,
+            "Họ và tên không được để trống và phải từ 5 - 20 ký tự.",
+          );
+          isValid = false;
+        } else {
+          clearError(rFields.name);
+        }
+
+        if (!/^\d{10}$/.test(rFields.phone.value.trim())) {
+          showError(
+            rFields.phone,
+            "Số điện thoại phải nhập đúng đủ 10 chữ số.",
+          );
+          isValid = false;
+        } else {
+          clearError(rFields.phone);
+        }
+
+        if (!rFields.gender.value) {
+          showError(rFields.gender, "Vui lòng chọn giới tính.");
+          isValid = false;
+        } else {
+          clearError(rFields.gender);
+        }
+
+        if (!rFields.dob.value) {
+          showError(rFields.dob, "Vui lòng chọn ngày sinh.");
+          isValid = false;
+        } else {
+          clearError(rFields.dob);
+        }
+
+        if (!/^[^\s@]+@gmail\.com$/.test(rFields.email.value.trim())) {
+          showError(
+            rFields.email,
+            "Email không hợp lệ (Phải đúng định dạng @gmail.com).",
+          );
+          isValid = false;
+        } else {
+          clearError(rFields.email);
+        }
+
+        if (
+          rFields.address.value.trim().length < 5 ||
+          rFields.address.value.trim().length > 100
+        ) {
+          showError(
+            rFields.address,
+            "Địa chỉ không được để trống và phải từ 5 - 100 ký tự.",
+          );
+          isValid = false;
+        } else {
+          clearError(rFields.address);
+        }
+
+        if (
+          !document.getElementById("edit-reader-flag").value &&
+          rFields.img.files.length === 0
+        ) {
+          showError(rFields.img, "Vui lòng tải lên ảnh đại diện bạn đọc.");
+          isValid = false;
+        } else {
+          clearError(rFields.img);
+        }
+
+        return isValid;
+      }
+
+      Object.values(rFields).forEach((field) => {
+        if (field) {
+          field.addEventListener("input", () => {
+            if (
+              field.id === "form-reader-name" &&
+              field.value.trim().length >= 5 &&
+              field.value.trim().length <= 20
+            )
+              clearError(field);
+            if (
+              field.id === "form-reader-phone" &&
+              /^\d{10}$/.test(field.value.trim())
+            )
+              clearError(field);
+            if (
+              field.id === "form-reader-email" &&
+              /^[^\s@]+@gmail\.com$/.test(field.value.trim())
+            )
+              clearError(field);
+            if (
+              field.id === "form-reader-address" &&
+              field.value.trim().length >= 5 &&
+              field.value.trim().length <= 100
+            )
+              clearError(field);
+            if (field.id === "form-reader-img" && field.files.length > 0)
+              clearError(field);
+          });
+          field.addEventListener("change", () => {
+            if (field.id === "form-reader-gender" && field.value)
+              clearError(field);
+            if (field.id === "form-reader-dob" && field.value)
+              clearError(field);
+          });
+        }
+      });
+
+      readerForm.addEventListener("submit", function (e) {
+        if (!validateReaderForm()) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+    </script>
   </body>
 </html>

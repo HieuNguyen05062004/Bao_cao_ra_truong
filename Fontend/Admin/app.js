@@ -150,6 +150,25 @@ class AdminDashboard {
       { id: 4, name: "Văn học", bookCount: 30 },
     ];
 
+    this.staffs = [
+      {
+        id: 1,
+        name: "Lê Minh Admin",
+        email: "minhlee@library.com",
+        role: "Admin",
+        createdAt: "2023-10-01",
+        img: "https://ui-avatars.com/api/?name=Admin+Lee&background=0D8ABC&color=fff",
+      },
+      {
+        id: 2,
+        name: "Nguyễn Thị Hoa",
+        email: "hoant@library.com",
+        role: "Staff",
+        createdAt: "2024-01-15",
+        img: "https://ui-avatars.com/api/?name=Hoa+Nguyen&background=green&color=fff",
+      },
+    ];
+
     this.borrowTickets = [
       {
         id: 101,
@@ -205,9 +224,12 @@ class AdminDashboard {
     this.renderBooks();
     this.renderReaders();
     this.renderCategories();
+    this.renderStaffs();
     this.renderBorrowTickets();
     this.renderBorrowTicketDetails();
+    this.renderStaffDetailView();
     this.setupEventListeners();
+    this.setupValidationListeners();
     this.setupSidebarToggle();
     this.renderBookDetailView(); // Thêm hàm này để chạy khi ở trang ct-sach.html
     this.renderReaderDetailView(); // Thêm cho trang chi tiết bạn đọc
@@ -238,6 +260,334 @@ class AdminDashboard {
       sidebar.classList.remove("active");
       overlay.classList.remove("active");
     });
+  }
+
+  // --- Validation Helpers ---
+  showError(input, message) {
+    const parent = input.closest(".form-group");
+    if (!parent) return;
+    let error = parent.querySelector(".error-msg");
+    if (!error) {
+      error = document.createElement("span");
+      error.className = "error-msg";
+      error.style.color = "red";
+      error.style.fontSize = "0.8rem";
+      error.style.marginTop = "5px";
+      error.style.display = "block";
+      parent.appendChild(error);
+    }
+    error.textContent = message;
+    input.style.borderColor = "red";
+  }
+
+  clearError(input) {
+    const parent = input.closest(".form-group");
+    if (!parent) return;
+    const error = parent.querySelector(".error-msg");
+    if (error) error.remove();
+    input.style.borderColor = "";
+  }
+
+  // --- Validation Logic ---
+  validateBookForm() {
+    const fields = {
+      title: document.getElementById("form-title"),
+      author: document.getElementById("form-author"),
+      publisher: document.getElementById("form-publisher"),
+      img: document.getElementById("form-img"),
+      description: document.getElementById("form-description"),
+    };
+    let isValid = true;
+
+    if (
+      !fields.title ||
+      fields.title.value.trim().length < 5 ||
+      fields.title.value.trim().length > 20
+    ) {
+      this.showError(
+        fields.title,
+        "Tên sách không được để trống và phải từ 5 - 20 ký tự.",
+      );
+      isValid = false;
+    } else this.clearError(fields.title);
+
+    if (
+      !fields.author ||
+      fields.author.value.trim().length < 5 ||
+      fields.author.value.trim().length > 20
+    ) {
+      this.showError(
+        fields.author,
+        "Tên tác giả không được để trống và phải từ 5 - 20 ký tự.",
+      );
+      isValid = false;
+    } else this.clearError(fields.author);
+
+    if (
+      !fields.publisher ||
+      fields.publisher.value.trim().length < 5 ||
+      fields.publisher.value.trim().length > 20
+    ) {
+      this.showError(
+        fields.publisher,
+        "Nhà xuất bản không được để trống và phải từ 5 - 20 ký tự.",
+      );
+      isValid = false;
+    } else this.clearError(fields.publisher);
+
+    const categoryContainer = document.getElementById(
+      "category-fields-container",
+    );
+    if (categoryContainer) {
+      const hasCategory = Array.from(
+        categoryContainer.querySelectorAll("select"),
+      ).some((s) => s.value !== "");
+      if (!hasCategory) {
+        this.showError(
+          categoryContainer,
+          "Vui lòng chọn ít nhất một thể loại sách.",
+        );
+        isValid = false;
+      } else this.clearError(categoryContainer);
+    }
+
+    if (
+      !document.getElementById("edit-id")?.value &&
+      fields.img?.files.length === 0
+    ) {
+      this.showError(fields.img, "Vui lòng tải lên hình ảnh bìa sách.");
+      isValid = false;
+    } else if (fields.img) this.clearError(fields.img);
+
+    if (
+      !fields.description ||
+      fields.description.value.trim().length < 10 ||
+      fields.description.value.trim().length > 900
+    ) {
+      this.showError(
+        fields.description,
+        "Mô tả không được để trống và phải từ 10 - 900 ký tự.",
+      );
+      isValid = false;
+    } else this.clearError(fields.description);
+
+    return isValid;
+  }
+
+  validateReaderForm() {
+    const rFields = {
+      name: document.getElementById("form-reader-name"),
+      phone: document.getElementById("form-reader-phone"),
+      gender: document.getElementById("form-reader-gender"),
+      dob: document.getElementById("form-reader-dob"),
+      email: document.getElementById("form-reader-email"),
+      address: document.getElementById("form-reader-address"),
+      img: document.getElementById("form-reader-img"),
+    };
+    let isValid = true;
+
+    if (
+      !rFields.name ||
+      rFields.name.value.trim().length < 5 ||
+      rFields.name.value.trim().length > 20
+    ) {
+      this.showError(
+        rFields.name,
+        "Họ và tên không được để trống và phải từ 5 - 20 ký tự.",
+      );
+      isValid = false;
+    } else this.clearError(rFields.name);
+
+    if (!rFields.phone || !/^\d{10}$/.test(rFields.phone.value.trim())) {
+      this.showError(
+        rFields.phone,
+        "Số điện thoại phải nhập đúng đủ 10 chữ số.",
+      );
+      isValid = false;
+    } else this.clearError(rFields.phone);
+
+    if (!rFields.gender || !rFields.gender.value) {
+      this.showError(rFields.gender, "Vui lòng chọn giới tính.");
+      isValid = false;
+    } else this.clearError(rFields.gender);
+
+    if (!rFields.dob || !rFields.dob.value) {
+      this.showError(rFields.dob, "Vui lòng chọn ngày sinh.");
+      isValid = false;
+    } else this.clearError(rFields.dob);
+
+    if (
+      !rFields.email ||
+      !/^[^\s@]+@gmail\.com$/.test(rFields.email.value.trim())
+    ) {
+      this.showError(
+        rFields.email,
+        "Email không hợp lệ (Phải đúng định dạng @gmail.com).",
+      );
+      isValid = false;
+    } else this.clearError(rFields.email);
+
+    if (
+      !rFields.address ||
+      rFields.address.value.trim().length < 5 ||
+      rFields.address.value.trim().length > 100
+    ) {
+      this.showError(
+        rFields.address,
+        "Địa chỉ không được để trống và phải từ 5 - 100 ký tự.",
+      );
+      isValid = false;
+    } else this.clearError(rFields.address);
+
+    if (
+      !document.getElementById("edit-reader-flag")?.value &&
+      rFields.img?.files.length === 0
+    ) {
+      this.showError(rFields.img, "Vui lòng tải lên ảnh đại diện bạn đọc.");
+      isValid = false;
+    } else if (rFields.img) this.clearError(rFields.img);
+
+    return isValid;
+  }
+
+  validateCategoryForm() {
+    const catNameField = document.getElementById("form-category-name");
+    if (!catNameField) return true;
+    const val = catNameField.value.trim();
+    if (val.length < 5 || val.length > 20) {
+      this.showError(
+        catNameField,
+        "Tên danh mục không được để trống và phải từ 5 - 20 ký tự.",
+      );
+      return false;
+    }
+    this.clearError(catNameField);
+    return true;
+  }
+
+  validateStaffForm() {
+    const fields = {
+      password: document.getElementById("form-staff-password"),
+      role: document.getElementById("form-staff-role"),
+      img: document.getElementById("form-staff-img"),
+    };
+    const PASS_REGEX = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{9,}$/;
+    let isValid = true;
+
+    if (fields.password) {
+      const passVal = fields.password.value.trim();
+      if (passVal === "" || !PASS_REGEX.test(passVal)) {
+        this.showError(
+          fields.password,
+          "Mật khẩu phải dài hơn 8 ký tự, bao gồm chữ hoa, số và ký tự đặc biệt.",
+        );
+        isValid = false;
+      } else this.clearError(fields.password);
+    }
+
+    if (fields.role && fields.role.value === "") {
+      this.showError(fields.role, "Vui lòng chọn quyền hạn cho tài khoản.");
+      isValid = false;
+    } else if (fields.role) this.clearError(fields.role);
+
+    if (
+      fields.img &&
+      fields.img.files.length === 0 &&
+      !document.getElementById("edit-staff-id")?.value
+    ) {
+      this.showError(fields.img, "Vui lòng tải lên ảnh đại diện nhân viên.");
+      isValid = false;
+    } else if (fields.img) this.clearError(fields.img);
+
+    return isValid;
+  }
+
+  setupValidationListeners() {
+    // Real-time Staff Validation
+    const staffPass = document.getElementById("form-staff-password");
+    const PASS_REGEX = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{9,}$/;
+    staffPass?.addEventListener("input", () => {
+      if (PASS_REGEX.test(staffPass.value.trim())) this.clearError(staffPass);
+      else
+        this.showError(
+          staffPass,
+          "Mật khẩu phải dài hơn 8 ký tự, bao gồm chữ hoa, số và ký tự đặc biệt.",
+        );
+    });
+
+    const staffRole = document.getElementById("form-staff-role");
+    staffRole?.addEventListener("change", () => {
+      if (staffRole.value !== "") this.clearError(staffRole);
+    });
+
+    // Real-time Category Validation
+    const catName = document.getElementById("form-category-name");
+    catName?.addEventListener("input", () => {
+      if (catName.value.trim().length >= 5 && catName.value.trim().length <= 20)
+        this.clearError(catName);
+    });
+
+    // Real-time Reader Validation
+    const readerName = document.getElementById("form-reader-name");
+    readerName?.addEventListener("input", () => {
+      if (
+        readerName.value.trim().length >= 5 &&
+        readerName.value.trim().length <= 20
+      )
+        this.clearError(readerName);
+    });
+    const readerPhone = document.getElementById("form-reader-phone");
+    readerPhone?.addEventListener("input", () => {
+      if (/^\d{10}$/.test(readerPhone.value.trim()))
+        this.clearError(readerPhone);
+    });
+    const readerEmail = document.getElementById("form-reader-email");
+    readerEmail?.addEventListener("input", () => {
+      if (/^[^\s@]+@gmail\.com$/.test(readerEmail.value.trim()))
+        this.clearError(readerEmail);
+    });
+
+    // Real-time Book Validation
+    const bookTitle = document.getElementById("form-title");
+    bookTitle?.addEventListener("input", () => {
+      if (
+        bookTitle.value.trim().length >= 5 &&
+        bookTitle.value.trim().length <= 20
+      )
+        this.clearError(bookTitle);
+    });
+  }
+
+  renderStaffDetailView() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const staffId = urlParams.get("id");
+    const headerTitle = document.getElementById("display-header-title");
+    if (!staffId || !headerTitle) return;
+
+    const staff = this.staffs.find((s) => s.id == staffId);
+    if (staff) {
+      document.title = `Chi tiết nhân viên: ${staff.name} - SmartLibrary`;
+      headerTitle.innerText = `👤 Chi tiết nhân viên: ${staff.name}`;
+      const img = document.getElementById("staff-detail-img");
+      if (img) img.src = staff.img;
+
+      document.getElementById("detail-staff-name").innerText = staff.name;
+      document.getElementById("detail-staff-email").innerText = staff.email;
+
+      const roleSpan = document.getElementById("detail-staff-role");
+      if (roleSpan) {
+        roleSpan.innerText =
+          staff.role === "Admin" ? "Quản trị viên" : "Thủ thư";
+        roleSpan.className = `badge ${staff.role === "Admin" ? "badge-primary" : "badge-info"}`;
+      }
+
+      const createdSpan = document.getElementById("detail-staff-created");
+      if (createdSpan && staff.createdAt) {
+        createdSpan.innerText = new Date(staff.createdAt).toLocaleString(
+          "vi-VN",
+        );
+      }
+    }
   }
 
   renderRecentActivity() {
@@ -339,6 +689,128 @@ class AdminDashboard {
     `,
       )
       .join("");
+  }
+
+  renderStaffs() {
+    const staffTable = document.getElementById("staff-list");
+    if (!staffTable) return;
+
+    staffTable.innerHTML = this.staffs
+      .map(
+        (s) => `
+      <tr>
+        <td><img src="${s.img}" class="table-img" style="border-radius: 50%" alt="avatar"></td>
+        <td>${s.name}</td>
+        <td>${s.email}</td>
+        <td><span class="badge ${s.role === "Admin" ? "badge-primary" : "badge-info"}">${s.role}</span></td>
+        <td>${new Date(s.createdAt).toLocaleDateString("vi-VN")}</td>
+        <td>
+          <div class="actions">
+            <a href="ct-nhan-vien.html?id=${s.id}" class="btn btn-sm btn-view" title="Xem chi tiết">
+              <i class="fas fa-eye"></i>
+            </a>
+            <button class="btn btn-sm btn-edit" onclick="app.openStaffModal(${s.id})" title="Sửa"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm btn-delete" onclick="app.deleteStaff(${s.id})" title="Xóa"><i class="fas fa-trash"></i></button>
+          </div>
+        </td>
+      </tr>
+    `,
+      )
+      .join("");
+  }
+
+  openStaffModal(staffId = null) {
+    const modal = document.getElementById("staff-modal");
+    const form = document.getElementById("staff-form");
+    const title = document.getElementById("staff-modal-title");
+    const passHelp = document.getElementById("password-help");
+
+    if (!modal || !form) return;
+    form.reset();
+    document.getElementById("edit-staff-id").value = "";
+    passHelp.style.display = "none";
+
+    if (staffId) {
+      const staff = this.staffs.find((s) => s.id === staffId);
+      if (staff) {
+        title.innerText = "Chỉnh sửa nhân viên";
+        document.getElementById("edit-staff-id").value = staff.id;
+        document.getElementById("form-staff-name").value = staff.name;
+        document.getElementById("form-staff-email").value = staff.email;
+        document.getElementById("form-staff-role").value = staff.role;
+        passHelp.style.display = "block";
+      }
+    } else {
+      title.innerText = "Thêm nhân viên mới";
+    }
+    modal.classList.add("active");
+  }
+
+  closeStaffModal() {
+    document.getElementById("staff-modal")?.classList.remove("active");
+  }
+
+  async handleStaffFormSubmit(e) {
+    const editId = document.getElementById("edit-staff-id").value;
+    const formImgInput = document.getElementById("form-staff-img");
+    let imageUrl = "https://ui-avatars.com/api/?name=Staff&background=random";
+
+    if (formImgInput.files && formImgInput.files.length > 0) {
+      imageUrl = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(formImgInput.files[0]);
+      });
+    } else if (editId) {
+      imageUrl = this.staffs.find((s) => s.id == editId)?.img;
+    }
+
+    const staffData = {
+      id: editId ? parseInt(editId) : this.staffs.length + 1,
+      name: document.getElementById("form-staff-name").value,
+      email: document.getElementById("form-staff-email").value,
+      role: document.getElementById("form-staff-role").value,
+      img: imageUrl,
+      createdAt: editId
+        ? this.staffs.find((s) => s.id == editId).createdAt
+        : new Date().toISOString().split("T")[0],
+    };
+
+    const isAdding = !editId;
+    this.openConfirmationModal(
+      isAdding ? "Xác nhận thêm" : "Xác nhận sửa",
+      `Lưu thông tin nhân viên <strong>${staffData.name}</strong>?`,
+      () => {
+        if (isAdding) {
+          this.staffs.push(staffData);
+          this.showToast("Thêm nhân viên thành công!", "success");
+        } else {
+          const idx = this.staffs.findIndex((s) => s.id == editId);
+          if (idx !== -1) this.staffs[idx] = staffData;
+          this.showToast("Cập nhật thành công!", "success");
+        }
+        this.renderStaffs();
+        this.closeStaffModal();
+      },
+    );
+  }
+
+  deleteStaff(id) {
+    const staff = this.staffs.find((s) => s.id === id);
+    if (staff && staff.id === 1) {
+      this.showToast("Không thể xóa tài khoản Admin hệ thống!", "error");
+      return;
+    }
+
+    this.openConfirmationModal(
+      "Xác nhận xóa",
+      `Bạn có chắc muốn xóa nhân viên <strong>${staff.name}</strong>?`,
+      () => {
+        this.staffs = this.staffs.filter((s) => s.id !== id);
+        this.renderStaffs();
+        this.showToast("Đã xóa nhân viên", "success");
+      },
+    );
   }
 
   renderCategories() {
@@ -987,7 +1459,7 @@ class AdminDashboard {
       () => {
         if (isAdding) this.readers.push(readerData);
         else {
-          const idx = this.readers.findIndex((r) => r.id === editId);
+          const idx = this.readers.findIndex((r) => r.id === readerIdInput);
           if (idx !== -1) this.readers[idx] = readerData;
         }
         this.renderReaders();
@@ -1053,7 +1525,41 @@ class AdminDashboard {
       ?.addEventListener("click", () => this.closeCategoryModal());
     document
       .getElementById("category-form")
-      ?.addEventListener("submit", (e) => this.handleCategoryFormSubmit(e));
+      ?.addEventListener("submit", (e) => {
+        if (this.validateCategoryForm()) this.handleCategoryFormSubmit(e);
+        else e.preventDefault();
+      });
+
+    // Staff form
+    document.getElementById("staff-form")?.addEventListener("submit", (e) => {
+      if (this.validateStaffForm()) this.handleStaffFormSubmit(e);
+      else e.preventDefault();
+    });
+
+    // Dynamic Category fields in Book Modal
+    document
+      .getElementById("add-category-field")
+      ?.addEventListener("click", () => {
+        const container = document.getElementById("category-fields-container");
+        if (!container) return;
+        const firstSelect = container.querySelector("select");
+        const newFieldGroup = document.createElement("div");
+        newFieldGroup.style.display = "flex";
+        newFieldGroup.style.gap = "5px";
+        newFieldGroup.style.marginBottom = "8px";
+        const newSelect = firstSelect.cloneNode(true);
+        newSelect.style.flex = "1";
+        newSelect.style.marginBottom = "0";
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "btn btn-outline";
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.style.padding = "5px 10px";
+        removeBtn.onclick = () => newFieldGroup.remove();
+        newFieldGroup.appendChild(newSelect);
+        newFieldGroup.appendChild(removeBtn);
+        container.appendChild(newFieldGroup);
+      });
 
     // Category details events
     document
@@ -1082,10 +1588,12 @@ class AdminDashboard {
       if (e.target.id === "reader-details-modal")
         this.closeReaderDetailsModal();
       if (e.target.id === "confirm-modal") this.closeConfirmationModal();
+      if (e.target.id === "staff-modal") this.closeStaffModal();
     });
 
-    document
-      .getElementById("book-form")
-      ?.addEventListener("submit", (e) => this.handleFormSubmit(e));
+    document.getElementById("book-form")?.addEventListener("submit", (e) => {
+      if (this.validateBookForm()) this.handleFormSubmit(e);
+      else e.preventDefault();
+    });
   }
 }

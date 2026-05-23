@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký bạn đọc - SmartLibrary</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../Admin/styles.css" />
+    <style>
+      body {
+        background-color: #f4f7f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+      }
+      .signup-card {
+        width: 100%;
+        max-width: 650px;
+        padding: 2rem;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+      .signup-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .signup-header i {
+        font-size: 2.5rem;
+        color: var(--accent, #3b82f6);
+        margin-bottom: 0.5rem;
+      }
+      .alert-info {
+        background-color: #e0f2fe;
+        border-left: 4px solid #0ea5e9;
+        padding: 12px;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+        color: #0369a1;
+        border-radius: 4px;
+      }
+      .show-password-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+        font-size: 0.85rem;
+        color: var(--text-light);
+        cursor: pointer;
+      }
+      .show-password-container input {
+        width: auto;
+      }
+      .form-help {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        margin-top: 4px;
+        display: block;
+      }
+      .btn-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 2rem;
+      }
+      .btn-group .btn {
+        flex: 1;
+        padding: 12px;
+        font-weight: 600;
+      }
+      @media (max-width: 480px) {
+        .signup-card {
+          padding: 1.5rem;
+        }
+        .btn-group {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="signup-card">
+      <div class="signup-header">
+        <i class="fas fa-user-plus"></i>
+        <h2>Đăng Ký Tài Khoản Bạn Đọc</h2>
+      </div>
+
+      <div class="alert-info">
+        <i class="fas fa-info-circle"></i>
+        Lưu ý: Sau khi đăng ký thành công, bạn sẽ nhận được mã bạn đọc dùng để
+        mượn sách.
+      </div>
+
+      <form id="signup-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="form-email" placeholder="hieu3@gmail.com" />
+          </div>
+          <div class="form-group">
+            <label>Họ và Tên *</label>
+            <input type="text" id="form-name" placeholder="Nguyễn Văn A" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Số Điện Thoại *</label>
+            <input type="text" id="form-phone" placeholder="0xxxxxxxxx" />
+          </div>
+          <div class="form-group">
+            <label>Giới Tính *</label>
+            <select id="form-gender">
+              <option value="">-- Chọn giới tính --</option>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+              <option value="Khác">Khác</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Mật Khẩu *</label>
+          <input type="password" id="form-password" placeholder="••••••••" />
+          <label class="show-password-container">
+            <input type="checkbox" id="toggle-password" /> Hiển thị mật khẩu
+          </label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ngày Sinh *</label>
+            <input type="date" id="form-dob" />
+          </div>
+          <div class="form-group">
+            <label>Ảnh Đại Diện *</label>
+            <input type="file" id="form-avatar" accept="image/*" />
+            <span class="form-help">Định dạng: JPG, PNG, GIF (tối đa 5MB)</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Địa Chỉ *</label>
+          <input
+            type="text"
+            id="form-address"
+            placeholder="123 Đường Lý Thái Tông, Quận Hà Nội"
+          />
+        </div>
+
+        <div class="btn-group">
+          <a href="index.html" class="btn btn-outline">Hủy</a>
+          <button type="submit" class="btn btn-primary">Đăng Ký</button>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      function showError(input, message) {
+        const parent = input.closest(".form-group");
+        let error = parent.querySelector(".error-msg");
+        if (!error) {
+          error = document.createElement("span");
+          error.className = "error-msg";
+          error.style.color = "red";
+          error.style.fontSize = "0.8rem";
+          error.style.marginTop = "5px";
+          error.style.display = "block";
+          parent.appendChild(error);
+        }
+        error.textContent = message;
+        input.style.borderColor = "red";
+      }
+
+      function clearError(input) {
+        const parent = input.closest(".form-group");
+        const error = parent.querySelector(".error-msg");
+        if (error) error.remove();
+        input.style.borderColor = "";
+      }
+
+      document
+        .getElementById("toggle-password")
+        .addEventListener("change", function () {
+          document.getElementById("form-password").type = this.checked
+            ? "text"
+            : "password";
+        });
+
+      const signupForm = document.getElementById("signup-form");
+      signupForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        let isValid = true;
+
+        const fields = {
+          email: document.getElementById("form-email"),
+          name: document.getElementById("form-name"),
+          phone: document.getElementById("form-phone"),
+          gender: document.getElementById("form-gender"),
+          password: document.getElementById("form-password"),
+          dob: document.getElementById("form-dob"),
+          avatar: document.getElementById("form-avatar"),
+          address: document.getElementById("form-address"),
+        };
+
+        // Validation Rules
+        if (!/^[^\s@]+@gmail\.com$/.test(fields.email.value.trim())) {
+          showError(
+            fields.email,
+            "Email không hợp lệ (Phải đúng định dạng @gmail.com).",
+          );
+          isValid = false;
+        } else clearError(fields.email);
+        if (
+          fields.name.value.trim().length < 5 ||
+          fields.name.value.trim().length > 20
+        ) {
+          showError(
+            fields.name,
+            "Họ và tên không được để trống và phải từ 5 - 20 ký tự.",
+          );
+          isValid = false;
+        } else clearError(fields.name);
+        if (!/^\d{10}$/.test(fields.phone.value.trim())) {
+          showError(fields.phone, "Số điện thoại phải nhập đúng đủ 10 chữ số.");
+          isValid = false;
+        } else clearError(fields.phone);
+        if (!fields.gender.value) {
+          showError(fields.gender, "Vui lòng chọn giới tính.");
+          isValid = false;
+        } else clearError(fields.gender);
+
+        const passVal = fields.password.value;
+        const passRegex =
+          /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{9,}$/;
+        if (!passRegex.test(passVal)) {
+          showError(
+            fields.password,
+            "Mật khẩu phải dài hơn 8 ký tự, bao gồm chữ hoa, số và ký tự đặc biệt.",
+          );
+          isValid = false;
+        } else clearError(fields.password);
+
+        if (!fields.dob.value) {
+          showError(fields.dob, "Vui lòng chọn ngày sinh.");
+          isValid = false;
+        } else clearError(fields.dob);
+        if (fields.avatar.files.length === 0) {
+          showError(fields.avatar, "Vui lòng tải lên ảnh đại diện bạn đọc.");
+          isValid = false;
+        } else clearError(fields.avatar);
+        if (
+          fields.address.value.trim().length < 5 ||
+          fields.address.value.trim().length > 100
+        ) {
+          showError(
+            fields.address,
+            "Địa chỉ không được để trống và phải từ 5 - 100 ký tự.",
+          );
+          isValid = false;
+        } else clearError(fields.address);
+
+        if (isValid) {
+          alert("Đăng ký thành công! Chào mừng " + fields.name.value);
+          window.location.href = "index.html";
+        }
+      });
+    </script>
+  </body>
+</html>

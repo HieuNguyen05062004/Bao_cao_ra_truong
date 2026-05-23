@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập - SmartLibrary</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Giả định styles.css nằm trong thư mục Admin -->
+    <link rel="stylesheet" href="../Admin/styles.css" />
+    <style>
+      body {
+        background-color: #f4f7f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+      }
+      .login-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 2.5rem;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+      .login-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .login-header i {
+        font-size: 3.5rem;
+        color: var(--primary, #0d8abc);
+        margin-bottom: 1rem;
+      }
+      .show-password-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+        font-size: 0.9rem;
+        color: #666;
+        cursor: pointer;
+        user-select: none;
+      }
+      .show-password-container input {
+        width: auto;
+        margin-bottom: 0;
+      }
+      .btn-login {
+        width: 100%;
+        margin-top: 2rem;
+        padding: 12px;
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+      @media (max-width: 480px) {
+        .login-card {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-card">
+      <div class="login-header">
+        <i class="fas fa-book-reader"></i>
+        <h2>SmartLib Login</h2>
+        <p>Đăng nhập để quản lý thư viện</p>
+      </div>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input
+            type="email"
+            id="login-email"
+            placeholder="example@gmail.com"
+          />
+        </div>
+        <div class="form-group">
+          <label for="login-password">Mật khẩu</label>
+          <input
+            type="password"
+            id="login-password"
+            placeholder="Nhập mật khẩu của bạn..."
+          />
+          <label class="show-password-container">
+            <input type="checkbox" id="toggle-password" /> Hiện mật khẩu
+          </label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-login">
+          Đăng Nhập
+        </button>
+      </form>
+      <div
+        style="
+          text-align: center;
+          margin-top: 1.5rem;
+          font-size: 0.9rem;
+          color: #666;
+        "
+      >
+        Chưa có tài khoản?
+        <a
+          href="sign-up.html"
+          style="
+            color: var(--primary, #0d8abc);
+            font-weight: 600;
+            text-decoration: none;
+          "
+          >Đăng ký ngay</a
+        >
+      </div>
+    </div>
+
+    <script>
+      function showError(input, message) {
+        const parent = input.closest(".form-group");
+        let error = parent.querySelector(".error-msg");
+        if (!error) {
+          error = document.createElement("span");
+          error.className = "error-msg";
+          error.style.color = "red";
+          error.style.fontSize = "0.8rem";
+          error.style.marginTop = "5px";
+          error.style.display = "block";
+          parent.appendChild(error);
+        }
+        error.textContent = message;
+        input.style.borderColor = "red";
+      }
+
+      function clearError(input) {
+        const parent = input.closest(".form-group");
+        const error = parent.querySelector(".error-msg");
+        if (error) error.remove();
+        input.style.borderColor = "";
+      }
+
+      // Logic ẩn hiện mật khẩu
+      const passwordInput = document.getElementById("login-password");
+      const toggleCheckbox = document.getElementById("toggle-password");
+
+      toggleCheckbox.addEventListener("change", function () {
+        passwordInput.type = this.checked ? "text" : "password";
+      });
+
+      // Logic Validation khi submit
+      const loginForm = document.getElementById("login-form");
+      loginForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        let isValid = true;
+        const emailInput = document.getElementById("login-email");
+
+        if (!/^[^\s@]+@gmail\.com$/.test(emailInput.value.trim())) {
+          showError(
+            emailInput,
+            "Email không hợp lệ (Phải đúng định dạng @gmail.com).",
+          );
+          isValid = false;
+        } else {
+          clearError(emailInput);
+        }
+
+        if (passwordInput.value.trim() === "") {
+          showError(passwordInput, "Vui lòng nhập mật khẩu.");
+          isValid = false;
+        } else {
+          clearError(passwordInput);
+        }
+
+        if (isValid) {
+          // Giả lập chuyển hướng sau khi đăng nhập thành công
+          window.location.href = "../Admin/index.html";
+        }
+      });
+
+      // Xóa lỗi khi người dùng bắt đầu nhập lại
+      document
+        .getElementById("login-email")
+        .addEventListener("input", function () {
+          clearError(this);
+        });
+      passwordInput.addEventListener("input", function () {
+        clearError(this);
+      });
+    </script>
+  </body>
+</html>

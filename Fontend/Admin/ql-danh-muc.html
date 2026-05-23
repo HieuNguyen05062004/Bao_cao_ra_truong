@@ -204,5 +204,61 @@
     <div id="toast-container" class="toast-container"></div>
 
     <script src="app.js"></script>
+    <script>
+      function showError(input, message) {
+        const parent = input.closest(".form-group");
+        let error = parent.querySelector(".error-msg");
+        if (!error) {
+          error = document.createElement("span");
+          error.className = "error-msg";
+          error.style.color = "red";
+          error.style.fontSize = "0.8rem";
+          error.style.marginTop = "5px";
+          error.style.display = "block";
+          parent.appendChild(error);
+        }
+        error.textContent = message;
+        input.style.borderColor = "red";
+      }
+
+      function clearError(input) {
+        const parent = input.closest(".form-group");
+        const error = parent.querySelector(".error-msg");
+        if (error) error.remove();
+        input.style.borderColor = "";
+      }
+
+      const categoryForm = document.getElementById("category-form");
+      const catNameField = document.getElementById("form-category-name");
+
+      function validateCategoryForm() {
+        let isValid = true;
+        const val = catNameField.value.trim();
+        if (val.length < 5 || val.length > 20) {
+          showError(
+            catNameField,
+            "Tên danh mục không được để trống và phải từ 5 - 20 ký tự.",
+          );
+          isValid = false;
+        } else {
+          clearError(catNameField);
+        }
+        return isValid;
+      }
+
+      catNameField.addEventListener("input", function () {
+        const val = this.value.trim();
+        if (val.length >= 5 && val.length <= 20) {
+          clearError(this);
+        }
+      });
+
+      categoryForm.addEventListener("submit", function (e) {
+        if (!validateCategoryForm()) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+    </script>
   </body>
 </html>
