@@ -5,6 +5,14 @@
     ViewData["Title"] = "Thêm sách mới";
 }
 
+@* Serialize danh sách categories thành JSON để JS dùng *@
+@{
+    var categoriesJson = System.Text.Json.JsonSerializer.Serialize(
+        Model.Categories.Select(c => new { id = c.CategoryId, name = c.CategoryName })
+    );
+    var selectedJson = System.Text.Json.JsonSerializer.Serialize(Model.CategoryIds);
+}
+
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-8 offset-md-2">
@@ -34,7 +42,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label asp-for="Title" class="form-label">Tên sách <span class="text-danger">*</span></label>
-                                <input asp-for="Title" class="form-control" placeholder="Nhập tên sách">
+                                <input asp-for="Title" class="form-control" placeholder="Nhập tên sách...">
                                 <span asp-validation-for="Title" class="text-danger small"></span>
                             </div>
                         </div>
@@ -42,51 +50,50 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label asp-for="Author" class="form-label">Tác giả</label>
-                                <input asp-for="Author" class="form-control" placeholder="Nhập tên tác giả">
+                                <input asp-for="Author" class="form-control" placeholder="Tên tác giả">
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="Publisher" class="form-label">Nhà xuất bản</label>
-                                <input asp-for="Publisher" class="form-control" placeholder="Nhập tên NXB">
+                                @* ── Thể loại: nhiều dòng select + nút + / × ── *@
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <label class="form-label mb-0">Thể loại</label>
+                                    <button type="button" class="btn btn-sm btn-outline-success py-0 px-2"
+                                            onclick="addCategoryRow()" title="Thêm thể loại">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                <div id="categoryRows"></div>
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
+                                <label asp-for="Publisher" class="form-label">Nhà xuất bản</label>
+                                <input asp-for="Publisher" class="form-control" placeholder="Tên nhà xuất bản">
+                            </div>
+                            <div class="col-md-6">
                                 <label asp-for="PublishYear" class="form-label">Năm xuất bản</label>
-                                <input asp-for="PublishYear" type="number" class="form-control" min="1000" max="2100" placeholder="VD: 2020">
+                                <input asp-for="PublishYear" type="number" class="form-control" min="1000" max="2100" placeholder="Năm">
                                 <span asp-validation-for="PublishYear" class="text-danger small"></span>
                             </div>
+                        </div>
+
+                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label asp-for="Quantity" class="form-label">Số lượng <span class="text-danger">*</span></label>
                                 <input asp-for="Quantity" type="number" class="form-control" min="0" value="1">
                                 <span asp-validation-for="Quantity" class="text-danger small"></span>
                             </div>
-                        </div>
-
-                        @* ── Chips chọn nhiều danh mục ── *@
-                        @await Html.PartialAsync("_CategoryChips", new CategoryChipsViewModel
-                        {
-                            Categories = Model.Categories,
-                            SelectedIds = Model.CategoryIds,
-                            InputName = "CategoryIds"
-                        })
-
-                        <div class="row mb-3">
                             <div class="col-md-6">
-                                <label asp-for="Status" class="form-label">Tình trạng</label>
-                                <input asp-for="Status" class="form-control" value="Có thể mượn">
-                            </div>
-                            <div class="col-md-6">
-                                <label asp-for="ImageFile" class="form-label">Hình ảnh bìa</label>
+                                <label asp-for="ImageFile" class="form-label">Ảnh bìa</label>
                                 <input asp-for="ImageFile" type="file" class="form-control" accept="image/*">
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="Description" class="form-label">Mô tả sách</label>
-                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Nhập mô tả về sách..."></textarea>
+                            <textarea asp-for="Description" class="form-control" rows="4"
+                                      placeholder="Nhập mô tả chi tiết về nội dung sách..."></textarea>
                             <span asp-validation-for="Description" class="text-danger small"></span>
-                            <small class="text-muted">Tối đa 1000 ký tự</small>
                         </div>
 
                         <div class="d-flex gap-2 justify-content-end">
@@ -108,4 +115,96 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        const ALL_CATEGORIES = @Html.Raw(categoriesJson);
+        const SELECTED_IDS   = @Html.Raw(selectedJson);
+
+        /* Tập các categoryId đang dùng (tránh chọn trùng) */
+        const usedIds = new Set();
+
+        /**
+         * Tạo 1 dòng <select> + nút ×
+         * preselectedId: số hoặc null — dùng khi render lại sau lỗi server
+         */
+        function addCategoryRow(preselectedId = null) {
+            const container = document.getElementById('categoryRows');
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'category-row d-flex align-items-center gap-2 mb-2';
+
+            // --- Build <select> ---
+            const select = document.createElement('select');
+            select.name      = 'CategoryIds';
+            select.className = 'form-select';
+
+            const blank = document.createElement('option');
+            blank.value       = '';
+            blank.textContent = '-- Chọn thể loại --';
+            select.appendChild(blank);
+
+            ALL_CATEGORIES.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value       = cat.id;
+                opt.textContent = cat.name;
+                // Ẩn option đã được chọn ở dòng khác
+                if (usedIds.has(String(cat.id))) opt.disabled = true;
+                if (preselectedId !== null && cat.id === preselectedId) {
+                    opt.selected = true;
+                    usedIds.add(String(cat.id));
+                }
+                select.appendChild(opt);
+            });
+
+            // Khi đổi giá trị: cập nhật usedIds + refresh disabled trên tất cả select
+            select.addEventListener('change', function () {
+                refreshUsedIds();
+                refreshAllSelects();
+            });
+
+            // --- Nút × ---
+            const btn = document.createElement('button');
+            btn.type      = 'button';
+            btn.className = 'btn btn-outline-danger btn-sm px-2';
+            btn.title     = 'Xóa thể loại này';
+            btn.innerHTML = '<i class="fas fa-times"></i>';
+            btn.addEventListener('click', function () {
+                wrapper.remove();
+                refreshUsedIds();
+                refreshAllSelects();
+            });
+
+            wrapper.appendChild(select);
+            wrapper.appendChild(btn);
+            container.appendChild(wrapper);
+        }
+
+        /** Tính lại tập usedIds từ tất cả select hiện tại */
+        function refreshUsedIds() {
+            usedIds.clear();
+            document.querySelectorAll('#categoryRows select[name="CategoryIds"]').forEach(sel => {
+                if (sel.value) usedIds.add(sel.value);
+            });
+        }
+
+        /** Cập nhật disabled cho mọi option trong mọi select */
+        function refreshAllSelects() {
+            document.querySelectorAll('#categoryRows select[name="CategoryIds"]').forEach(sel => {
+                const myVal = sel.value;
+                Array.from(sel.options).forEach(opt => {
+                    if (!opt.value) return; // bỏ qua option blank
+                    opt.disabled = usedIds.has(opt.value) && opt.value !== myVal;
+                });
+            });
+        }
+
+        /* Khởi tạo: render các thể loại đã được chọn trước (sau lỗi server) */
+        window.addEventListener('DOMContentLoaded', () => {
+            if (SELECTED_IDS && SELECTED_IDS.length > 0) {
+                SELECTED_IDS.forEach(id => addCategoryRow(id));
+            } else {
+                addCategoryRow(); // mặc định có 1 dòng trống
+            }
+        });
+    </script>
 }
