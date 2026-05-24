@@ -120,24 +120,24 @@ public partial class LibraryDbContext : DbContext
                   .HasConstraintName("FK__BorrowTic__Staff__2B0A656D");
 
             entity.HasMany(d => d.Books)
-                  .WithMany(p => p.Tickets)
-                  .UsingEntity<Dictionary<string, object>>(
-                      "BorrowDetail",
-                      r => r.HasOne<Book>().WithMany()
-                            .HasForeignKey("BookId")
-                            .OnDelete(DeleteBehavior.ClientSetNull),
-                      l => l.HasOne<BorrowTicket>().WithMany()
-                            .HasForeignKey("TicketId")
-                            .OnDelete(DeleteBehavior.ClientSetNull),
-                      j =>
-                      {
-                          j.HasKey("TicketId", "BookId")
-                           .HasName("PK__BorrowDe__12F2CA05C68F0A44");
-                          j.ToTable("BorrowDetails");
-                          j.IndexerProperty<int>("TicketId").HasColumnName("TicketID");
-                          j.IndexerProperty<string>("BookId")
-                           .HasMaxLength(20).IsUnicode(false).HasColumnName("BookID");
-                      });
+          .WithMany(p => p.Tickets)
+          .UsingEntity<Dictionary<string, object>>(
+              "BorrowDetail",
+              r => r.HasOne<Book>().WithMany()
+                    .HasForeignKey("BookId")
+                    .OnDelete(DeleteBehavior.ClientSetNull), // Book giữ nguyên
+              l => l.HasOne<BorrowTicket>().WithMany()
+                    .HasForeignKey("TicketId")
+                    .OnDelete(DeleteBehavior.Cascade),       // ← đổi thành Cascade
+              j =>
+              {
+                  j.HasKey("TicketId", "BookId")
+                   .HasName("PK__BorrowDe__12F2CA05C68F0A44");
+                  j.ToTable("BorrowDetails");
+                  j.IndexerProperty<int>("TicketId").HasColumnName("TicketID");
+                  j.IndexerProperty<string>("BookId")
+                   .HasMaxLength(20).IsUnicode(false).HasColumnName("BookID");
+              });
         });
 
         // ── Reader ────────────────────────────────────────────────────────────
