@@ -1,4 +1,5 @@
-﻿using Admin.ViewModels;
+﻿using System.Text.RegularExpressions;
+using Admin.ViewModels;
 using Core.Shared.Constants;
 using Core.Shared.Entities;
 using Core.Shared.Interfaces;
@@ -11,15 +12,21 @@ public class StaffController : Controller
     private readonly IAuthService _authService;
     private readonly IWebHostEnvironment _env;
 
+    // Regex dùng chung: > 8 ký tự, có chữ hoa, có số, có ký tự đặc biệt
+    private static readonly Regex PasswordRegex =
+        new(@"^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{9,}$", RegexOptions.Compiled);
+
+    private const string PasswordErrorMessage =
+        "Mật khẩu phải dài hơn 8 ký tự, bao gồm chữ hoa, số và ký tự đặc biệt.";
+
     public StaffController(IAuthService authService, IWebHostEnvironment env)
     {
         _authService = authService;
         _env = env;
     }
 
-    // ------------------------------------------------------------------ //
-    //  Middleware kiểm tra quyền (gọi ở đầu mỗi action cần Admin)
-    // ------------------------------------------------------------------ //
+    // ─── HELPER QUYỀN ────────────────────────────────────────────────────────
+
     private bool IsAdmin() =>
         HttpContext.Session.GetString("Role") == RoleConstants.Admin;
 
@@ -30,21 +37,17 @@ public class StaffController : Controller
         return null!;
     }
 
-    // ------------------------------------------------------------------ //
-    //  INDEX - Danh sách tài khoản
-    // ------------------------------------------------------------------ //
+    // ─── INDEX ───────────────────────────────────────────────────────────────
 
-    // GET /Staff  hoặc  /Staff?keyword=...
     [HttpGet]
     public async Task<IActionResult> Index(string? keyword)
     {
         var guard = RequireAdmin(); if (guard != null) return guard;
 
-        IEnumerable<Core.Shared.Entities.Account> accounts;
+        IEnumerable<Account> accounts;
 
         if (!string.IsNullOrWhiteSpace(keyword))
         {
-            // Tìm kiếm — dùng GetAllStaffAsync rồi filter (hoặc bạn mở rộng IAuthService thêm SearchAsync)
             var all = await _authService.GetAllStaffAsync();
             keyword = keyword.Trim().ToLower();
             accounts = all.Where(a =>
@@ -71,11 +74,8 @@ public class StaffController : Controller
         return View(viewModels);
     }
 
-    // ------------------------------------------------------------------ //
-    //  DETAILS
-    // ------------------------------------------------------------------ //
+    // ─── DETAILS ─────────────────────────────────────────────────────────────
 
-    // GET /Staff/Details/{username}
     [HttpGet]
     public async Task<IActionResult> Details(string username)
     {
@@ -101,11 +101,8 @@ public class StaffController : Controller
         return View(model);
     }
 
-    // ------------------------------------------------------------------ //
-    //  CREATE
-    // ------------------------------------------------------------------ //
+    // ─── CREATE ──────────────────────────────────────────────────────────────
 
-    // GET /Staff/Create
     [HttpGet]
     public IActionResult Create()
     {
@@ -113,27 +110,32 @@ public class StaffController : Controller
         return View(new StaffViewModel { Role = RoleConstants.Staff });
     }
 
-    // POST /Staff/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(StaffViewModel model)
     {
         var guard = RequireAdmin(); if (guard != null) return guard;
 
-        // Bắt buộc nhập mật khẩu khi tạo mới
+        // ── Validate Password: bắt buộc khi Create ────────────────────
         if (string.IsNullOrWhiteSpace(model.Password))
-            ModelState.AddModelError(nameof(model.Password), "Vui lòng nhập mật khẩu.");
+            ModelState.AddModelError(nameof(model.Password), PasswordErrorMessage);
+        else if (!PasswordRegex.IsMatch(model.Password))
+            ModelState.AddModelError(nameof(model.Password), PasswordErrorMessage);
+        // ──────────────────────────────────────────────────────────────
+
+        // ── Validate AvatarFile: bắt buộc khi Create ──────────────────
+        if (model.AvatarFile == null || model.AvatarFile.Length == 0)
+            ModelState.AddModelError(nameof(model.AvatarFile),
+                "Vui lòng tải lên ảnh đại diện nhân viên.");
+        // ──────────────────────────────────────────────────────────────
 
         if (!ModelState.IsValid)
             return View(model);
 
-        // Xử lý upload avatar
         string? avatarUrl = await SaveAvatarAsync(model.AvatarFile);
-
-        // Tự động tạo Username từ Email (lấy phần trước dấu @)
         string username = model.Email.Trim().Split('@')[0];
 
-        var account = new Core.Shared.Entities.Account
+        var account = new Account
         {
             Username = username,
             FullName = model.FullName.Trim(),
@@ -153,11 +155,8 @@ public class StaffController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // ------------------------------------------------------------------ //
-    //  EDIT
-    // ------------------------------------------------------------------ //
+    // ─── EDIT ────────────────────────────────────────────────────────────────
 
-    // GET /Staff/Edit/{username}
     [HttpGet]
     public async Task<IActionResult> Edit(string username)
     {
@@ -183,25 +182,31 @@ public class StaffController : Controller
         return View(model);
     }
 
-    // POST /Staff/Edit/{username}
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(string username, StaffViewModel model)
     {
         var guard = RequireAdmin(); if (guard != null) return guard;
 
-        // Bỏ validate Password (không bắt buộc khi Edit)
-        ModelState.Remove(nameof(model.Password));
+        // ── Password không bắt buộc khi Edit ──────────────────────────
+        // Nếu để trống → giữ nguyên mật khẩu cũ (không validate)
+        // Nếu có nhập  → validate đúng format
+        if (string.IsNullOrWhiteSpace(model.Password))
+            ModelState.Remove(nameof(model.Password));
+        else if (!PasswordRegex.IsMatch(model.Password))
+            ModelState.AddModelError(nameof(model.Password), PasswordErrorMessage);
+        // ──────────────────────────────────────────────────────────────
+
+        // AvatarFile không bắt buộc khi Edit — giữ ảnh cũ nếu không upload mới
 
         if (!ModelState.IsValid)
             return View(model);
 
-        // Xử lý avatar mới (nếu có upload)
-        string? avatarUrl = model.AvatarUrl; // giữ ảnh cũ
-        if (model.AvatarFile != null)
+        string? avatarUrl = model.AvatarUrl;
+        if (model.AvatarFile != null && model.AvatarFile.Length > 0)
             avatarUrl = await SaveAvatarAsync(model.AvatarFile);
 
-        var account = new Core.Shared.Entities.Account
+        var account = new Account
         {
             Username = username,
             FullName = model.FullName.Trim(),
@@ -221,11 +226,8 @@ public class StaffController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // ------------------------------------------------------------------ //
-    //  DELETE
-    // ------------------------------------------------------------------ //
+    // ─── DELETE ──────────────────────────────────────────────────────────────
 
-    // POST /Staff/Delete/{username}
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(string username)
@@ -234,17 +236,13 @@ public class StaffController : Controller
 
         var error = await _authService.DeleteAccountAsync(username);
 
-        if (error != null)
-            TempData["Error"] = error;
-        else
-            TempData["Success"] = MessageConstants.DeleteSuccess;
+        if (error != null) TempData["Error"] = error;
+        else TempData["Success"] = MessageConstants.DeleteSuccess;
 
         return RedirectToAction(nameof(Index));
     }
 
-    // ------------------------------------------------------------------ //
-    //  HELPER - Lưu file ảnh
-    // ------------------------------------------------------------------ //
+    // ─── PRIVATE HELPER ──────────────────────────────────────────────────────
 
     private async Task<string?> SaveAvatarAsync(IFormFile? file)
     {
@@ -253,7 +251,6 @@ public class StaffController : Controller
         var uploadDir = Path.Combine(_env.WebRootPath, "uploads", "avatars");
         Directory.CreateDirectory(uploadDir);
 
-        // Tên file unique để tránh trùng
         var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
         var filePath = Path.Combine(uploadDir, fileName);
 

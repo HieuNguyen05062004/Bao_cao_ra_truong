@@ -9,29 +9,33 @@ public class ReaderViewModel
     // Chỉ dùng để hiển thị, không nhập tay — hệ thống tự sinh
     public string? ReaderId { get; set; }
 
-    [Required(ErrorMessage = "Vui lòng nhập họ tên.")]
-    [StringLength(100, ErrorMessage = "Tối đa 100 ký tự.")]
+    [Required(ErrorMessage = "Họ và tên không được để trống và phải từ 5 - 20 ký tự.")]
+    [StringLength(20, MinimumLength = 5, ErrorMessage = "Họ và tên không được để trống và phải từ 5 - 20 ký tự.")]
     [Display(Name = "Họ và tên")]
     public string FullName { get; set; } = string.Empty;
 
+    [Required(ErrorMessage = "Vui lòng chọn ngày sinh.")]
     [Display(Name = "Ngày sinh")]
     public DateOnly? DoB { get; set; }
 
+    [Required(ErrorMessage = "Vui lòng chọn giới tính.")]
     [Display(Name = "Giới tính")]
     public string? Gender { get; set; }
-
-    [StringLength(255, ErrorMessage = "Tối đa 255 ký tự.")]
+    [Required(ErrorMessage = "Địa chỉ không được để trống và phải từ 5 - 100 ký tự.")]
+    [StringLength(100, MinimumLength = 5, ErrorMessage = "Địa chỉ không được để trống và phải từ 5 - 100 ký tự.")]
     [Display(Name = "Địa chỉ")]
-    public string? Address { get; set; }
+    public string Address { get; set; } = string.Empty;
 
-    [StringLength(15, ErrorMessage = "Tối đa 15 ký tự.")]
+    [Required(ErrorMessage = "Số điện thoại phải nhập đúng đủ 10 chữ số.")]
+    [RegularExpression(@"^\d{10}$", ErrorMessage = "Số điện thoại phải nhập đúng đủ 10 chữ số.")]
     [Display(Name = "Số điện thoại")]
     public string? Phone { get; set; }
 
-    [EmailAddress(ErrorMessage = "Email không hợp lệ.")]
-    [StringLength(100, ErrorMessage = "Tối đa 100 ký tự.")]
+    [Required(ErrorMessage = "Email không hợp lệ (Phải đúng định dạng @gmail.com).")]
+    [RegularExpression(@"^[a-zA-Z0-9._%+\-]+@gmail\.com$",
+    ErrorMessage = "Email không hợp lệ (Phải đúng định dạng @gmail.com).")]
     [Display(Name = "Email")]
-    public string? Email { get; set; }
+    public string Email { get; set; } = string.Empty;
 
     [StringLength(100, MinimumLength = 6, ErrorMessage = "Mật khẩu từ 6 đến 100 ký tự.")]
     [DataType(DataType.Password)]

@@ -3,21 +3,34 @@
 
 @{
     ViewData["Title"] = "Sửa thông tin sách";
+    var categoriesJson = System.Text.Json.JsonSerializer.Serialize(
+        Model.Categories.Select(c => new { id = c.CategoryId, name = c.CategoryName })
+    );
+    var selectedJson = System.Text.Json.JsonSerializer.Serialize(Model.CategoryIds);
 }
 
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-8 offset-md-2">
+
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h4 class="mb-0">
+                    <i class="fas fa-edit text-warning me-2"></i>Sửa thông tin sách
+                </h4>
+            </div>
+
             <div class="card">
                 <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">
-                        <i class="fas fa-edit"></i> Sửa thông tin sách
-                    </h5>
+                    <h5 class="mb-0">@Model.BookId — @Model.Title</h5>
                 </div>
                 <div class="card-body">
+
                     @if (TempData["ErrorMessage"] != null)
                     {
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <div class="alert alert-danger alert-dismissible fade show">
                             <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
@@ -27,95 +40,237 @@
                           action="@Url.Action("Edit", new { id = Model.BookId })"
                           enctype="multipart/form-data">
                         @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="BookId" />
 
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label asp-for="BookId" class="form-label">Mã sách</label>
-                                <input asp-for="BookId" class="form-control" readonly>
-                                <small class="text-muted">Mã sách không thể thay đổi</small>
-                            </div>
-                            <div class="col-md-6">
-                                <label asp-for="Title" class="form-label">Tên sách <span class="text-danger">*</span></label>
-                                <input asp-for="Title" class="form-control" placeholder="Nhập tên sách">
-                                <span asp-validation-for="Title" class="text-danger small"></span>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label asp-for="Author" class="form-label">Tác giả</label>
-                                <input asp-for="Author" class="form-control" placeholder="Nhập tên tác giả">
-                            </div>
-                            <div class="col-md-6">
-                                <label asp-for="Publisher" class="form-label">Nhà xuất bản</label>
-                                <input asp-for="Publisher" class="form-control" placeholder="Nhập tên NXB">
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label asp-for="PublishYear" class="form-label">Năm xuất bản</label>
-                                <input asp-for="PublishYear" type="number" class="form-control" min="1000" max="2100">
-                                <span asp-validation-for="PublishYear" class="text-danger small"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label asp-for="Quantity" class="form-label">Số lượng <span class="text-danger">*</span></label>
-                                <input asp-for="Quantity" type="number" class="form-control" min="0">
-                                <span asp-validation-for="Quantity" class="text-danger small"></span>
-                            </div>
-                        </div>
-
-                        @*
-                            ── Chips chọn nhiều danh mục ──
-                            SelectedIds = Model.CategoryIds: các chip đang chọn sẽ tự highlight
-                        *@
-                        @await Html.PartialAsync("_CategoryChips", new CategoryChipsViewModel
-                        {
-                            Categories = Model.Categories,
-                            SelectedIds = Model.CategoryIds,
-                            InputName = "CategoryIds"
-                        })
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label asp-for="Status" class="form-label">Tình trạng</label>
-                                <input asp-for="Status" class="form-control" placeholder="Có thể mượn">
-                            </div>
-                            <div class="col-md-6">
-                                <label asp-for="ImageFile" class="form-label">Hình ảnh bìa</label>
-                                <input asp-for="ImageFile" type="file" class="form-control" accept="image/*">
-                                @if (!string.IsNullOrEmpty(Model.ImageUrl))
-                                {
-                                    <small class="text-muted">Ảnh hiện tại: @Model.ImageUrl — chọn file mới để thay</small>
-                                }
-                                <input type="hidden" asp-for="ImageUrl" />
-                            </div>
-                        </div>
-
+                        {{-- Mã sách (readonly) --}}
                         <div class="mb-3">
-                            <label asp-for="Description" class="form-label">Mô tả sách</label>
-                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Nhập mô tả về sách..."></textarea>
-                            <span asp-validation-for="Description" class="text-danger small"></span>
-                            <small class="text-muted">Tối đa 1000 ký tự</small>
+                            <label class="form-label fw-semibold">Mã sách</label>
+                            <input value="@Model.BookId" class="form-control bg-light" readonly />
+                            <small class="text-muted">Mã sách không thể thay đổi</small>
                         </div>
 
-                        <div class="d-flex gap-2 justify-content-end">
-                            <a href="@Url.Action("Index")" class="btn btn-secondary">
-                                <i class="fas fa-times"></i> Hủy
-                            </a>
-                            <button type="submit" class="btn btn-warning">
-                                <i class="fas fa-save"></i> Lưu thay đổi
-                            </button>
+                        {{-- Tên sách --}}
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-semibold">
+                                Tên sách <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Title" class="form-control"
+                                   placeholder="Nhập tên sách" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
                         </div>
-                    </form>
+
+                        {{-- Tác giả --}}
+                        <div class="mb-3">
+                            <label asp-for="Author" class="form-label fw-semibold">
+                                Tác giả <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Author" class="form-control"
+                                   placeholder="Nhập tên tác giả" />
+                            <span asp-validation-for="Author" class="text-danger small"></span>
+                        </div>
+
+                        {{-- Nhà xuất bản --}}
+                        <div class="mb-3">
+                            <label asp-for="Publisher" class="form-label fw-semibold">
+                                Nhà xuất bản <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Publisher" class="form-control"
+                                   placeholder="Nhập tên nhà xuất bản" />
+                            <span asp-validation-for="Publisher" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{-- Năm xuất bản --}}
+                                <label asp-for="PublishYear" class="form-label fw-semibold">
+                                    Năm xuất bản
+                                </label>
+                                <input asp-for="PublishYear" type="number"
+                                       class="form-control" min="1000" max="2100" />
+                                <span asp-validation-for="PublishYear"
+                                      class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                {{-- Số lượng --}}
+                                <label asp-for="Quantity" class="form-label fw-semibold">
+                                    Số lượng <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Quantity" type="number"
+                                       class="form-control" min="0" />
+                                <span asp-validation-for="Quantity"
+                                      class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        {{-- Thể loại --}}
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center
+                                justify-content-between mb-1">
+                                <label class="form-label fw-semibold mb-0">
+                                    Thể loại <span class="text-danger">*</span>
+                                </label>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-warning py-0 px-2"
+                                        onclick="addCategoryRow()"
+                                        title="Thêm thể loại">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div id="categoryRows"></div>
+                            @if (!ViewData.ModelState.IsValid &&
+                                 ViewData.ModelState["CategoryIds"]?.Errors.Count > 0)
+                            {
+                                <span class="text-danger small">
+                                    @ViewData.ModelState["CategoryIds"]!.Errors[0].ErrorMessage
+                                </span>
+                            }
+                        </div>
+
+                        {{-- Tình trạng --}}
+                        <div class="mb-3">
+                            <label asp-for="Status" class="form-label fw-semibold">
+                                Tình trạng
+                            </label>
+                            <input asp-for="Status" class="form-control"
+                                   placeholder="Có thể mượn" />
+                        </div>
+
+                        {{-- Hình ảnh bìa --}}
+                        <div class="mb-3">
+                            <label asp-for="ImageFile" class="form-label fw-semibold">
+                                Hình ảnh bìa
+                            </label>
+                            <input asp-for="ImageFile" type="file"
+                                   class="form-control" accept="image/*" />
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <div class="mt-2 d-flex align-items-center gap-3">
+                                    <img src="@Model.ImageUrl" alt="Ảnh hiện tại"
+                                         style="height:80px;object-fit:cover;
+                                    border-radius:6px;
+                                    border:1px solid #dee2e6" />
+                                    <small class="text-muted">
+                                        Ảnh hiện tại — chọn file mới để thay thế
+                                    </small>
+                                </div>
+                            }
+                            <input type="hidden" asp-for="ImageUrl" />
+                        </div>
+
+                        {{-- Mô tả --}}
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-semibold">
+                                Mô tả <span class="text-danger">*</span>
+                            </label>
+                            <textarea asp-for="Description" class="form-control"
+                                      rows="4"
+                                          placeholder="Nhập mô tả chi tiết về sách...">
+                            </textarea>
+                                <span asp-validation-for="Description"
+                                      class="text-danger small"></span>
+                                <small class="text-muted">Tối đa 900 ký tự</small>
+                            </div>
+
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a asp-action="Details"
+                                       asp-route-id="@Model.BookId"
+                                       class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Hủy
+                                </a>
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-save"></i> Lưu thay đổi
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+
+        <script>
+            const ALL_CATEGORIES = @Html.Raw(categoriesJson);
+            const SELECTED_IDS   = @Html.Raw(selectedJson);
+            const usedIds        = new Set();
+
+            function addCategoryRow(preselectedId = null) {
+                const container   = document.getElementById('categoryRows');
+
+                const wrapper     = document.createElement('div');
+                wrapper.className = 'category-row d-flex align-items-center gap-2 mb-2';
+
+                const select      = document.createElement('select');
+                select.name       = 'CategoryIds';
+                select.className  = 'form-select';
+
+                const blank       = document.createElement('option');
+                blank.value       = '';
+                blank.textContent = '-- Chọn thể loại --';
+                select.appendChild(blank);
+
+                ALL_CATEGORIES.forEach(cat => {
+                    const opt       = document.createElement('option');
+                    opt.value       = cat.id;
+                    opt.textContent = cat.name;
+                    if (usedIds.has(String(cat.id))) opt.disabled = true;
+                    if (preselectedId !== null && cat.id === preselectedId) {
+                        opt.selected = true;
+                        usedIds.add(String(cat.id));
+                    }
+                    select.appendChild(opt);
+                });
+
+                select.addEventListener('change', () => {
+                    refreshUsedIds();
+                    refreshAllSelects();
+                });
+
+                const btn       = document.createElement('button');
+                btn.type        = 'button';
+                btn.className   = 'btn btn-outline-danger btn-sm px-2';
+                btn.title       = 'Xóa thể loại này';
+                btn.innerHTML   = '<i class="fas fa-times"></i>';
+                btn.addEventListener('click', () => {
+                    wrapper.remove();
+                    refreshUsedIds();
+                    refreshAllSelects();
+                });
+
+                wrapper.appendChild(select);
+                wrapper.appendChild(btn);
+                container.appendChild(wrapper);
+            }
+
+            function refreshUsedIds() {
+                usedIds.clear();
+                document.querySelectorAll(
+                    '#categoryRows select[name="CategoryIds"]'
+                ).forEach(sel => { if (sel.value) usedIds.add(sel.value); });
+            }
+
+            function refreshAllSelects() {
+                document.querySelectorAll(
+                    '#categoryRows select[name="CategoryIds"]'
+                ).forEach(sel => {
+                    const myVal = sel.value;
+                    Array.from(sel.options).forEach(opt => {
+                        if (!opt.value) return;
+                        opt.disabled = usedIds.has(opt.value) && opt.value !== myVal;
+                    });
+                });
+            }
+
+            window.addEventListener('DOMContentLoaded', () => {
+                if (SELECTED_IDS && SELECTED_IDS.length > 0)
+                    SELECTED_IDS.forEach(id => addCategoryRow(id));
+                else
+                    addCategoryRow();
+            });
+        </script>
     }
-}

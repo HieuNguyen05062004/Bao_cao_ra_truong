@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xóa bạn đọc - SmartLibrary</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="admin-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <i class="fas fa-book-reader"></i>
+          <span>SmartLib Admin</span>
+          <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="index.html" class="nav-item"
+            ><i class="fas fa-chart-line"></i> Dashboard</a
+          >
+          <a href="ql-sach.html" class="nav-item"
+            ><i class="fas fa-book"></i> Quản lý sách</a
+          >
+          <a href="ql-danh-muc.html" class="nav-item"
+            ><i class="fas fa-list"></i> Thể loại</a
+          >
+          <a href="ql-ban-doc.html" class="nav-item active"
+            ><i class="fas fa-users"></i> Bạn đọc</a
+          >
+          <a href="muon-tra.html" class="nav-item"
+            ><i class="fas fa-exchange-alt"></i> Mượn & Trả</a
+          >
+        </nav>
+      </aside>
+
+      <main class="main-content">
+        <header class="top-header">
+          <div class="page-title">
+            <i class="fas fa-user-times"></i> Xác nhận xóa bạn đọc
+          </div>
+          <div class="header-user">
+            <a href="ql-ban-doc.html" class="btn btn-outline"
+              ><i class="fas fa-arrow-left"></i> Quay lại</a
+            >
+          </div>
+        </header>
+
+        <div class="dashboard-body">
+          <div class="card">
+            <div class="card-body text-center" style="padding: 40px">
+              <div
+                class="modal-icon-wrapper"
+                style="font-size: 3rem; color: #e74c3c; margin-bottom: 20px"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <h2 style="margin-bottom: 10px">Cảnh báo xóa dữ liệu!</h2>
+              <p style="color: #666; margin-bottom: 30px">
+                Bạn đang yêu cầu xóa bạn đọc có mã
+                <strong id="detail-reader-id">--</strong>: <br />
+                <span
+                  id="detail-reader-name"
+                  style="font-size: 1.2rem; font-weight: bold; color: #333"
+                  >--</span
+                >
+              </p>
+              <p
+                style="
+                  background: #fff5f5;
+                  color: #c0392b;
+                  padding: 15px;
+                  border-radius: 8px;
+                  border: 1px solid #fed7d7;
+                  margin-bottom: 30px;
+                "
+              >
+                Lưu ý: Hành động này sẽ gỡ bỏ thông tin bạn đọc vĩnh viễn khỏi
+                hệ thống. <br />
+                Không thể xóa nếu bạn đọc còn đang nợ sách.
+              </p>
+              <div
+                class="form-actions"
+                style="display: flex; gap: 15px; justify-content: center"
+              >
+                <a
+                  href="ql-ban-doc.html"
+                  class="btn btn-outline"
+                  style="min-width: 120px"
+                  >Hủy bỏ</a
+                >
+                <button
+                  class="btn btn-danger"
+                  style="min-width: 120px"
+                  id="btn-confirm-delete"
+                >
+                  Xác nhận xóa
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div id="confirm-modal" class="modal-overlay">
+      <div class="modal-container modal-sm">
+        <div class="modal-header">
+          <h2 id="confirm-modal-title">Xác nhận cuối cùng</h2>
+          <button class="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body text-center">
+          <p id="confirm-modal-message"></p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline close-modal-btn">Hủy</button>
+          <button class="btn btn-danger" id="confirm-action-btn">
+            Xóa vĩnh viễn
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+    <script src="app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const readerId = urlParams.get("id");
+        if (readerId) {
+          document
+            .getElementById("btn-confirm-delete")
+            .addEventListener("click", () => {
+              window.app.deleteReader(readerId);
+            });
+        }
+      });
+    </script>
+  </body>
+</html>

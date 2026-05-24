@@ -29,6 +29,7 @@
             <div class="mb-3">
                 <label asp-for="DoB" class="form-label fw-semibold"></label>
                 <input asp-for="DoB" type="date" class="form-control" />
+                <span asp-validation-for="DoB" class="text-danger small"></span>
             </div>
 
             <div class="mb-3">
@@ -39,6 +40,8 @@
                     <option value="Nữ">Nữ</option>
                     <option value="Khác">Khác</option>
                 </select>
+                <span asp-validation-for="Gender" class="text-danger small"></span>
+
             </div>
 
             <div class="mb-3">
@@ -56,6 +59,7 @@
             <div class="mb-3">
                 <label asp-for="Address" class="form-label fw-semibold"></label>
                 <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                <span asp-validation-for="Address" class="text-danger small"></span>
             </div>
 
             <div class="mb-3">
@@ -75,6 +79,7 @@
             <div class="mb-3">
                 <label asp-for="AvatarFile" class="form-label fw-semibold">Tải ảnh mới</label>
                 <input asp-for="AvatarFile" type="file" class="form-control" accept="image/*" />
+                <span asp-validation-for="AvatarFile" class="text-danger small"></span>
             </div>
 
             <div class="d-flex gap-2 mt-4">

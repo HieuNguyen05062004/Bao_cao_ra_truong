@@ -17,9 +17,8 @@ public class ReaderController : Controller
         _env = env;
     }
 
-    // ------------------------------------------------------------------ //
-    //  Kiểm tra đăng nhập
-    // ------------------------------------------------------------------ //
+    // ─── HELPER ĐĂNG NHẬP ────────────────────────────────────────────────────
+
     private bool IsLoggedIn() =>
         HttpContext.Session.GetString("Username") != null;
 
@@ -30,9 +29,8 @@ public class ReaderController : Controller
         return null!;
     }
 
-    // ------------------------------------------------------------------ //
-    //  INDEX
-    // ------------------------------------------------------------------ //
+    // ─── INDEX ───────────────────────────────────────────────────────────────
+
     [HttpGet]
     public async Task<IActionResult> Index(string? keyword)
     {
@@ -63,9 +61,8 @@ public class ReaderController : Controller
         return View(viewModels);
     }
 
-    // ------------------------------------------------------------------ //
-    //  DETAILS
-    // ------------------------------------------------------------------ //
+    // ─── DETAILS ─────────────────────────────────────────────────────────────
+
     [HttpGet]
     public async Task<IActionResult> Details(string id, string filter = "all")
     {
@@ -116,9 +113,8 @@ public class ReaderController : Controller
         return View(model);
     }
 
-    // ------------------------------------------------------------------ //
-    //  CREATE
-    // ------------------------------------------------------------------ //
+    // ─── CREATE ──────────────────────────────────────────────────────────────
+
     [HttpGet]
     public IActionResult Create()
     {
@@ -132,15 +128,21 @@ public class ReaderController : Controller
     {
         var guard = RequireLogin(); if (guard != null) return guard;
 
-        // ReaderId không nhập tay nên không validate
         ModelState.Remove(nameof(model.ReaderId));
+
+        // ── Validate thủ công AvatarFile ───────────────────────────────
+        if (model.AvatarFile == null || model.AvatarFile.Length == 0)
+            ModelState.AddModelError(nameof(model.AvatarFile),
+                "Vui lòng tải lên ảnh đại diện bạn đọc.");
+        // ──────────────────────────────────────────────────────────────
+
         if (!ModelState.IsValid) return View(model);
 
         string? avatarUrl = await SaveAvatarAsync(model.AvatarFile);
 
         var reader = new Reader
         {
-            ReaderId = string.Empty,   // service sẽ tự sinh
+            ReaderId = string.Empty,
             FullName = model.FullName.Trim(),
             DoB = model.DoB,
             Gender = model.Gender,
@@ -148,7 +150,6 @@ public class ReaderController : Controller
             Phone = model.Phone?.Trim(),
             Email = model.Email?.Trim(),
             AvatarUrl = avatarUrl,
-            // Hash mật khẩu nếu admin nhập
             PasswordHash = string.IsNullOrWhiteSpace(model.Password)
                 ? null
                 : BCrypt.Net.BCrypt.HashPassword(model.Password)
@@ -165,9 +166,8 @@ public class ReaderController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // ------------------------------------------------------------------ //
-    //  EDIT
-    // ------------------------------------------------------------------ //
+    // ─── EDIT ────────────────────────────────────────────────────────────────
+
     [HttpGet]
     public async Task<IActionResult> Edit(string id)
     {
@@ -190,7 +190,6 @@ public class ReaderController : Controller
             Phone = reader.Phone,
             Email = reader.Email,
             AvatarUrl = reader.AvatarUrl
-            // Password để trống — chỉ cập nhật nếu admin nhập mới
         };
 
         return View(model);
@@ -203,11 +202,14 @@ public class ReaderController : Controller
         var guard = RequireLogin(); if (guard != null) return guard;
 
         ModelState.Remove(nameof(model.ReaderId));
-        ModelState.Remove(nameof(model.Password)); // Password không bắt buộc khi edit
+        ModelState.Remove(nameof(model.Password)); // Không bắt buộc khi Edit
+
+        // AvatarFile không bắt buộc khi Edit — giữ ảnh cũ nếu không upload mới
+
         if (!ModelState.IsValid) return View(model);
 
         string? avatarUrl = model.AvatarUrl;
-        if (model.AvatarFile != null)
+        if (model.AvatarFile != null && model.AvatarFile.Length > 0)
             avatarUrl = await SaveAvatarAsync(model.AvatarFile);
 
         var reader = new Reader
@@ -220,7 +222,6 @@ public class ReaderController : Controller
             Phone = model.Phone?.Trim(),
             Email = model.Email?.Trim(),
             AvatarUrl = avatarUrl,
-            // Chỉ hash và cập nhật nếu admin nhập mật khẩu mới
             PasswordHash = string.IsNullOrWhiteSpace(model.Password)
                 ? null
                 : BCrypt.Net.BCrypt.HashPassword(model.Password)
@@ -237,9 +238,8 @@ public class ReaderController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // ------------------------------------------------------------------ //
-    //  DELETE
-    // ------------------------------------------------------------------ //
+    // ─── DELETE ──────────────────────────────────────────────────────────────
+
     [HttpGet]
     public async Task<IActionResult> Delete(string id)
     {
@@ -280,9 +280,8 @@ public class ReaderController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // ------------------------------------------------------------------ //
-    //  HELPER
-    // ------------------------------------------------------------------ //
+    // ─── PRIVATE HELPER ──────────────────────────────────────────────────────
+
     private async Task<string?> SaveAvatarAsync(IFormFile? file)
     {
         if (file is null || file.Length == 0) return null;

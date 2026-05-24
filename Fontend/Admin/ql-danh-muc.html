@@ -64,9 +64,9 @@
             />
           </div>
           <div class="header-user">
-            <button class="btn btn-primary" id="btn-add-category">
+            <a href="Creat-danhmuc.html" class="btn btn-primary">
               <i class="fas fa-plus"></i> Thêm danh mục mới
-            </button>
+            </a>
           </div>
         </header>
 
@@ -97,168 +97,9 @@
       </main>
     </div>
 
-    <!-- Modal Thêm/Sửa Danh mục -->
-    <div class="modal-overlay" id="category-modal">
-      <div class="modal-container modal-sm">
-        <div class="modal-header">
-          <h2 id="category-modal-title">Thêm danh mục mới</h2>
-          <button class="close-modal-btn" data-modal-target="category-modal">
-            &times;
-          </button>
-        </div>
-        <form id="category-form">
-          <input type="hidden" id="edit-category-id" />
-          <div class="form-group">
-            <label>Tên danh mục</label>
-            <input
-              type="text"
-              id="form-category-name"
-              required
-              placeholder="VD: Công nghệ thông tin"
-            />
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-outline close-modal-btn"
-              data-modal-target="category-modal"
-            >
-              Hủy
-            </button>
-            <button
-              type="submit"
-              class="btn btn-primary"
-              id="category-submit-button"
-            >
-              Lưu danh mục
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Modal Xem Chi Tiết Danh Mục -->
-    <div class="modal-overlay" id="category-details-modal">
-      <div class="modal-container modal-sm">
-        <div class="modal-header">
-          <h2>Chi tiết danh mục</h2>
-          <button class="close-modal-btn" id="close-category-details-x">
-            &times;
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="detail-item">
-            <label>Mã danh mục:</label> <span id="detail-category-id"></span>
-          </div>
-          <div class="detail-item">
-            <label>Tên danh mục:</label> <span id="detail-category-name"></span>
-          </div>
-          <div class="detail-item">
-            <label>Số sách hiện có:</label>
-            <span id="detail-category-count"></span>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-primary"
-            id="close-category-details-btn"
-          >
-            Đóng
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal Xác nhận (Dùng chung) -->
-    <div class="modal-overlay" id="confirm-modal">
-      <div class="modal-container modal-sm">
-        <div class="modal-header">
-          <h2 id="confirm-modal-title">Xác nhận hành động</h2>
-          <button class="close-modal-btn" data-modal-target="confirm-modal">
-            &times;
-          </button>
-        </div>
-        <div class="modal-body text-center">
-          <div class="modal-icon-wrapper">
-            <i class="fas fa-exclamation-triangle"></i>
-          </div>
-          <p id="confirm-modal-message"></p>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-outline close-modal-btn"
-            data-modal-target="confirm-modal"
-          >
-            Hủy
-          </button>
-          <button type="button" class="btn btn-danger" id="confirm-action-btn">
-            Xác nhận
-          </button>
-        </div>
-      </div>
-    </div>
-
     <!-- Toast Container -->
     <div id="toast-container" class="toast-container"></div>
 
     <script src="app.js"></script>
-    <script>
-      function showError(input, message) {
-        const parent = input.closest(".form-group");
-        let error = parent.querySelector(".error-msg");
-        if (!error) {
-          error = document.createElement("span");
-          error.className = "error-msg";
-          error.style.color = "red";
-          error.style.fontSize = "0.8rem";
-          error.style.marginTop = "5px";
-          error.style.display = "block";
-          parent.appendChild(error);
-        }
-        error.textContent = message;
-        input.style.borderColor = "red";
-      }
-
-      function clearError(input) {
-        const parent = input.closest(".form-group");
-        const error = parent.querySelector(".error-msg");
-        if (error) error.remove();
-        input.style.borderColor = "";
-      }
-
-      const categoryForm = document.getElementById("category-form");
-      const catNameField = document.getElementById("form-category-name");
-
-      function validateCategoryForm() {
-        let isValid = true;
-        const val = catNameField.value.trim();
-        if (val.length < 5 || val.length > 20) {
-          showError(
-            catNameField,
-            "Tên danh mục không được để trống và phải từ 5 - 20 ký tự.",
-          );
-          isValid = false;
-        } else {
-          clearError(catNameField);
-        }
-        return isValid;
-      }
-
-      catNameField.addEventListener("input", function () {
-        const val = this.value.trim();
-        if (val.length >= 5 && val.length <= 20) {
-          clearError(this);
-        }
-      });
-
-      categoryForm.addEventListener("submit", function (e) {
-        if (!validateCategoryForm()) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      });
-    </script>
   </body>
 </html>

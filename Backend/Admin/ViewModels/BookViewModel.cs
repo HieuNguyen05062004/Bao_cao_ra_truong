@@ -11,15 +11,21 @@ public class BookViewModel
     public string? BookId { get; set; }
 
     [Display(Name = "Tên sách")]
-    [Required(ErrorMessage = "Tên sách không được để trống")]
-    [StringLength(255)]
+    [Required(ErrorMessage = "Tên sách không được để trống và phải từ 5 - 20 ký tự.")]
+    [StringLength(20, MinimumLength = 5, ErrorMessage = "Tên sách không được để trống và phải từ 5 - 20 ký tự.")]
     public string Title { get; set; } = null!;
 
+
+
     [Display(Name = "Tác giả")]
-    public string? Author { get; set; }
+    [Required(ErrorMessage = "Tên tác giả không được để trống và phải từ 5 - 20 ký tự.")]
+    [StringLength(20, MinimumLength = 5, ErrorMessage = "Tên tác giả không được để trống và phải từ 5 - 20 ký tự.")]
+    public string Author { get; set; } = null!;
 
     [Display(Name = "Nhà xuất bản")]
-    public string? Publisher { get; set; }
+    [Required(ErrorMessage = "Nhà xuất bản không được để trống và phải từ 5 - 20 ký tự.")]
+    [StringLength(20, MinimumLength = 5, ErrorMessage = "Nhà xuất bản không được để trống và phải từ 5 - 20 ký tự.")]
+    public string Publisher { get; set; } = null!;
 
     [Display(Name = "Năm xuất bản")]
     [Range(1000, 9999, ErrorMessage = "Năm xuất bản không hợp lệ")]
@@ -38,8 +44,9 @@ public class BookViewModel
     public IFormFile? ImageFile { get; set; }
 
     [Display(Name = "Mô tả sách")]
-    [StringLength(1000, ErrorMessage = "Mô tả sách không được vượt quá 1000 ký tự")]
-    public string? Description { get; set; }
+    [Required(ErrorMessage = "Mô tả không được để trống và phải từ 10 - 900 ký tự.")]
+    [StringLength(900, MinimumLength = 10, ErrorMessage = "Mô tả không được để trống và phải từ 10 - 900 ký tự.")]
+    public string Description { get; set; } = null!;
 
     /// <summary>
     /// Danh sách CategoryId đã chọn (many-to-many).

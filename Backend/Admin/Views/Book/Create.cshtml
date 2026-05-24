@@ -36,11 +36,6 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label asp-for="BookId" class="form-label">Mã sách <span class="text-danger">*</span></label>
-                                <input asp-for="BookId" class="form-control" placeholder="VD: SACH001" maxlength="20">
-                                <span asp-validation-for="BookId" class="text-danger small"></span>
-                            </div>
-                            <div class="col-md-6">
                                 <label asp-for="Title" class="form-label">Tên sách <span class="text-danger">*</span></label>
                                 <input asp-for="Title" class="form-control" placeholder="Nhập tên sách...">
                                 <span asp-validation-for="Title" class="text-danger small"></span>
@@ -51,6 +46,8 @@
                             <div class="col-md-6">
                                 <label asp-for="Author" class="form-label">Tác giả</label>
                                 <input asp-for="Author" class="form-control" placeholder="Tên tác giả">
+                                <span asp-validation-for="Author" class="text-danger small"></span>
+
                             </div>
                             <div class="col-md-6">
                                 @* ── Thể loại: nhiều dòng select + nút + / × ── *@
@@ -62,6 +59,7 @@
                                     </button>
                                 </div>
                                 <div id="categoryRows"></div>
+                                <span id="categoryError" class="text-danger small"></span>
                             </div>
                         </div>
 
@@ -69,6 +67,8 @@
                             <div class="col-md-6">
                                 <label asp-for="Publisher" class="form-label">Nhà xuất bản</label>
                                 <input asp-for="Publisher" class="form-control" placeholder="Tên nhà xuất bản">
+                                <span asp-validation-for="Publisher" class="text-danger small"></span>
+
                             </div>
                             <div class="col-md-6">
                                 <label asp-for="PublishYear" class="form-label">Năm xuất bản</label>
@@ -86,6 +86,7 @@
                             <div class="col-md-6">
                                 <label asp-for="ImageFile" class="form-label">Ảnh bìa</label>
                                 <input asp-for="ImageFile" type="file" class="form-control" accept="image/*">
+                                <span id="imageFileError" class="text-danger small"></span>
                             </div>
                         </div>
 

@@ -62,7 +62,7 @@ public class BookController : Controller
         }
     }
 
-    // ─── CREATE (trang riêng — fallback nếu cần) ─────────────────────────────
+    // ─── CREATE ──────────────────────────────────────────────────────────────
 
     [HttpGet]
     public async Task<IActionResult> Create()
@@ -85,6 +85,16 @@ public class BookController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(BookViewModel model)
     {
+        // ── Validate thủ công IFormFile & CategoryIds ──────────────────
+        if (model.ImageFile == null || model.ImageFile.Length == 0)
+            ModelState.AddModelError(nameof(model.ImageFile),
+                "Vui lòng tải lên hình ảnh bìa sách.");
+
+        if (model.CategoryIds == null || !model.CategoryIds.Any())
+            ModelState.AddModelError(nameof(model.CategoryIds),
+                "Vui lòng chọn ít nhất một thể loại sách.");
+        // ──────────────────────────────────────────────────────────────
+
         if (!ModelState.IsValid)
         {
             model.Categories = await _bookService.GetAllCategoriesAsync();
@@ -95,7 +105,7 @@ public class BookController : Controller
         {
             var book = new Book
             {
-                BookId = null,   // Service tự sinh BK + 5 số
+                BookId = null,
                 Title = model.Title?.Trim(),
                 Author = model.Author?.Trim(),
                 Publisher = model.Publisher?.Trim(),
@@ -104,9 +114,7 @@ public class BookController : Controller
                 Status = model.Status ?? "Có thể mượn",
                 Description = model.Description?.Trim(),
                 CreatedAt = DateTime.Now,
-                ImageUrl = model.ImageFile != null
-                                  ? await SaveImageAsync(model.ImageFile)
-                                  : string.Empty
+                ImageUrl = await SaveImageAsync(model.ImageFile!)
             };
 
             var (success, message) = await _bookService.AddBookAsync(book, model.CategoryIds);
@@ -129,7 +137,7 @@ public class BookController : Controller
         }
     }
 
-    // ─── CREATE AJAX (gọi từ modal trong Index) ───────────────────────────────
+    // ─── CREATE AJAX ─────────────────────────────────────────────────────────
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -139,24 +147,23 @@ public class BookController : Controller
         {
             var book = new Book
             {
-                BookId = null,   // Service tự sinh BK + 5 số, đảm bảo không trùng
+                BookId = null,
                 Title = model.Title?.Trim(),
                 Author = model.Author?.Trim(),
                 Publisher = model.Publisher?.Trim(),
                 PublishYear = model.PublishYear,
                 Quantity = model.Quantity ?? 0,
                 Status = string.IsNullOrWhiteSpace(model.Status)
-                                  ? "Có thể mượn"
-                                  : model.Status,
+                    ? "Có thể mượn"
+                    : model.Status,
                 Description = model.Description?.Trim(),
                 CreatedAt = DateTime.Now,
                 ImageUrl = model.ImageFile != null
-                                  ? await SaveImageAsync(model.ImageFile)
-                                  : string.Empty
+                    ? await SaveImageAsync(model.ImageFile)
+                    : string.Empty
             };
 
             var categoryIds = model.CategoryIds ?? new List<int>();
-
             var (success, message) = await _bookService.AddBookAsync(book, categoryIds);
             return Json(new { success, message });
         }
@@ -212,6 +219,12 @@ public class BookController : Controller
     {
         if (id != model.BookId) return BadRequest("Mã sách không khớp.");
 
+        // ── Validate thủ công CategoryIds (ImageFile không bắt buộc khi Edit) ──
+        if (model.CategoryIds == null || !model.CategoryIds.Any())
+            ModelState.AddModelError(nameof(model.CategoryIds),
+                "Vui lòng chọn ít nhất một thể loại sách.");
+        // ──────────────────────────────────────────────────────────────────────
+
         if (!ModelState.IsValid)
         {
             model.Categories = await _bookService.GetAllCategoriesAsync();
@@ -231,8 +244,8 @@ public class BookController : Controller
                 Status = model.Status ?? "Có thể mượn",
                 Description = model.Description?.Trim(),
                 ImageUrl = model.ImageFile != null
-                                  ? await SaveImageAsync(model.ImageFile)
-                                  : model.ImageUrl ?? string.Empty
+                    ? await SaveImageAsync(model.ImageFile)
+                    : model.ImageUrl ?? string.Empty
             };
 
             var (success, message) = await _bookService.UpdateBookAsync(book, model.CategoryIds);
@@ -255,7 +268,7 @@ public class BookController : Controller
         }
     }
 
-    // ─── EDIT AJAX (gọi từ modal trong Index) ─────────────────────────────────
+    // ─── EDIT AJAX ───────────────────────────────────────────────────────────
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -275,17 +288,15 @@ public class BookController : Controller
                 PublishYear = model.PublishYear,
                 Quantity = model.Quantity ?? 0,
                 Status = string.IsNullOrWhiteSpace(model.Status)
-                                  ? "Có thể mượn"
-                                  : model.Status,
+                    ? "Có thể mượn"
+                    : model.Status,
                 Description = model.Description?.Trim(),
-                // Nếu có ảnh mới thì lưu ảnh mới, ngược lại giữ URL ảnh cũ
                 ImageUrl = model.ImageFile != null
-                                  ? await SaveImageAsync(model.ImageFile)
-                                  : model.ImageUrl ?? string.Empty
+                    ? await SaveImageAsync(model.ImageFile)
+                    : model.ImageUrl ?? string.Empty
             };
 
             var categoryIds = model.CategoryIds ?? new List<int>();
-
             var (success, message) = await _bookService.UpdateBookAsync(book, categoryIds);
             return Json(new { success, message });
         }
@@ -409,8 +420,6 @@ public class BookController : Controller
 }
 
 // ─── MODEL BIND CHO AJAX ─────────────────────────────────────────────────────
-// Nhận dữ liệu từ FormData (JavaScript fetch) trong CreateAjax / EditAjax.
-// Đặt cùng namespace để controller dùng trực tiếp không cần import thêm.
 
 public class BookAjaxModel
 {
@@ -422,7 +431,7 @@ public class BookAjaxModel
     public int? Quantity { get; set; }
     public string? Status { get; set; }
     public string? Description { get; set; }
-    public string? ImageUrl { get; set; }  // URL ảnh cũ khi Edit
-    public IFormFile? ImageFile { get; set; }  // File ảnh mới upload
-    public List<int>? CategoryIds { get; set; }  // Nhiều danh mục từ chips
+    public string? ImageUrl { get; set; }
+    public IFormFile? ImageFile { get; set; }
+    public List<int>? CategoryIds { get; set; }
 }

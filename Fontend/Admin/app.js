@@ -9,204 +9,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 class AdminDashboard {
   constructor() {
+    // Địa chỉ gốc của API Backend (ASP.NET Core)
+    this.apiUrl = "https://localhost:7001/api";
+
     // Sidebar link update logic
     this.updateSidebarLinks();
 
-    this.recentBorrows = [
-      {
-        id: "MT-001",
-        reader: "Nguyễn Văn A",
-        books: ["Lập trình C# cơ bản"],
-        date: "2024-05-15",
-        dueDate: "2024-05-25",
-        status: "Đang mượn",
-      },
-      {
-        id: "MT-002",
-        reader: "Trần Thị B",
-        books: ["Cấu trúc dữ liệu"],
-        date: "2024-05-16",
-        dueDate: "2024-05-26",
-        status: "Trả đúng hạn",
-      },
-      {
-        id: "MT-003",
-        reader: "Lê Văn C",
-        books: ["Thiết kế Web hiện đại"],
-        date: "2024-05-17",
-        dueDate: "2024-05-27",
-        status: "Đang mượn",
-      },
-      {
-        id: "MT-004",
-        reader: "Phạm Minh D",
-        books: ["Học máy với Python"],
-        date: "2024-05-18",
-        dueDate: "2024-05-28",
-        status: "Đang mượn",
-      },
-    ];
-
-    this.books = [
-      {
-        id: "S001",
-        title: "Lập trình C# nâng cao",
-        author: "Phạm Duy Lễ",
-        category: "CNTT",
-        stock: 15,
-        status: "Còn sách", // Derived from stock
-        img: "https://via.placeholder.com/45x60",
-        publisher: "NXB Giáo dục",
-        publishYear: 2023,
-        description:
-          "Cuốn sách hướng dẫn chuyên sâu về các kỹ thuật lập trình C# hiện đại.",
-      },
-      {
-        id: "S002",
-        title: "Thiết kế thuật toán",
-        author: "Nguyễn Văn B",
-        category: "CNTT",
-        stock: 0, // Derived from stock
-        status: "Hết sách", // Derived from stock
-        img: "https://via.placeholder.com/45x60",
-        publisher: "NXB Khoa học",
-        publishYear: 2022,
-        description:
-          "Phân tích và thiết kế các thuật toán tối ưu cho bài toán thực tế.",
-      },
-      {
-        id: "S003",
-        title: "Kinh tế vi mô",
-        author: "Trần Thị C",
-        category: "Kinh tế",
-        stock: 8, // Derived from stock
-        status: "Còn sách", // Derived from stock
-        img: "https://via.placeholder.com/45x60",
-        publisher: "NXB Thống kê",
-        publishYear: 2024,
-        description:
-          "Kiến thức cơ bản về quy luật cung cầu và hành vi người tiêu dùng.",
-      },
-      {
-        id: "S004",
-        title: "Tiếng Anh chuyên ngành",
-        author: "John Doe",
-        category: "Ngoại ngữ",
-        stock: 20, // Derived from stock
-        status: "Còn sách", // Derived from stock
-        img: "https://via.placeholder.com/45x60",
-        publisher: "NXB Tổng hợp",
-        publishYear: 2021,
-        description: "Từ vựng và ngữ pháp chuyên ngành Công nghệ thông tin.",
-      },
-    ];
-
-    this.readers = [
-      {
-        id: "R001",
-        name: "Nguyễn Văn A",
-        email: "vana@gmail.com",
-        phone: "0912345678",
-        address: "Hà Nội",
-        status: "Hoạt động", // Status is still relevant for active/inactive
-        img: "https://ui-avatars.com/api/?name=Nguyen+Van+A&background=random",
-        dob: "1990-01-15",
-        gender: "Nam",
-        borrowingCount: 2,
-        overdueCount: 0,
-      },
-      {
-        id: "R002",
-        name: "Trần Thị B",
-        email: "thib@gmail.com",
-        phone: "0987654321",
-        address: "Đà Nẵng",
-        status: "Hoạt động",
-        img: "https://ui-avatars.com/api/?name=Tran+Thi+B&background=random",
-        dob: "1992-03-20",
-        gender: "Nữ",
-        borrowingCount: 1,
-        overdueCount: 1,
-      },
-      {
-        id: "R003",
-        name: "Lê Văn C",
-        email: "vanc@gmail.com",
-        phone: "0905123456",
-        address: "TP.HCM",
-        status: "Đang khóa",
-        img: "https://ui-avatars.com/api/?name=Le+Van+C&background=random",
-        dob: "1988-11-05",
-        gender: "Nam",
-        borrowingCount: 0,
-        overdueCount: 0,
-      },
-    ];
-
-    this.categories = [
-      { id: 1, name: "CNTT", bookCount: 25 },
-      { id: 2, name: "Kinh tế", bookCount: 12 },
-      { id: 3, name: "Ngoại ngữ", bookCount: 18 },
-      { id: 4, name: "Văn học", bookCount: 30 },
-    ];
-
-    this.staffs = [
-      {
-        id: 1,
-        name: "Lê Minh Admin",
-        email: "minhlee@library.com",
-        role: "Admin",
-        createdAt: "2023-10-01",
-        img: "https://ui-avatars.com/api/?name=Admin+Lee&background=0D8ABC&color=fff",
-      },
-      {
-        id: 2,
-        name: "Nguyễn Thị Hoa",
-        email: "hoant@library.com",
-        role: "Staff",
-        createdAt: "2024-01-15",
-        img: "https://ui-avatars.com/api/?name=Hoa+Nguyen&background=green&color=fff",
-      },
-    ];
-
-    this.borrowTickets = [
-      {
-        id: 101,
-        readerId: "R001",
-        readerName: "Nguyễn Văn A",
-        borrowDate: "2024-05-15",
-        dueDate: "2024-05-25",
-        returnDate: null,
-        status: "Chờ duyệt",
-        staff: null,
-        books: [
-          {
-            id: "S001",
-            title: "Lập trình C# nâng cao",
-            author: "Phạm Duy Lễ",
-            status: "Có thể mượn",
-          },
-        ],
-      },
-      {
-        id: 102,
-        readerId: "R002",
-        readerName: "Trần Thị B",
-        borrowDate: "2024-05-10",
-        dueDate: "2024-05-20",
-        returnDate: "2024-05-19",
-        status: "Đã trả",
-        staff: "admin",
-        books: [
-          {
-            id: "S003",
-            title: "Kinh tế vi mô",
-            author: "Trần Thị C",
-            status: "Có thể mượn",
-          },
-        ],
-      },
-    ];
+    this.recentBorrows = [];
+    this.books = [];
+    this.readers = [];
+    this.categories = [];
+    this.staffs = [];
+    this.borrowTickets = [];
   }
 
   updateSidebarLinks() {
@@ -219,22 +33,62 @@ class AdminDashboard {
     });
   }
 
-  init() {
-    this.renderRecentActivity();
-    this.renderBooks();
-    this.renderReaders();
-    this.renderCategories();
-    this.renderStaffs();
-    this.renderBorrowTickets();
-    this.renderBorrowTicketDetails();
-    this.renderStaffDetailView();
+  async init() {
+    await this.fetchInitialData();
+
+    // Tự động nhận diện trang để render dữ liệu phù hợp
+    if (document.getElementById("recent-borrows")) this.renderRecentActivity();
+    if (document.getElementById("book-list")) this.renderBooks();
+    if (document.getElementById("reader-list")) this.renderReaders();
+    if (document.getElementById("category-list")) this.renderCategories();
+    if (document.getElementById("staff-list")) this.renderStaffs();
+    if (document.getElementById("borrow-ticket-list"))
+      this.renderBorrowTickets();
+
+    this.initForms(); // Khởi tạo logic cho các trang thêm/sửa
     this.setupEventListeners();
-    this.setupValidationListeners();
     this.setupSidebarToggle();
-    this.renderBookDetailView(); // Thêm hàm này để chạy khi ở trang ct-sach.html
-    this.renderReaderDetailView(); // Thêm cho trang chi tiết bạn đọc
-    this.renderCategoryDetailView(); // Thêm cho trang chi tiết danh mục
+
+    // Chi tiết thực thể
+    this.renderBookDetailView();
+    this.renderReaderDetailView();
+    this.renderCategoryDetailView();
+    this.renderStaffDetailView();
+    this.renderBorrowTicketDetails();
+
     console.log("SmartLib Admin initialized.");
+  }
+
+  async fetchInitialData() {
+    try {
+      // Gọi song song các API để tối ưu tốc độ
+      const [books, readers, categories, staff, tickets] = await Promise.all([
+        fetch(`${this.apiUrl}/Book/All`).then((res) =>
+          res.ok ? res.json() : [],
+        ),
+        fetch(`${this.apiUrl}/Reader/All`).then((res) =>
+          res.ok ? res.json() : [],
+        ),
+        fetch(`${this.apiUrl}/Category/All`).then((res) =>
+          res.ok ? res.json() : [],
+        ),
+        fetch(`${this.apiUrl}/Staff/All`).then((res) =>
+          res.ok ? res.json() : [],
+        ),
+        fetch(`${this.apiUrl}/Borrow/All`).then((res) =>
+          res.ok ? res.json() : [],
+        ),
+      ]);
+
+      this.books = books;
+      this.readers = readers;
+      this.categories = categories;
+      this.staffs = staff;
+      this.borrowTickets = tickets;
+    } catch (error) {
+      console.error("Lỗi khi tải dữ liệu từ Backend:", error);
+      this.showToast("Không thể kết nối đến máy chủ Backend!", "error");
+    }
   }
 
   setupSidebarToggle() {
@@ -561,18 +415,23 @@ class AdminDashboard {
   renderStaffDetailView() {
     const urlParams = new URLSearchParams(window.location.search);
     const staffId = urlParams.get("id");
-    const headerTitle = document.getElementById("display-header-title");
-    if (!staffId || !headerTitle) return;
+    if (!staffId) return;
 
     const staff = this.staffs.find((s) => s.id == staffId);
     if (staff) {
       document.title = `Chi tiết nhân viên: ${staff.name} - SmartLibrary`;
-      headerTitle.innerText = `👤 Chi tiết nhân viên: ${staff.name}`;
+      const headerTitle = document.getElementById("display-header-title");
+      if (headerTitle)
+        headerTitle.innerText = `👤 Chi tiết nhân viên: ${staff.name}`;
       const img = document.getElementById("staff-detail-img");
       if (img) img.src = staff.img;
 
-      document.getElementById("detail-staff-name").innerText = staff.name;
-      document.getElementById("detail-staff-email").innerText = staff.email;
+      const detailId = document.getElementById("detail-staff-id");
+      if (detailId) detailId.innerText = staff.id;
+      if (document.getElementById("detail-staff-name"))
+        document.getElementById("detail-staff-name").innerText = staff.name;
+      if (document.getElementById("detail-staff-email"))
+        document.getElementById("detail-staff-email").innerText = staff.email;
 
       const roleSpan = document.getElementById("detail-staff-role");
       if (roleSpan) {
@@ -643,12 +502,12 @@ class AdminDashboard {
             <a href="ct-sach.html?id=${book.id}" class="btn btn-sm btn-view" title="Xem chi tiết">
               <i class="fas fa-eye"></i>
             </a>
-            <button class="btn btn-sm btn-edit" onclick="app.openModal('${book.id}')" title="Sửa">
+            <a href="Edit-sach.html?id=${book.id}" class="btn btn-sm btn-edit" title="Sửa">
               <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn btn-sm btn-delete" onclick="app.deleteBook('${book.id}')" title="Xóa">
+            </a>
+            <a href="Delete-sach.html?id=${book.id}" class="btn btn-sm btn-delete" title="Xóa">
               <i class="fas fa-trash"></i>
-            </button>
+            </a>
           </div>
         </td>
       </tr>
@@ -677,12 +536,12 @@ class AdminDashboard {
             <a href="ct-ban-doc.html?id=${reader.id}" class="btn btn-sm btn-view" title="Xem chi tiết">
               <i class="fas fa-eye"></i>
             </a>
-            <button class="btn btn-sm btn-edit" onclick="app.openReaderModal('${reader.id}')" title="Sửa">
+            <a href="Edit-bandoc.html?id=${reader.id}" class="btn btn-sm btn-edit" title="Sửa">
               <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn btn-sm btn-delete" onclick="app.deleteReader('${reader.id}')" title="Xóa">
+            </a>
+            <a href="Delete-bandoc.html?id=${reader.id}" class="btn btn-sm btn-delete" title="Xóa">
               <i class="fas fa-trash"></i>
-            </button>
+            </a>
           </div>
         </td>
       </tr>
@@ -709,8 +568,8 @@ class AdminDashboard {
             <a href="ct-nhan-vien.html?id=${s.id}" class="btn btn-sm btn-view" title="Xem chi tiết">
               <i class="fas fa-eye"></i>
             </a>
-            <button class="btn btn-sm btn-edit" onclick="app.openStaffModal(${s.id})" title="Sửa"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-sm btn-delete" onclick="app.deleteStaff(${s.id})" title="Xóa"><i class="fas fa-trash"></i></button>
+            <a href="Edit-nhanvien.html?id=${s.id}" class="btn btn-sm btn-edit" title="Sửa"><i class="fas fa-edit"></i></a>
+            <a href="Delete-nhanvien.html?id=${s.id}" class="btn btn-sm btn-delete" title="Xóa"><i class="fas fa-trash"></i></a>
           </div>
         </td>
       </tr>
@@ -719,39 +578,74 @@ class AdminDashboard {
       .join("");
   }
 
-  openStaffModal(staffId = null) {
-    const modal = document.getElementById("staff-modal");
-    const form = document.getElementById("staff-form");
-    const title = document.getElementById("staff-modal-title");
-    const passHelp = document.getElementById("password-help");
+  // --- Logic cho các trang Form (Thêm/Sửa) ---
+  initForms() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get("id");
 
-    if (!modal || !form) return;
-    form.reset();
-    document.getElementById("edit-staff-id").value = "";
-    passHelp.style.display = "none";
+    // 1. Sách
+    const bookForm = document.getElementById("book-form");
+    if (bookForm && editId) {
+      const book = this.books.find((b) => b.id === editId);
+      if (book) {
+        document.getElementById("form-title").value = book.title;
+        document.getElementById("form-author").value = book.author;
+        document.getElementById("form-publisher").value = book.publisher;
+        document.getElementById("form-publish-year").value = book.publishYear;
+        document.getElementById("form-stock").value = book.stock;
+        document.getElementById("form-description").value = book.description;
+      }
+    }
 
-    if (staffId) {
-      const staff = this.staffs.find((s) => s.id === staffId);
+    // 2. Bạn đọc
+    const readerForm = document.getElementById("reader-form");
+    if (readerForm && editId) {
+      const reader = this.readers.find((r) => r.id === editId);
+      if (reader) {
+        document.getElementById("edit-reader-flag").value = "edit";
+        document.getElementById("form-reader-id").value = reader.id;
+        document.getElementById("form-reader-id").readOnly = true;
+        document.getElementById("form-reader-name").value = reader.name;
+        document.getElementById("form-reader-email").value = reader.email;
+        document.getElementById("form-reader-phone").value = reader.phone;
+        document.getElementById("form-reader-address").value = reader.address;
+        document.getElementById("form-reader-dob").value = reader.dob;
+        document.getElementById("form-reader-gender").value =
+          reader.gender || "Nam";
+        document.getElementById("form-reader-status").value = reader.status;
+        if (document.getElementById("password-group")) {
+          document.getElementById("password-group").style.display = "none";
+        }
+      }
+    }
+
+    // 3. Nhân viên
+    const staffForm = document.getElementById("staff-form");
+    if (staffForm && editId) {
+      const staff = this.staffs.find((s) => s.id == editId);
       if (staff) {
-        title.innerText = "Chỉnh sửa nhân viên";
-        document.getElementById("edit-staff-id").value = staff.id;
         document.getElementById("form-staff-name").value = staff.name;
         document.getElementById("form-staff-email").value = staff.email;
         document.getElementById("form-staff-role").value = staff.role;
-        passHelp.style.display = "block";
       }
-    } else {
-      title.innerText = "Thêm nhân viên mới";
     }
-    modal.classList.add("active");
-  }
 
-  closeStaffModal() {
-    document.getElementById("staff-modal")?.classList.remove("active");
+    // 4. Danh mục
+    const categoryForm = document.getElementById("category-form");
+    if (categoryForm && editId) {
+      const cat = this.categories.find((c) => c.id == editId);
+      if (cat) {
+        document.getElementById("edit-category-id").value = cat.id;
+        document.getElementById("form-category-name").value = cat.name;
+      }
+    }
   }
 
   async handleStaffFormSubmit(e) {
-    const editId = document.getElementById("edit-staff-id").value;
+    e.preventDefault();
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get("id");
+
     const formImgInput = document.getElementById("form-staff-img");
     let imageUrl = "https://ui-avatars.com/api/?name=Staff&background=random";
 
@@ -762,35 +656,52 @@ class AdminDashboard {
         reader.readAsDataURL(formImgInput.files[0]);
       });
     } else if (editId) {
-      imageUrl = this.staffs.find((s) => s.id == editId)?.img;
+      const existing = this.staffs.find((s) => s.id == editId);
+      if (existing) imageUrl = existing.img;
     }
 
     const staffData = {
-      id: editId ? parseInt(editId) : this.staffs.length + 1,
+      id: editId || this.staffs.length + 1,
       name: document.getElementById("form-staff-name").value,
       email: document.getElementById("form-staff-email").value,
       role: document.getElementById("form-staff-role").value,
       img: imageUrl,
       createdAt: editId
         ? this.staffs.find((s) => s.id == editId).createdAt
-        : new Date().toISOString().split("T")[0],
+        : new Date().toISOString(),
     };
 
     const isAdding = !editId;
     this.openConfirmationModal(
-      isAdding ? "Xác nhận thêm" : "Xác nhận sửa",
-      `Lưu thông tin nhân viên <strong>${staffData.name}</strong>?`,
-      () => {
-        if (isAdding) {
-          this.staffs.push(staffData);
-          this.showToast("Thêm nhân viên thành công!", "success");
-        } else {
-          const idx = this.staffs.findIndex((s) => s.id == editId);
-          if (idx !== -1) this.staffs[idx] = staffData;
-          this.showToast("Cập nhật thành công!", "success");
+      isAdding ? "Xác nhận thêm nhân viên" : "Xác nhận cập nhật",
+      `Bạn có chắc chắn muốn lưu thông tin nhân viên <strong>${staffData.name}</strong>?`,
+      async () => {
+        try {
+          const url = isAdding
+            ? `${this.apiUrl}/Staff/Create`
+            : `${this.apiUrl}/Staff/Update`;
+          const method = isAdding ? "POST" : "PUT";
+          const response = await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(staffData),
+          });
+
+          if (response.ok) {
+            this.showToast(
+              isAdding ? "Thêm nhân viên thành công" : "Cập nhật thành công",
+              "success",
+            );
+            setTimeout(
+              () => (window.location.href = "ql-nhan-vien.html"),
+              1500,
+            );
+          } else {
+            this.showToast("Lỗi khi lưu dữ liệu lên server", "error");
+          }
+        } catch (err) {
+          this.showToast("Lỗi kết nối API", "error");
         }
-        this.renderStaffs();
-        this.closeStaffModal();
       },
     );
   }
@@ -809,6 +720,9 @@ class AdminDashboard {
         this.staffs = this.staffs.filter((s) => s.id !== id);
         this.renderStaffs();
         this.showToast("Đã xóa nhân viên", "success");
+        if (window.location.pathname.includes("Delete-nhanvien.html")) {
+          setTimeout(() => (window.location.href = "ql-nhan-vien.html"), 1500);
+        }
       },
     );
   }
@@ -829,115 +743,18 @@ class AdminDashboard {
             <a href="ct-danh-muc.html?id=${cat.id}" class="btn btn-sm btn-view" title="Xem chi tiết">
               <i class="fas fa-eye"></i>
             </a>
-            <button class="btn btn-sm btn-edit" onclick="app.openCategoryModal(${cat.id})" title="Sửa">
+            <a href="Edit-danhmuc.html?id=${cat.id}" class="btn btn-sm btn-edit" title="Sửa">
               <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn btn-sm btn-delete" onclick="app.deleteCategory(${cat.id})" title="Xóa">
+            </a>
+            <a href="Delete-danhmuc.html?id=${cat.id}" class="btn btn-sm btn-delete" title="Xóa">
               <i class="fas fa-trash"></i>
-            </button>
+            </a>
           </div>
         </td>
       </tr>
     `,
       )
       .join("");
-  }
-
-  openCategoryModal(catId = null) {
-    const modal = document.getElementById("category-modal");
-    const form = document.getElementById("category-form");
-    const title = document.getElementById("category-modal-title");
-
-    if (!modal || !form) return;
-    form.reset();
-    document.getElementById("edit-category-id").value = "";
-
-    if (catId) {
-      const cat = this.categories.find((c) => c.id === catId);
-      if (cat) {
-        title.innerText = "Chỉnh sửa danh mục";
-        document.getElementById("edit-category-id").value = cat.id;
-        document.getElementById("form-category-name").value = cat.name;
-      }
-    } else {
-      title.innerText = "Thêm danh mục mới";
-    }
-    modal.classList.add("active");
-  }
-
-  viewCategoryDetails(id) {
-    const cat = this.categories.find((c) => c.id === id);
-    if (cat) {
-      document.getElementById("detail-category-id").innerText = `#${cat.id}`;
-      document.getElementById("detail-category-name").innerText = cat.name;
-      document.getElementById("detail-category-count").innerText =
-        `${cat.bookCount} cuốn sách`;
-
-      const modal = document.getElementById("category-details-modal");
-      if (modal) modal.classList.add("active");
-    }
-  }
-
-  closeCategoryDetailsModal() {
-    document
-      .getElementById("category-details-modal")
-      ?.classList.remove("active");
-  }
-
-  closeCategoryModal() {
-    document.getElementById("category-modal")?.classList.remove("active");
-  }
-
-  deleteCategory(id) {
-    const cat = this.categories.find((c) => c.id === id);
-    if (!cat) return;
-
-    // Giả lập logic backend: Không cho xóa nếu danh mục có sách
-    if (cat.bookCount > 0) {
-      this.showToast(
-        `Không thể xóa danh mục "${cat.name}" vì đang có ${cat.bookCount} sách thuộc thể loại này!`,
-        "error",
-      );
-      return;
-    }
-
-    this.openConfirmationModal(
-      "Xác nhận xóa danh mục",
-      `Bạn có chắc chắn muốn xóa danh mục <strong>${cat.name}</strong> không?`,
-      () => {
-        this.categories = this.categories.filter((c) => c.id !== id);
-        this.renderCategories();
-        this.showToast("Đã xóa danh mục thành công", "success");
-      },
-    );
-  }
-
-  handleCategoryFormSubmit(e) {
-    e.preventDefault();
-    const editId = document.getElementById("edit-category-id").value;
-    const catName = document.getElementById("form-category-name").value;
-
-    const isAdding = !editId;
-    this.openConfirmationModal(
-      isAdding ? "Xác nhận thêm danh mục" : "Xác nhận lưu thay đổi",
-      `Lưu danh mục <strong>${catName}</strong>?`,
-      () => {
-        if (isAdding) {
-          const newId =
-            this.categories.length > 0
-              ? Math.max(...this.categories.map((c) => c.id)) + 1
-              : 1;
-          this.categories.push({ id: newId, name: catName, bookCount: 0 });
-          this.showToast("Thêm danh mục thành công!", "success");
-        } else {
-          const idx = this.categories.findIndex((c) => c.id == editId);
-          if (idx !== -1) this.categories[idx].name = catName;
-          this.showToast("Cập nhật danh mục thành công!", "success");
-        }
-        this.renderCategories();
-        this.closeCategoryModal();
-      },
-    );
   }
 
   renderBorrowTickets() {
@@ -1172,6 +989,36 @@ class AdminDashboard {
     }
   }
 
+  renderBookDetailView() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const bookId = urlParams.get("id");
+    if (!bookId || !document.getElementById("detail-id")) return;
+
+    const book = this.books.find((b) => b.id === bookId);
+    if (book) {
+      document.getElementById("detail-id").innerText = book.id;
+      document.getElementById("detail-title").innerText = book.title;
+      document.getElementById("detail-author").innerText =
+        book.author || "Chưa rõ";
+      document.getElementById("detail-publisher").innerText =
+        book.publisher || "Chưa rõ";
+      document.getElementById("detail-year").innerText =
+        book.publishYear || "Chưa rõ";
+      document.getElementById("detail-category").innerText = book.category;
+      document.getElementById("detail-stock").innerText = book.stock;
+      document.getElementById("detail-img").src = book.img;
+
+      const statusBadge = document.getElementById("detail-status");
+      if (statusBadge) {
+        statusBadge.innerText = book.status;
+        statusBadge.className = `badge ${book.stock > 0 ? "badge-success" : "badge-danger"}`;
+      }
+
+      const editLink = document.getElementById("edit-link");
+      if (editLink) editLink.href = `ql-sach.html?edit=${book.id}`;
+    }
+  }
+
   renderReaderDetailView() {
     const urlParams = new URLSearchParams(window.location.search);
     const readerId = urlParams.get("id");
@@ -1321,14 +1168,27 @@ class AdminDashboard {
     document.getElementById("confirm-modal").classList.remove("active");
   }
 
-  deleteBook(id) {
+  async deleteBook(id) {
     this.openConfirmationModal(
       "Xác nhận xóa sách",
       `Bạn có chắc chắn muốn xóa sách có mã <strong>${id}</strong> không? Hành động này không thể hoàn tác.`,
-      () => {
-        this.books = this.books.filter((b) => b.id !== id);
-        this.renderBooks();
-        this.showToast(`Đã xóa thành công sách có mã: ${id}`, "success");
+      async () => {
+        try {
+          const response = await fetch(`${this.apiUrl}/Book/Delete/${id}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            this.books = this.books.filter((b) => b.id !== id);
+            this.renderBooks();
+            this.showToast(`Đã xóa thành công sách có mã: ${id}`, "success");
+          } else {
+            const errorData = await response.json();
+            this.showToast(errorData.message || "Lỗi khi xóa sách", "error");
+          }
+        } catch (err) {
+          this.showToast("Lỗi kết nối API", "error");
+        }
       },
     );
   }
@@ -1387,25 +1247,43 @@ class AdminDashboard {
       ? `Bạn có muốn thêm sách <strong>"${bookData.title}"</strong> vào thư viện không?`
       : `Bạn có muốn lưu các thay đổi cho sách <strong>"${bookData.title}"</strong> không?`;
 
-    this.openConfirmationModal(confirmTitle, confirmMessage, () => {
-      if (isAdding) {
-        this.books.push(bookData);
-        this.showToast(
-          `Đã thêm sách "${bookData.title}" thành công!`,
-          "success",
-        );
-      } else {
-        const index = this.books.findIndex((b) => b.id === editId);
-        if (index !== -1) {
-          this.books[index] = bookData;
-          this.showToast(
-            `Cập nhật sách "${bookData.title}" thành công!`,
-            "success",
-          );
+    this.openConfirmationModal(confirmTitle, confirmMessage, async () => {
+      try {
+        const url = isAdding
+          ? `${this.apiUrl}/Book/Create`
+          : `${this.apiUrl}/Book/Update`;
+        const method = isAdding ? "POST" : "PUT";
+
+        const response = await fetch(url, {
+          method: method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bookData),
+        });
+
+        if (response.ok) {
+          const savedBook = await response.json();
+          if (isAdding) {
+            this.books.push(savedBook);
+            this.showToast(
+              `Đã thêm sách "${bookData.title}" thành công!`,
+              "success",
+            );
+          } else {
+            const index = this.books.findIndex((b) => b.id === editId);
+            if (index !== -1) this.books[index] = savedBook;
+            this.showToast(
+              `Cập nhật sách "${bookData.title}" thành công!`,
+              "success",
+            );
+          }
+          this.renderBooks();
+          this.closeBookModal();
+        } else {
+          this.showToast("Lỗi khi lưu dữ liệu lên Backend", "error");
         }
+      } catch (err) {
+        this.showToast("Lỗi kết nối API", "error");
       }
-      this.renderBooks();
-      this.closeBookModal(); // Close the input modal after confirmation and save
     });
   }
 
@@ -1480,11 +1358,6 @@ class AdminDashboard {
         this.showToast(`Đang tìm kiếm: ${query}`, "warning");
       }
     });
-
-    // Modal events
-    document
-      .getElementById("btn-add-book")
-      ?.addEventListener("click", () => this.openModal());
 
     // Close book modal
     document

@@ -11,8 +11,8 @@ public class CategoryViewModel
 {
     public int CategoryId { get; set; }
 
-    [Required(ErrorMessage = "Tên danh mục không được để trống.")]
-    [StringLength(100, ErrorMessage = "Tên danh mục không được vượt quá 100 ký tự.")]
+    [Required(ErrorMessage = "Tên danh mục không được để trống và phải từ 5 - 20 ký tự.")]
+    [StringLength(20, MinimumLength = 5, ErrorMessage = "Tên danh mục không được để trống và phải từ 5 - 20 ký tự.")]
     [Display(Name = "Tên danh mục")]
     public string CategoryName { get; set; } = string.Empty;
 }
