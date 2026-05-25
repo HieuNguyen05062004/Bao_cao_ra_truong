@@ -7,6 +7,7 @@ public interface IReaderService
     Task<IEnumerable<Reader>> GetAllAsync();
     Task<Reader?> GetByIdAsync(string readerId);
     Task<bool> ReaderIdExistsAsync(string readerId);
+    Task<bool> EmailExistsAsync(string email, string? exceptReaderId = null);
     Task<IEnumerable<Reader>> SearchAsync(string keyword);
     Task<int> CountBorrowingAsync(string readerId);
     Task<int> CountOverdueAsync(string readerId);

@@ -49,6 +49,21 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+var frontendPath = Path.GetFullPath(Path.Combine(
+    Directory.GetCurrentDirectory(), "../../Fontend/Admin"));
+if (Directory.Exists(frontendPath))
+{
+    app.UseDefaultFiles(new DefaultFilesOptions
+    {
+        FileProvider = new PhysicalFileProvider(frontendPath),
+        DefaultFileNames = { "index.html" }
+    });
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(frontendPath)
+    });
+}
+
 // ── Serve ảnh sách ────────────────────────────────────────────────────────
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -68,10 +83,23 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/reader-avatars"
 });
 
+var staffAvatarsPath = Path.GetFullPath(Path.Combine(
+    Directory.GetCurrentDirectory(), "../Core.Shared/Uploads/staff-avatars"));
+Directory.CreateDirectory(staffAvatarsPath);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(staffAvatarsPath),
+    RequestPath = "/staff-avatars"
+});
+
 app.UseRouting();
 app.UseSession();
 app.UseAuthorization();
 app.MapStaticAssets();
+app.MapControllers();
+
+if (Directory.Exists(frontendPath))
+    app.MapGet("/", () => Results.Redirect("/login.html"));
 
 app.MapControllerRoute(
     name: "default",

@@ -29,12 +29,14 @@ builder.Services.AddScoped<BookRepository>();
 builder.Services.AddScoped<BorrowRepository>();
 builder.Services.AddScoped<ReaderRepository>();
 builder.Services.AddScoped<AccountRepository>();
+builder.Services.AddScoped<CategoryRepository>();
 
 // Đăng ký Service
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IBorrowService, BorrowService>();
 builder.Services.AddScoped<IReaderService, ReaderService>();
 builder.Services.AddScoped<IUnifiedAuthService, UnifiedAuthService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 // ── AI Search ────────────────────────────────────────────────────────────────
 // Dùng typed HttpClient — DI tự inject HttpClient vào constructor AiSearchService
@@ -53,6 +55,37 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+var frontendPath = Path.GetFullPath(Path.Combine(
+    Directory.GetCurrentDirectory(), "../../Fontend/Client"));
+if (Directory.Exists(frontendPath))
+{
+    app.UseDefaultFiles(new DefaultFilesOptions
+    {
+        FileProvider = new PhysicalFileProvider(frontendPath),
+        DefaultFileNames = { "index.html" }
+    });
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(frontendPath)
+    });
+}
+
+var accountFrontendPath = Path.GetFullPath(Path.Combine(
+    Directory.GetCurrentDirectory(), "../../Fontend/Acount"));
+if (Directory.Exists(accountFrontendPath))
+{
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(accountFrontendPath),
+        RequestPath = "/account"
+    });
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(accountFrontendPath),
+        RequestPath = "/Account"
+    });
+}
 
 // Serve ảnh sách
 var bookImagesPath = Path.GetFullPath(Path.Combine(
@@ -78,6 +111,10 @@ app.UseRouting();
 app.UseSession();
 app.UseAuthorization();
 app.MapStaticAssets();
+app.MapControllers();
+
+if (Directory.Exists(frontendPath))
+    app.MapGet("/", () => Results.Redirect("/index.html"));
 
 app.MapControllerRoute(
     name: "default",

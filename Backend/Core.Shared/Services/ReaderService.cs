@@ -24,6 +24,9 @@ public class ReaderService : IReaderService
     public async Task<bool> ReaderIdExistsAsync(string readerId)
         => await _repo.ExistsAsync(readerId);
 
+    public async Task<bool> EmailExistsAsync(string email, string? exceptReaderId = null)
+        => await _repo.EmailExistsAsync(email, exceptReaderId);
+
     public async Task<IEnumerable<Reader>> SearchAsync(string keyword)
         => await _repo.SearchAsync(keyword);
 
@@ -47,6 +50,9 @@ public class ReaderService : IReaderService
         if (!string.IsNullOrWhiteSpace(reader.Email) && !IsValidEmail(reader.Email))
             return "Email không hợp lệ.";
 
+        if (!string.IsNullOrWhiteSpace(reader.Email) && await _repo.EmailExistsAsync(reader.Email))
+            return "Gmail không được để trùng.";
+
         if (!string.IsNullOrWhiteSpace(reader.Phone) && !IsValidPhone(reader.Phone))
             return "Số điện thoại không hợp lệ.";
 
@@ -69,6 +75,9 @@ public class ReaderService : IReaderService
 
         if (!string.IsNullOrWhiteSpace(reader.Email) && !IsValidEmail(reader.Email))
             return "Email không hợp lệ.";
+
+        if (!string.IsNullOrWhiteSpace(reader.Email) && await _repo.EmailExistsAsync(reader.Email, reader.ReaderId))
+            return "Gmail không được để trùng.";
 
         if (!string.IsNullOrWhiteSpace(reader.Phone) && !IsValidPhone(reader.Phone))
             return "Số điện thoại không hợp lệ.";

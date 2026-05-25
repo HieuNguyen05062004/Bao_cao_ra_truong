@@ -37,6 +37,13 @@ public class ReaderRepository
             .AnyAsync(r => r.ReaderId == readerId);
     }
 
+    public async Task<bool> EmailExistsAsync(string email, string? exceptReaderId = null)
+    {
+        email = email.Trim();
+        return await _context.Readers
+            .AnyAsync(r => r.Email == email && (exceptReaderId == null || r.ReaderId != exceptReaderId));
+    }
+
     // Kiểm tra còn phiếu mượn chưa trả
     public async Task<bool> HasActiveBorrowAsync(string readerId)
     {
