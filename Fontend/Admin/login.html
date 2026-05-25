@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập Admin - SmartLibrary</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .login-card {
+        width: 100%;
+        max-width: 420px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 32px;
+      }
+
+      .login-header {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+
+      .login-header i {
+        font-size: 48px;
+        color: var(--accent);
+        margin-bottom: 12px;
+      }
+
+      .login-error {
+        color: var(--danger);
+        font-size: 0.9rem;
+        margin-top: 8px;
+        min-height: 20px;
+      }
+
+      .btn-login {
+        width: 100%;
+        margin-top: 12px;
+        padding: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="login-card">
+      <div class="login-header">
+        <i class="fas fa-user-shield"></i>
+        <h1>SmartLib Admin</h1>
+        <p>Đăng nhập để quản lý thư viện</p>
+      </div>
+
+      <form id="admin-login-form">
+        <div class="form-group">
+          <label for="login-username">Email hoặc tên đăng nhập</label>
+          <input id="login-username" type="text" autocomplete="username" required />
+          <div class="login-error" id="username-error"></div>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Mật khẩu</label>
+          <input
+            id="login-password"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
+          <label class="password-toggle">
+            <input type="checkbox" id="toggle-password" /> Hiện mật khẩu
+          </label>
+          <div class="login-error" id="password-error"></div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-login">
+          <i class="fas fa-sign-in-alt"></i> Đăng nhập
+        </button>
+      </form>
+    </main>
+
+    <script>
+      const form = document.getElementById("admin-login-form");
+      const username = document.getElementById("login-username");
+      const password = document.getElementById("login-password");
+      const usernameError = document.getElementById("username-error");
+      const passwordError = document.getElementById("password-error");
+
+      document.getElementById("toggle-password").addEventListener("change", (event) => {
+        password.type = event.target.checked ? "text" : "password";
+      });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        usernameError.textContent = "";
+        passwordError.textContent = "";
+
+        if (!username.value.trim()) {
+          usernameError.textContent = "Vui lòng nhập email hoặc tên đăng nhập.";
+          return;
+        }
+        if (!password.value) {
+          passwordError.textContent = "Vui lòng nhập mật khẩu.";
+          return;
+        }
+
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: username.value.trim(),
+            password: password.value,
+          }),
+        });
+
+        if (response.ok) {
+          window.location.href = "index.html";
+          return;
+        }
+
+        const error = await response.json().catch(() => ({}));
+        passwordError.textContent = error.message || "Đăng nhập thất bại.";
+      });
+    </script>
+  </body>
+</html>

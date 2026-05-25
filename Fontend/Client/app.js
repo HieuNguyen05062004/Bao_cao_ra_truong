@@ -1,11 +1,13 @@
 class SmartLibraryApp {
   constructor() {
+    this.apiUrl = "/api";
     this.init();
   }
 
   init() {
     console.log("SmartLibrary AI App initialized...");
     this.createToastContainer();
+    this.renderAuthState();
     this.setupEventListeners();
     if (document.getElementById("latest-books-grid")) {
       this.loadHomepageData();
@@ -58,79 +60,82 @@ class SmartLibraryApp {
   }
 
   async loadHomepageData() {
-    // Trong thực tế, bạn sẽ fetch từ API của ASP.NET Core:
-    // const latest = await fetch('/api/books/latest?count=5').then(res => res.json());
-    // const trending = await fetch('/api/books/trending?count=5').then(res => res.json());
+    try {
+      const [latest, trending] = await Promise.all([
+        fetch(`${this.apiUrl}/books/latest?count=5`).then((res) =>
+          res.ok ? res.json() : [],
+        ),
+        fetch(`${this.apiUrl}/books/trending?count=5`).then((res) =>
+          res.ok ? res.json() : [],
+        ),
+      ]);
 
-    // Giả lập dữ liệu để hiển thị
-    const mockLatest = Array(5).fill({
-      id: "L1",
-      title: "Sách mới nhất 2024",
-      author: "Admin",
-      category: "Công nghệ",
-      status: "Sẵn có",
-    });
-    const mockTrending = Array(5).fill({
-      id: "T1",
-      title: "Sách mượn nhiều nhất",
-      author: "Tác giả Hot",
-      category: "Kinh tế",
-      status: "Sẵn có",
-    });
+      this.renderBookGrid("latest-books-grid", latest);
+      this.renderBookGrid("trending-books-grid", trending);
+    } catch {
+      this.showToast("Không thể tải dữ liệu sách từ backend.", "danger");
+    }
+  }
 
-    this.renderBookGrid("latest-books-grid", mockLatest);
-    this.renderBookGrid("trending-books-grid", mockTrending);
+  async renderAuthState() {
+    const menus = document.querySelectorAll(".user-menu");
+    if (!menus.length) return;
+
+    let me = { isAuthenticated: false };
+    try {
+      const response = await fetch(`${this.apiUrl}/auth/me`);
+      if (response.ok) me = await response.json();
+    } catch {
+      me = { isAuthenticated: false };
+    }
+
+    menus.forEach((menu) => {
+      if (me.isAuthenticated) {
+        menu.innerHTML = `
+          <span class="btn btn-outline btn-sm" title="${me.userId || ""}">
+            <i class="fas fa-user-circle"></i> ${me.userName || me.userId || "Tài khoản"}
+          </span>
+          <button class="btn btn-accent btn-sm" data-logout>
+            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+          </button>
+        `;
+        menu.querySelector("[data-logout]")?.addEventListener("click", async () => {
+          await fetch(`${this.apiUrl}/auth/logout`, { method: "POST" });
+          window.location.href = "index.html";
+        });
+      } else {
+        menu.innerHTML = `
+          <a class="btn btn-outline btn-sm" href="/account/index.html">Đăng nhập</a>
+          <a class="btn btn-accent btn-sm" href="/account/sign-up.html">Đăng ký</a>
+        `;
+      }
+    });
   }
 
   async loadBorrowHistoryPage() {
-    // Giả lập dữ liệu từ BorrowTickets
-    const mockHistory = [
-      {
-        id: "TKT-001",
-        date: "10/05/2026",
-        due: "17/05/2026",
-        count: 2,
-        status: "Approved",
-        statusText: "Đã duyệt",
-      },
-      {
-        id: "TKT-002",
-        date: "15/05/2026",
-        due: "22/05/2026",
-        count: 1,
-        status: "Pending",
-        statusText: "Chờ duyệt",
-      },
-      {
-        id: "TKT-003",
-        date: "01/05/2026",
-        due: "08/05/2026",
-        count: 3,
-        status: "Returned",
-        statusText: "Đã trả",
-      },
-      {
-        id: "TKT-005",
-        date: "12/05/2026",
-        due: "19/05/2026",
-        count: 1,
-        status: "Borrowing",
-        statusText: "Đang mượn",
-      },
-      {
-        id: "TKT-004",
-        date: "20/04/2026",
-        due: "27/04/2026",
-        count: 1,
-        status: "Rejected",
-        statusText: "Bị từ chối",
-      },
-    ];
-
     const tableBody = document.getElementById("borrow-history-table");
     const searchInput = document.getElementById("history-search");
     const statusFilter = document.getElementById("status-filter");
     if (!tableBody) return;
+
+    let history = [];
+    try {
+      const response = await fetch(`${this.apiUrl}/borrow/history`);
+      if (response.status === 401) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center p-xl">
+              Vui lòng đăng nhập để xem phiếu mượn.
+              <a class="btn btn-primary btn-sm" href="/account/index.html" style="margin-left: 8px">Đăng nhập</a>
+            </td>
+          </tr>`;
+        this.showToast("Vui lòng đăng nhập để xem phiếu mượn.", "danger");
+        return;
+      }
+      history = response.ok ? await response.json() : [];
+    } catch {
+      this.showToast("Không thể tải lịch sử mượn.", "danger");
+    }
 
     const renderTable = (data) => {
       if (data.length === 0) {
@@ -174,7 +179,7 @@ class SmartLibraryApp {
       const searchTerm = searchInput.value.toLowerCase();
       const statusValue = statusFilter.value.toLowerCase();
 
-      const filtered = mockHistory.filter((item) => {
+      const filtered = history.filter((item) => {
         const matchesSearch = item.id.toLowerCase().includes(searchTerm);
         const matchesStatus =
           statusValue === "all" || item.status.toLowerCase() === statusValue;
@@ -188,17 +193,25 @@ class SmartLibraryApp {
     statusFilter.onchange = filterData;
 
     // Initial render
-    setTimeout(() => renderTable(mockHistory), 300);
+    renderTable(history);
   }
 
   deleteBorrowTicket(id) {
     this.openConfirmModal(
       "Xác nhận hủy yêu cầu",
       `Bạn có chắc chắn muốn xóa và hủy yêu cầu mượn sách <strong>${id}</strong> không? Hành động này không thể hoàn tác.`,
-      () => {
-        // Trong thực tế, bạn sẽ gọi API DELETE tại đây
-        this.showToast(`Đã xóa yêu cầu mượn sách ${id} thành công!`);
-        this.loadBorrowHistoryPage();
+      async () => {
+        const rawId = String(id).replace("TKT-", "");
+        const response = await fetch(`${this.apiUrl}/borrow/${parseInt(rawId)}`, {
+          method: "DELETE",
+        });
+        if (response.ok) {
+          this.showToast(`Đã xóa yêu cầu mượn sách ${id} thành công!`);
+          this.loadBorrowHistoryPage();
+        } else {
+          const error = await response.json().catch(() => ({}));
+          this.showToast(error.message || "Không thể xóa phiếu mượn.", "danger");
+        }
       },
     );
   }
@@ -228,41 +241,34 @@ class SmartLibraryApp {
 
   async loadTicketDetailPage() {
     const urlParams = new URLSearchParams(window.location.search);
-    const ticketId = urlParams.get("id") || "TKT-001";
+    const ticketParam = urlParams.get("id") || "TKT-001";
+    const rawId = parseInt(ticketParam.replace("TKT-", ""));
 
-    // Giả lập dữ liệu phiếu mượn chi tiết
-    const mockTicket = {
-      id: ticketId,
-      readerName: "hieu (RR66520)",
-      borrowDate: "12/05/2026",
-      dueDate: "19/05/2026",
-      returnDate: ticketId === "TKT-003" ? "08/05/2026" : "Chưa trả",
-      status: ticketId === "TKT-003" ? "Returned" : "Borrowing",
-      statusText: ticketId === "TKT-003" ? "Đã trả" : "Đang mượn",
-      books: [
-        { title: "Lập trình .NET 10 & AI", quantity: 1 },
-        { title: "Cấu trúc dữ liệu và Giải thuật", quantity: 1 },
-      ],
-    };
+    const response = await fetch(`${this.apiUrl}/borrow/${rawId}`);
+    if (!response.ok) {
+      this.showToast("Không tìm thấy phiếu mượn.", "danger");
+      return;
+    }
+    const ticket = await response.json();
 
     // Hiển thị thông tin header
-    document.getElementById("display-ticket-id").innerText = mockTicket.id;
+    document.getElementById("display-ticket-id").innerText = ticket.id;
     const statusEl = document.getElementById("display-status");
-    statusEl.innerText = mockTicket.statusText;
-    statusEl.className = `status-badge status-${mockTicket.status.toLowerCase()}`;
+    statusEl.innerText = ticket.statusText;
+    statusEl.className = `status-badge status-${ticket.status.toLowerCase()}`;
 
     // Hiển thị thông tin chi tiết
     document.getElementById("display-reader-name").innerText =
-      mockTicket.readerName;
+      ticket.readerName || "";
     document.getElementById("display-borrow-date").innerText =
-      mockTicket.borrowDate;
-    document.getElementById("display-due-date").innerText = mockTicket.dueDate;
+      ticket.date || "";
+    document.getElementById("display-due-date").innerText = ticket.due || "";
     document.getElementById("display-return-date").innerText =
-      mockTicket.returnDate;
+      ticket.returnDate ? new Date(ticket.returnDate).toLocaleDateString("vi-VN") : "Chưa trả";
 
     // Hiển thị danh sách sách
     const bookTable = document.getElementById("ticket-books-table");
-    bookTable.innerHTML = mockTicket.books
+    bookTable.innerHTML = ticket.books
       .map(
         (b) => `
       <tr>
@@ -275,14 +281,20 @@ class SmartLibraryApp {
   }
 
   async loadAllBooksPage() {
-    // Giả lập load danh mục
-    const categories = [
-      "Văn học",
-      "Kinh tế",
-      "Công nghệ",
-      "Khoa học",
-      "Kỹ năng",
-    ];
+    const params = new URLSearchParams(window.location.search);
+    const keyword = params.get("q") || "";
+    const mode = params.get("mode") || "basic";
+    const [categories, books] = await Promise.all([
+      fetch(`${this.apiUrl}/books/categories`).then((res) =>
+        res.ok ? res.json() : [],
+      ),
+      fetch(
+        keyword
+          ? `${this.apiUrl}/books/search?q=${encodeURIComponent(keyword)}&mode=${encodeURIComponent(mode)}`
+          : `${this.apiUrl}/books`,
+      ).then((res) => (res.ok ? res.json() : [])),
+    ]);
+    this.allBooks = books;
     const categoryContainer = document.getElementById("category-filter-list");
     if (categoryContainer) {
       categoryContainer.innerHTML =
@@ -292,7 +304,7 @@ class SmartLibraryApp {
             (cat) => `
           <li>
             <label class="filter-item">
-              <input type="checkbox" name="category" value="${cat}"> <span>${cat}</span>
+              <input type="checkbox" name="category" value="${cat.id}"> <span>${cat.name}</span>
             </label>
           </li>
         `,
@@ -300,31 +312,73 @@ class SmartLibraryApp {
           .join("");
     }
 
-    // Giả lập load toàn bộ sách (ví dụ 12 cuốn)
-    const mockAllBooks = Array(12)
-      .fill(0)
-      .map((_, i) => ({
-        id: `B${i}`,
-        title: `Sách Kiến Thức Số ${i + 1}`,
-        author: "Tác giả Tuyển Chọn",
-        category: categories[i % categories.length],
-        status: i % 4 === 0 ? "Hết hàng" : "Sẵn có",
-        statusClass: i % 4 === 0 ? "danger" : "success",
-      }));
+    const renderFiltered = () => {
+      const checked = Array.from(
+        document.querySelectorAll('input[name="category"]:checked'),
+      ).map((input) => input.value);
+      const sort = document.getElementById("sort-books")?.value || "newest";
+      let filtered =
+        checked.includes("all") || checked.length === 0
+          ? [...this.allBooks]
+          : this.allBooks.filter((book) =>
+              (book.categoryIds || []).some((id) => checked.includes(String(id))),
+            );
 
-    this.renderBookGrid("all-books-grid", mockAllBooks);
-    document.getElementById("results-count").innerText =
-      `Hiển thị ${mockAllBooks.length} kết quả`;
+      filtered.sort((a, b) => {
+        if (sort === "az") return a.title.localeCompare(b.title, "vi");
+        if (sort === "trending") return (b.borrowCount || 0) - (a.borrowCount || 0);
+        return (b.publishYear || 0) - (a.publishYear || 0);
+      });
+
+      this.renderBookGrid("all-books-grid", filtered);
+      document.getElementById("results-count").innerText =
+        `Hiển thị ${filtered.length} kết quả`;
+    };
+
+    document.querySelectorAll('input[name="category"]').forEach((input) => {
+      input.addEventListener("change", () => {
+        if (input.value === "all" && input.checked) {
+          document
+            .querySelectorAll('input[name="category"]:not([value="all"])')
+            .forEach((item) => (item.checked = false));
+        } else if (input.checked) {
+          const all = document.querySelector('input[name="category"][value="all"]');
+          if (all) all.checked = false;
+        }
+        renderFiltered();
+      });
+    });
+    document.getElementById("sort-books")?.addEventListener("change", renderFiltered);
+    renderFiltered();
   }
 
-  loadBookDetailPage() {
+  async loadBookDetailPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const bookId = urlParams.get("id") || "B001";
-    const bookTitle = "Lập trình .NET 10 & AI";
+    const response = await fetch(`${this.apiUrl}/books/${bookId}`);
+    if (!response.ok) {
+      this.showToast("Không tìm thấy sách.", "danger");
+      return;
+    }
+    const book = await response.json();
+    const bookTitle = book.title;
 
     // Hiển thị thông tin lên trang chi tiết
     document.getElementById("detail-title").innerText = bookTitle;
     document.getElementById("detail-id").innerText = `Mã: ${bookId}`;
+    document.getElementById("detail-img").src =
+      book.img || "https://via.placeholder.com/400x600?text=Book+Cover";
+    document.getElementById("detail-status").innerText = book.status || "";
+    document.getElementById("detail-status").className =
+      `book-tag ${book.statusClass || (book.stock > 0 ? "success" : "danger")}`;
+    document.getElementById("detail-category").innerText =
+      book.category || "Chưa phân loại";
+    document.getElementById("detail-author").innerText =
+      `Tác giả: ${book.author || "Chưa cập nhật"}`;
+    document.getElementById("detail-desc").innerText =
+      book.description || "Chưa có mô tả cho sách này.";
+    document.getElementById("detail-pub").innerText =
+      `${book.publisher || "Chưa cập nhật"}${book.publishYear ? ` - ${book.publishYear}` : ""}`;
 
     // Xử lý Modal
     const modal = document.getElementById("borrow-modal");
@@ -334,9 +388,17 @@ class SmartLibraryApp {
     const confirmBtn = document.getElementById("confirm-borrow");
 
     if (openModalBtn && modal) {
-      openModalBtn.addEventListener("click", () => {
+      openModalBtn.addEventListener("click", async () => {
+        const meResponse = await fetch(`${this.apiUrl}/auth/me`).catch(() => null);
+        const me = meResponse?.ok ? await meResponse.json() : { isAuthenticated: false };
+        if (!me.isAuthenticated || me.userType !== "Reader") {
+          this.showToast("Vui lòng đăng nhập để gửi yêu cầu mượn sách.", "danger");
+          return;
+        }
         // Tự động điền tên sách vào modal
         document.getElementById("modal-book-title").value = bookTitle;
+        document.getElementById("modal-reader-id").value = me.userId || "";
+        document.getElementById("modal-reader-name").value = me.userName || "";
 
         // Thiết lập ngày mặc định (Ngày mượn là hôm nay, ngày trả là 7 ngày sau)
         const today = new Date().toISOString().split("T")[0];
@@ -357,12 +419,29 @@ class SmartLibraryApp {
     if (cancelBtn) cancelBtn.onclick = closeModal;
 
     if (confirmBtn) {
-      confirmBtn.addEventListener("click", () => {
+      confirmBtn.addEventListener("click", async () => {
         const borrowDate = document.getElementById("modal-borrow-date").value;
         const dueDate = document.getElementById("modal-due-date").value;
 
-        this.showToast(`Đã gửi yêu cầu mượn sách "${bookTitle}" thành công!`);
-        closeModal();
+        const response = await fetch(`${this.apiUrl}/borrow/request`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            bookIds: [bookId],
+            borrowDate,
+            dueDate,
+          }),
+        });
+
+        if (response.ok) {
+          this.showToast(`Đã gửi yêu cầu mượn sách "${bookTitle}" thành công!`);
+          closeModal();
+        } else if (response.status === 401) {
+          this.showToast("Vui lòng đăng nhập để gửi yêu cầu mượn sách.", "danger");
+        } else {
+          const error = await response.json().catch(() => ({}));
+          this.showToast(error.message || "Không thể gửi yêu cầu mượn.", "danger");
+        }
       });
     }
   }
@@ -376,7 +455,7 @@ class SmartLibraryApp {
         (book) => `
         <div class="card book-card">
             <div class="book-cover">
-                <img src="https://via.placeholder.com/200x300?text=Cover" alt="${book.title}">
+                <img src="${book.img || "https://via.placeholder.com/200x300?text=Cover"}" alt="${book.title}">
                 <span class="book-tag ${book.statusClass || "success"}">${book.status}</span>
             </div>
             <div class="card-body">
@@ -426,11 +505,14 @@ class SmartLibraryApp {
       searchBtn.addEventListener("click", () => {
         const query = searchInput.value;
         if (query) {
-          const mode = isAiMode ? "AI" : "Cơ bản";
-          this.showToast(`Đang thực hiện tìm kiếm ${mode}: ${query}`, "info");
+          window.location.href = `kho-sach.html?q=${encodeURIComponent(query)}&mode=${isAiMode ? "ai" : "basic"}`;
         }
       });
     }
+
+    searchInput?.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") searchBtn?.click();
+    });
 
     // Mobile Menu Toggle logic
     const mobileMenuBtn = document.getElementById("mobile-menu-btn");

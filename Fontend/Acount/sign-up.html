@@ -8,7 +8,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="../Admin/styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
     <style>
       body {
         background-color: #f4f7f6;
@@ -193,7 +193,7 @@
         });
 
       const signupForm = document.getElementById("signup-form");
-      signupForm.addEventListener("submit", function (e) {
+      signupForm.addEventListener("submit", async function (e) {
         e.preventDefault();
         let isValid = true;
 
@@ -266,8 +266,28 @@
         } else clearError(fields.address);
 
         if (isValid) {
-          alert("Đăng ký thành công! Chào mừng " + fields.name.value);
-          window.location.href = "index.html";
+          const data = new FormData();
+          data.append("email", fields.email.value.trim());
+          data.append("fullName", fields.name.value.trim());
+          data.append("phone", fields.phone.value.trim());
+          data.append("gender", fields.gender.value);
+          data.append("password", fields.password.value);
+          data.append("doB", fields.dob.value);
+          data.append("address", fields.address.value.trim());
+          data.append("avatar", fields.avatar.files[0]);
+
+          const response = await fetch("/api/auth/register", {
+            method: "POST",
+            body: data,
+          });
+
+          if (response.ok) {
+            alert("Đăng ký thành công! Chào mừng " + fields.name.value);
+            window.location.href = "index.html";
+          } else {
+            const error = await response.json().catch(() => ({}));
+            showError(fields.email, error.message || "Đăng ký thất bại.");
+          }
         }
       });
     </script>

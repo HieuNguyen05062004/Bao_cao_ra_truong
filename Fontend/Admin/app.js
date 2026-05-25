@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 class AdminDashboard {
   constructor() {
     // Địa chỉ gốc của API Backend (ASP.NET Core)
-    this.apiUrl = "https://localhost:7001/api";
+    this.apiUrl = "/api";
 
     // Sidebar link update logic
     this.updateSidebarLinks();
@@ -31,9 +31,40 @@ class AdminDashboard {
       if (href === "the-loai.html")
         link.setAttribute("href", "ql-danh-muc.html");
     });
+
+    document.querySelectorAll(".sidebar-nav").forEach((nav) => {
+      if (!nav.querySelector('a[href="ql-nhan-vien.html"]')) {
+        const borrowLink = nav.querySelector('a[href="muon-tra.html"]');
+        const staffLink = document.createElement("a");
+        staffLink.href = "ql-nhan-vien.html";
+        staffLink.className = "nav-item";
+        staffLink.innerHTML = '<i class="fas fa-user-shield"></i> Nhân viên';
+        nav.insertBefore(staffLink, borrowLink || null);
+      }
+    });
+  }
+
+  async ensureAdminAuthenticated() {
+    if (window.location.pathname.toLowerCase().endsWith("/login.html")) {
+      return false;
+    }
+
+    try {
+      const response = await fetch(`${this.apiUrl}/auth/me`);
+      if (response.ok) {
+        const me = await response.json();
+        if (me.isAuthenticated) return true;
+      }
+    } catch {
+      // Redirect below.
+    }
+
+    window.location.href = "login.html";
+    return false;
   }
 
   async init() {
+    if (!(await this.ensureAdminAuthenticated())) return;
     await this.fetchInitialData();
 
     // Tự động nhận diện trang để render dữ liệu phù hợp
@@ -45,7 +76,10 @@ class AdminDashboard {
     if (document.getElementById("borrow-ticket-list"))
       this.renderBorrowTickets();
 
+    this.setupImagePreviews();
+    this.setupPasswordToggles();
     this.initForms(); // Khởi tạo logic cho các trang thêm/sửa
+    this.setupValidationListeners();
     this.setupEventListeners();
     this.setupSidebarToggle();
 
@@ -85,6 +119,15 @@ class AdminDashboard {
       this.categories = categories;
       this.staffs = staff;
       this.borrowTickets = tickets;
+      this.recentBorrows = tickets.slice(0, 5).map((ticket) => ({
+        id: ticket.id,
+        reader: ticket.readerName,
+        books: ticket.books.map((book) => book.title),
+        date: ticket.borrowDate,
+        dueDate: ticket.dueDate,
+        status: ticket.status,
+      }));
+      this.populateCategorySelects();
     } catch (error) {
       console.error("Lỗi khi tải dữ liệu từ Backend:", error);
       this.showToast("Không thể kết nối đến máy chủ Backend!", "error");
@@ -92,8 +135,20 @@ class AdminDashboard {
   }
 
   setupSidebarToggle() {
+    if (!document.querySelector(".top-header .sidebar-toggle")) {
+      const header = document.querySelector(".top-header");
+      if (header) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "sidebar-toggle";
+        btn.innerHTML = '<i class="fas fa-bars"></i>';
+        header.prepend(btn);
+      }
+    }
+
     const toggleBtns = document.querySelectorAll(".sidebar-toggle");
     const sidebar = document.querySelector(".sidebar");
+    if (!sidebar) return;
 
     // Tạo overlay nếu chưa có
     let overlay = document.querySelector(".sidebar-overlay");
@@ -113,6 +168,18 @@ class AdminDashboard {
     overlay.addEventListener("click", () => {
       sidebar.classList.remove("active");
       overlay.classList.remove("active");
+    });
+  }
+
+  populateCategorySelects() {
+    document.querySelectorAll("#form-category, #category-fields-container select").forEach((select) => {
+      const selected = select.value;
+      select.innerHTML =
+        '<option value="">-- Chọn thể loại --</option>' +
+        this.categories
+          .map((cat) => `<option value="${cat.name}">${cat.name}</option>`)
+          .join("");
+      select.value = selected;
     });
   }
 
@@ -140,6 +207,70 @@ class AdminDashboard {
     const error = parent.querySelector(".error-msg");
     if (error) error.remove();
     input.style.borderColor = "";
+  }
+
+  setupImagePreviews() {
+    const configs = [
+      ["form-img", "book-image-preview", "Ảnh bìa hiện tại"],
+      ["form-reader-img", "reader-image-preview", "Ảnh đại diện hiện tại"],
+      ["form-staff-img", "staff-image-preview", "Ảnh đại diện hiện tại"],
+    ];
+
+    configs.forEach(([inputId, previewId, label]) => {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+
+      let preview = document.getElementById(previewId);
+      if (!preview) {
+        preview = document.createElement("div");
+        preview.id = previewId;
+        preview.className = "image-preview";
+        preview.innerHTML = `
+          <span>${label}</span>
+          <img alt="${label}" style="display:none" />
+        `;
+        input.closest(".form-group")?.appendChild(preview);
+      }
+
+      input.addEventListener("change", () => {
+        const file = input.files?.[0];
+        if (!file) return;
+        const img = preview.querySelector("img");
+        img.src = URL.createObjectURL(file);
+        img.style.display = "block";
+        this.clearError(input);
+      });
+    });
+  }
+
+  setImagePreview(previewId, src) {
+    if (!src) return;
+    const preview = document.getElementById(previewId);
+    const img = preview?.querySelector("img");
+    if (img) {
+      img.src = src;
+      img.style.display = "block";
+    }
+  }
+
+  setupPasswordToggles() {
+    [
+      ["form-reader-password", "Hiện mật khẩu"],
+      ["form-staff-password", "Hiện mật khẩu"],
+    ].forEach(([inputId, label]) => {
+      const input = document.getElementById(inputId);
+      if (!input || document.querySelector(`[data-toggle-for="${inputId}"]`)) return;
+
+      const toggle = document.createElement("label");
+      toggle.className = "password-toggle";
+      toggle.dataset.toggleFor = inputId;
+      toggle.innerHTML = `<input type="checkbox" /> ${label}`;
+      input.closest(".form-group")?.appendChild(toggle);
+
+      toggle.querySelector("input").addEventListener("change", (event) => {
+        input.type = event.target.checked ? "text" : "password";
+      });
+    });
   }
 
   // --- Validation Logic ---
@@ -279,7 +410,19 @@ class AdminDashboard {
         "Email không hợp lệ (Phải đúng định dạng @gmail.com).",
       );
       isValid = false;
-    } else this.clearError(rFields.email);
+    } else {
+      const email = rFields.email.value.trim().toLowerCase();
+      const currentId = document.getElementById("form-reader-id")?.value;
+      const duplicate = this.readers.some(
+        (r) => (r.email || "").trim().toLowerCase() === email && r.id !== currentId,
+      );
+      if (duplicate) {
+        this.showError(rFields.email, "Gmail không được để trùng.");
+        isValid = false;
+      } else {
+        this.clearError(rFields.email);
+      }
+    }
 
     if (
       !rFields.address ||
@@ -326,11 +469,12 @@ class AdminDashboard {
       img: document.getElementById("form-staff-img"),
     };
     const PASS_REGEX = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{9,}$/;
+    const isEdit = !!document.getElementById("edit-staff-id")?.value;
     let isValid = true;
 
     if (fields.password) {
       const passVal = fields.password.value.trim();
-      if (passVal === "" || !PASS_REGEX.test(passVal)) {
+      if ((!isEdit && passVal === "") || (passVal !== "" && !PASS_REGEX.test(passVal))) {
         this.showError(
           fields.password,
           "Mật khẩu phải dài hơn 8 ký tự, bao gồm chữ hoa, số và ký tự đặc biệt.",
@@ -588,17 +732,28 @@ class AdminDashboard {
     if (bookForm && editId) {
       const book = this.books.find((b) => b.id === editId);
       if (book) {
+        document.getElementById("edit-id").value = book.id;
         document.getElementById("form-title").value = book.title;
         document.getElementById("form-author").value = book.author;
         document.getElementById("form-publisher").value = book.publisher;
         document.getElementById("form-publish-year").value = book.publishYear;
         document.getElementById("form-stock").value = book.stock;
         document.getElementById("form-description").value = book.description;
+        document.getElementById("form-category").value =
+          (book.category || "").split(",")[0]?.trim() || "";
+        this.setImagePreview("book-image-preview", book.img);
       }
     }
 
     // 2. Bạn đọc
     const readerForm = document.getElementById("reader-form");
+    if (readerForm) {
+      const readerIdGroup = document.getElementById("form-reader-id")?.closest(".form-group");
+      const readerStatusGroup = document.getElementById("form-reader-status")?.closest(".form-group");
+      if (readerIdGroup) readerIdGroup.style.display = "none";
+      if (readerStatusGroup) readerStatusGroup.style.display = "none";
+      document.getElementById("form-reader-id")?.removeAttribute("required");
+    }
     if (readerForm && editId) {
       const reader = this.readers.find((r) => r.id === editId);
       if (reader) {
@@ -612,10 +767,7 @@ class AdminDashboard {
         document.getElementById("form-reader-dob").value = reader.dob;
         document.getElementById("form-reader-gender").value =
           reader.gender || "Nam";
-        document.getElementById("form-reader-status").value = reader.status;
-        if (document.getElementById("password-group")) {
-          document.getElementById("password-group").style.display = "none";
-        }
+        this.setImagePreview("reader-image-preview", reader.img);
       }
     }
 
@@ -624,9 +776,11 @@ class AdminDashboard {
     if (staffForm && editId) {
       const staff = this.staffs.find((s) => s.id == editId);
       if (staff) {
+        document.getElementById("edit-staff-id").value = staff.id;
         document.getElementById("form-staff-name").value = staff.name;
         document.getElementById("form-staff-email").value = staff.email;
         document.getElementById("form-staff-role").value = staff.role;
+        this.setImagePreview("staff-image-preview", staff.img);
       }
     }
 
@@ -661,11 +815,12 @@ class AdminDashboard {
     }
 
     const staffData = {
-      id: editId || this.staffs.length + 1,
+      id: editId || "",
       name: document.getElementById("form-staff-name").value,
       email: document.getElementById("form-staff-email").value,
       role: document.getElementById("form-staff-role").value,
       img: imageUrl,
+      password: document.getElementById("form-staff-password")?.value || "",
       createdAt: editId
         ? this.staffs.find((s) => s.id == editId).createdAt
         : new Date().toISOString(),
@@ -707,8 +862,13 @@ class AdminDashboard {
   }
 
   deleteStaff(id) {
-    const staff = this.staffs.find((s) => s.id === id);
-    if (staff && staff.id === 1) {
+    id = String(id);
+    const staff = this.staffs.find((s) => String(s.id) === id);
+    if (!staff) {
+      this.showToast("Không tìm thấy nhân viên cần xóa", "error");
+      return;
+    }
+    if (staff.role === "Admin" && staff.id === "admin") {
       this.showToast("Không thể xóa tài khoản Admin hệ thống!", "error");
       return;
     }
@@ -716,12 +876,20 @@ class AdminDashboard {
     this.openConfirmationModal(
       "Xác nhận xóa",
       `Bạn có chắc muốn xóa nhân viên <strong>${staff.name}</strong>?`,
-      () => {
-        this.staffs = this.staffs.filter((s) => s.id !== id);
-        this.renderStaffs();
-        this.showToast("Đã xóa nhân viên", "success");
-        if (window.location.pathname.includes("Delete-nhanvien.html")) {
-          setTimeout(() => (window.location.href = "ql-nhan-vien.html"), 1500);
+      async () => {
+        const response = await fetch(`${this.apiUrl}/Staff/Delete/${encodeURIComponent(id)}`, {
+          method: "DELETE",
+        });
+        if (response.ok) {
+          this.staffs = this.staffs.filter((s) => String(s.id) !== id);
+          this.renderStaffs();
+          this.showToast("Đã xóa nhân viên", "success");
+          if (window.location.pathname.includes("Delete-nhanvien.html")) {
+            setTimeout(() => (window.location.href = "ql-nhan-vien.html"), 1000);
+          }
+        } else {
+          const error = await response.json().catch(() => ({}));
+          this.showToast(error.message || "Không thể xóa nhân viên", "error");
         }
       },
     );
@@ -757,6 +925,65 @@ class AdminDashboard {
       .join("");
   }
 
+  async handleCategoryFormSubmit(e) {
+    e.preventDefault();
+    const id = parseInt(document.getElementById("edit-category-id")?.value || "0");
+    const name = document.getElementById("form-category-name").value.trim();
+    const isAdding = !id;
+
+    this.openConfirmationModal(
+      isAdding ? "XÃ¡c nháº­n thÃªm danh má»¥c" : "XÃ¡c nháº­n cáº­p nháº­t",
+      `Báº¡n cÃ³ muá»‘n lÆ°u danh má»¥c <strong>${name}</strong> khÃ´ng?`,
+      async () => {
+        const response = await fetch(
+          isAdding
+            ? `${this.apiUrl}/Category/Create`
+            : `${this.apiUrl}/Category/Update`,
+          {
+            method: isAdding ? "POST" : "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id, name }),
+          },
+        );
+
+        if (response.ok) {
+          this.showToast(
+            isAdding
+              ? "ThÃªm danh má»¥c thÃ nh cÃ´ng"
+              : "Cáº­p nháº­t danh má»¥c thÃ nh cÃ´ng",
+          );
+          setTimeout(() => (window.location.href = "ql-danh-muc.html"), 1000);
+        } else {
+          const error = await response.json().catch(() => ({}));
+          this.showToast(error.message || "KhÃ´ng thá»ƒ lÆ°u danh má»¥c", "error");
+        }
+      },
+    );
+  }
+
+  deleteCategory(id) {
+    this.openConfirmationModal(
+      "Xác nhận xóa danh mục",
+      `Bạn có chắc chắn muốn xóa danh mục <strong>#${id}</strong> không?`,
+      async () => {
+        const response = await fetch(`${this.apiUrl}/Category/Delete/${id}`, {
+          method: "DELETE",
+        });
+        if (response.ok) {
+          this.categories = this.categories.filter((c) => c.id !== id);
+          this.renderCategories();
+          this.showToast("Đã xóa danh mục", "success");
+          if (window.location.pathname.includes("Delete-danhmuc.html")) {
+            setTimeout(() => (window.location.href = "ql-danh-muc.html"), 1000);
+          }
+        } else {
+          const error = await response.json().catch(() => ({}));
+          this.showToast(error.message || "Không thể xóa danh mục", "error");
+        }
+      },
+    );
+  }
+
   renderBorrowTickets() {
     const list = document.getElementById("borrow-ticket-list");
     if (!list) return;
@@ -781,12 +1008,40 @@ class AdminDashboard {
               <a href="ct-muon-tra.html?id=${t.id}" class="btn btn-sm btn-view" title="Chi tiết">
                 <i class="fas fa-eye"></i>
               </a>
+              ${
+                t.status === "Đã trả" || t.status === "Bị từ chối" || t.status === "ÄÃ£ tráº£" || t.status === "Bá»‹ tá»« chá»‘i"
+                  ? `<button class="btn btn-sm btn-delete" title="Xóa" onclick="app.deleteBorrowTicket(${t.id})"><i class="fas fa-trash"></i></button>`
+                  : ""
+              }
             </div>
           </td>
         </tr>
       `;
       })
       .join("");
+  }
+
+  deleteBorrowTicket(id) {
+    this.openConfirmationModal(
+      "Xác nhận xóa phiếu mượn",
+      `Bạn có chắc chắn muốn xóa phiếu mượn <strong>#${id}</strong> không?`,
+      async () => {
+        const response = await fetch(`${this.apiUrl}/Borrow/Delete/${id}`, {
+          method: "DELETE",
+        });
+        if (response.ok) {
+          this.borrowTickets = this.borrowTickets.filter((t) => t.id !== id);
+          this.renderBorrowTickets();
+          this.showToast("Đã xóa phiếu mượn", "success");
+          if (window.location.pathname.includes("ct-muon-tra.html")) {
+            setTimeout(() => (window.location.href = "muon-tra.html"), 1000);
+          }
+        } else {
+          const error = await response.json().catch(() => ({}));
+          this.showToast(error.message || "Không thể xóa phiếu mượn", "error");
+        }
+      },
+    );
   }
 
   renderBorrowTicketDetails() {
@@ -835,6 +1090,9 @@ class AdminDashboard {
     } else if (ticket.status === "Đang mượn") {
       actionHtml = `<button class="btn btn-success" onclick="app.updateTicketStatus(${ticket.id}, 'Đã trả')">Xác nhận trả sách</button>`;
     }
+    if (ticket.status === "Đã trả" || ticket.status === "Bị từ chối" || ticket.status === "ÄÃ£ tráº£" || ticket.status === "Bá»‹ tá»« chá»‘i") {
+      actionHtml += ` <button class="btn btn-danger" onclick="app.deleteBorrowTicket(${ticket.id})">Xóa phiếu</button>`;
+    }
     actionsContainer.innerHTML = actionHtml;
 
     // Render books
@@ -856,7 +1114,28 @@ class AdminDashboard {
     this.openConfirmationModal(
       "Xác nhận thay đổi trạng thái",
       `Bạn có muốn chuyển trạng thái phiếu #${id} sang <strong>${newStatus}</strong>?`,
-      () => {
+      async () => {
+        const action =
+          newStatus === "Đã duyệt"
+            ? "Approve"
+            : newStatus === "Đang mượn"
+              ? "ConfirmBorrowing"
+              : newStatus === "Đã trả"
+                ? "Return"
+                : "";
+        if (!action) return;
+
+        const response = await fetch(`${this.apiUrl}/Borrow/${id}/${action}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: "{}",
+        });
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          this.showToast(error.message || "Không thể cập nhật trạng thái", "error");
+          return;
+        }
+
         const ticket = this.borrowTickets.find((t) => t.id === id);
         if (ticket) {
           ticket.status = newStatus;
@@ -876,7 +1155,22 @@ class AdminDashboard {
     this.openConfirmationModal(
       "Từ chối phiếu",
       `Xác nhận từ chối phiếu #${id}?`,
-      () => {
+      async () => {
+        const reason =
+          document.getElementById("reject-reason")?.value ||
+          document.getElementById("reject-reason-input")?.value ||
+          "";
+        const response = await fetch(`${this.apiUrl}/Borrow/${id}/Reject`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reason }),
+        });
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          this.showToast(error.message || "Không thể từ chối phiếu", "error");
+          return;
+        }
+
         const ticket = this.borrowTickets.find((t) => t.id === id);
         if (ticket) {
           ticket.status = "Bị từ chối";
@@ -1116,7 +1410,7 @@ class AdminDashboard {
   }
 
   closeBookModal() {
-    document.getElementById("book-modal").classList.remove("active");
+    document.getElementById("book-modal")?.classList.remove("active");
   }
 
   showToast(message, type = "success") {
@@ -1148,10 +1442,36 @@ class AdminDashboard {
 
   openConfirmationModal(title, message, onConfirmCallback) {
     const confirmModal = document.getElementById("confirm-modal");
+    if (!confirmModal) {
+      onConfirmCallback();
+      return;
+    }
+
+    if (!document.getElementById("confirm-modal-title")) {
+      confirmModal.innerHTML = `
+        <div class="modal-container modal-sm">
+          <div class="modal-header">
+            <h2 id="confirm-modal-title">Xác nhận</h2>
+            <button class="close-modal-btn">&times;</button>
+          </div>
+          <div class="modal-body"><p id="confirm-modal-message"></p></div>
+          <div class="modal-footer">
+            <button class="btn btn-outline" type="button">Hủy</button>
+            <button class="btn btn-primary" id="confirm-action-btn" type="button">Đồng ý</button>
+          </div>
+        </div>`;
+    }
+
     document.getElementById("confirm-modal-title").innerText = title;
-    document.getElementById("confirm-modal-message").innerText = message;
+    document.getElementById("confirm-modal-message").innerHTML = message;
 
     const confirmActionBtn = document.getElementById("confirm-action-btn");
+    confirmModal
+      .querySelector(".btn-outline")
+      ?.addEventListener("click", () => this.closeConfirmationModal());
+    confirmModal
+      .querySelector(".close-modal-btn")
+      ?.addEventListener("click", () => this.closeConfirmationModal());
     // Remove previous event listener to prevent multiple calls
     confirmActionBtn.replaceWith(confirmActionBtn.cloneNode(true));
     document
@@ -1165,7 +1485,7 @@ class AdminDashboard {
   }
 
   closeConfirmationModal() {
-    document.getElementById("confirm-modal").classList.remove("active");
+    document.getElementById("confirm-modal")?.classList.remove("active");
   }
 
   async deleteBook(id) {
@@ -1182,6 +1502,7 @@ class AdminDashboard {
             this.books = this.books.filter((b) => b.id !== id);
             this.renderBooks();
             this.showToast(`Đã xóa thành công sách có mã: ${id}`, "success");
+            setTimeout(() => (window.location.href = "ql-sach.html"), 1000);
           } else {
             const errorData = await response.json();
             this.showToast(errorData.message || "Lỗi khi xóa sách", "error");
@@ -1194,6 +1515,27 @@ class AdminDashboard {
   }
 
   deleteReader(id) {
+    this.openConfirmationModal(
+      "Xác nhận xóa bạn đọc",
+      `Bạn có chắc chắn muốn xóa bạn đọc <strong>${id}</strong>?`,
+      async () => {
+        const response = await fetch(`${this.apiUrl}/Reader/Delete/${encodeURIComponent(id)}`, {
+          method: "DELETE",
+        });
+        if (response.ok) {
+          this.readers = this.readers.filter((r) => r.id !== id);
+          this.renderReaders();
+          this.showToast(`Đã xóa bạn đọc: ${id}`, "success");
+          if (window.location.pathname.includes("Delete-bandoc.html")) {
+            setTimeout(() => (window.location.href = "ql-ban-doc.html"), 1000);
+          }
+        } else {
+          const error = await response.json().catch(() => ({}));
+          this.showToast(error.message || "Không thể xóa bạn đọc", "error");
+        }
+      },
+    );
+    return;
     this.openConfirmationModal(
       "Xác nhận xóa bạn đọc",
       `Bạn có chắc chắn muốn xóa bạn đọc <strong>${id}</strong>? Dữ liệu này không thể khôi phục.`,
@@ -1224,7 +1566,7 @@ class AdminDashboard {
     }
 
     const bookData = {
-      id: editId || `S00${this.books.length + 1}`,
+      id: editId || "",
       title: document.getElementById("form-title").value,
       author: document.getElementById("form-author").value,
       category: document.getElementById("form-category").value,
@@ -1278,6 +1620,7 @@ class AdminDashboard {
           }
           this.renderBooks();
           this.closeBookModal();
+          setTimeout(() => (window.location.href = "ql-sach.html"), 1000);
         } else {
           this.showToast("Lỗi khi lưu dữ liệu lên Backend", "error");
         }
@@ -1290,7 +1633,7 @@ class AdminDashboard {
   async handleReaderFormSubmit(e) {
     e.preventDefault();
     const isEdit = document.getElementById("edit-reader-flag").value === "edit";
-    const readerIdInput = document.getElementById("form-reader-id").value;
+    const readerIdInput = document.getElementById("form-reader-id")?.value || "";
     const formImgInput = document.getElementById("form-reader-img");
     let imageUrl = "https://ui-avatars.com/api/?name=User&background=random";
 
@@ -1311,10 +1654,11 @@ class AdminDashboard {
       email: document.getElementById("form-reader-email").value,
       phone: document.getElementById("form-reader-phone").value,
       address: document.getElementById("form-reader-address").value,
-      status: document.getElementById("form-reader-status").value,
+      status: "Hoạt động",
       dob: document.getElementById("form-reader-dob").value,
       gender: document.getElementById("form-reader-gender").value,
       img: imageUrl,
+      password: document.getElementById("form-reader-password")?.value || "",
       borrowingCount: isEdit
         ? this.readers.find((r) => r.id === readerIdInput)?.borrowingCount || 0
         : 0,
@@ -1325,16 +1669,26 @@ class AdminDashboard {
 
     const isAdding = !isEdit;
 
-    // Kiểm tra trùng mã khi thêm mới
-    if (isAdding && this.readers.some((r) => r.id === readerIdInput)) {
-      this.showToast("Mã bạn đọc đã tồn tại!", "error");
-      return;
-    }
-
     this.openConfirmationModal(
       isAdding ? "Xác nhận thêm bạn đọc" : "Xác nhận lưu thay đổi",
       `Bạn có muốn lưu thông tin bạn đọc <strong>${readerData.name}</strong> không?`,
-      () => {
+      async () => {
+        const response = await fetch(
+          isAdding ? `${this.apiUrl}/Reader/Create` : `${this.apiUrl}/Reader/Update`,
+          {
+            method: isAdding ? "POST" : "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(readerData),
+          },
+        );
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({}));
+          this.showToast(error.message || "KhÃ´ng thá»ƒ lÆ°u báº¡n Ä‘á»c", "error");
+          return;
+        }
+
+        const savedReader = await response.json().catch(() => readerData);
+        if (savedReader.id) readerData.id = savedReader.id;
         if (isAdding) this.readers.push(readerData);
         else {
           const idx = this.readers.findIndex((r) => r.id === readerIdInput);
@@ -1346,6 +1700,7 @@ class AdminDashboard {
           isAdding ? "Thêm bạn đọc thành công!" : "Cập nhật thành công!",
           "success",
         );
+        setTimeout(() => (window.location.href = "ql-ban-doc.html"), 1000);
       },
     );
   }

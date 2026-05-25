@@ -128,6 +128,13 @@
       document.addEventListener("DOMContentLoaded", () => {
         const urlParams = new URLSearchParams(window.location.search);
         const catId = urlParams.get("id");
+        if (catId) {
+          document
+            .getElementById("btn-confirm-delete")
+            .addEventListener("click", () => {
+              window.app.deleteCategory(parseInt(catId));
+            });
+        }
         // Logic xác nhận xóa danh mục có thể được gọi thông qua app.js hoặc API tương ứng
       });
     </script>

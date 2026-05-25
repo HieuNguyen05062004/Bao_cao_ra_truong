@@ -495,6 +495,38 @@ body {
   gap: 16px;
 }
 
+.image-preview {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+.image-preview img {
+  width: 120px;
+  height: 150px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--primary-bg);
+}
+
+.password-toggle {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--text-light);
+  font-size: 0.9rem !important;
+  font-weight: 400 !important;
+}
+
+.password-toggle input {
+  width: auto;
+}
+
 /* Details Modal specific styles */
 .book-details-grid {
   display: grid;

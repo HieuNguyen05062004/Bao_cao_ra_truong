@@ -9,7 +9,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <!-- Giả định styles.css nằm trong thư mục Admin -->
-    <link rel="stylesheet" href="../Admin/styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
     <style>
       body {
         background-color: #f4f7f6;
@@ -151,7 +151,7 @@
 
       // Logic Validation khi submit
       const loginForm = document.getElementById("login-form");
-      loginForm.addEventListener("submit", function (e) {
+      loginForm.addEventListener("submit", async function (e) {
         e.preventDefault();
         let isValid = true;
         const emailInput = document.getElementById("login-email");
@@ -175,7 +175,23 @@
 
         if (isValid) {
           // Giả lập chuyển hướng sau khi đăng nhập thành công
-          window.location.href = "../Admin/index.html";
+          const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: emailInput.value.trim(),
+              password: passwordInput.value,
+            }),
+          });
+
+          if (response.ok) {
+            const user = await response.json();
+            window.location.href =
+              user.userType === "Reader" ? "/index.html" : "https://localhost:7268/index.html";
+          } else {
+            const error = await response.json().catch(() => ({}));
+            showError(passwordInput, error.message || "Đăng nhập thất bại.");
+          }
         }
       });
 
