@@ -8,6 +8,10 @@ class SmartLibraryApp {
     console.log("SmartLibrary AI App initialized...");
     this.createToastContainer();
     this.renderAuthState();
+
+    // Kiểm tra phiên hết hạn mỗi 30 giây
+    this.setupSessionTimeoutCheck();
+
     this.setupEventListeners();
     if (document.getElementById("latest-books-grid")) {
       this.loadHomepageData();
@@ -24,6 +28,25 @@ class SmartLibraryApp {
     if (document.getElementById("ticket-detail-page")) {
       this.loadTicketDetailPage();
     }
+  }
+
+  setupSessionTimeoutCheck() {
+    setInterval(async () => {
+      try {
+        const response = await fetch(`${this.apiUrl}/auth/me`);
+        if (response.ok) {
+          const data = await response.json();
+          if (!data.isAuthenticated && !window.location.pathname.includes("index.html") && !window.location.pathname.includes("kho-sach")) {
+            this.showToast("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", "warning");
+            setTimeout(() => {
+              window.location.href = "index.html";
+            }, 2000);
+          }
+        }
+      } catch (error) {
+        console.error("Lỗi khi kiểm tra phiên:", error);
+      }
+    }, 30000); // Kiểm tra mỗi 30 giây
   }
 
   createToastContainer() {

@@ -30,10 +30,20 @@ public class StaffController : Controller
     private bool IsAdmin() =>
         HttpContext.Session.GetString("Role") == RoleConstants.Admin;
 
+    private bool IsStaff() =>
+        HttpContext.Session.GetString("Role") == RoleConstants.Staff;
+
     private IActionResult RequireAdmin()
     {
         if (!IsAdmin())
             return RedirectToAction("Login", "Account");
+        return null!;
+    }
+
+    private IActionResult RequireNotStaff()
+    {
+        if (IsStaff())
+            return RedirectToAction("Index", "Home");
         return null!;
     }
 
@@ -42,7 +52,8 @@ public class StaffController : Controller
     [HttpGet]
     public async Task<IActionResult> Index(string? keyword)
     {
-        var guard = RequireAdmin(); if (guard != null) return guard;
+        var guard = RequireNotStaff(); if (guard != null) return guard;
+        var guard2 = RequireAdmin(); if (guard2 != null) return guard2;
 
         IEnumerable<Account> accounts;
 
@@ -79,7 +90,8 @@ public class StaffController : Controller
     [HttpGet]
     public async Task<IActionResult> Details(string username)
     {
-        var guard = RequireAdmin(); if (guard != null) return guard;
+        var guard = RequireNotStaff(); if (guard != null) return guard;
+        var guard2 = RequireAdmin(); if (guard2 != null) return guard2;
 
         var account = await _authService.GetByUsernameAsync(username);
         if (account is null)
@@ -106,7 +118,8 @@ public class StaffController : Controller
     [HttpGet]
     public IActionResult Create()
     {
-        var guard = RequireAdmin(); if (guard != null) return guard;
+        var guard = RequireNotStaff(); if (guard != null) return guard;
+        var guard2 = RequireAdmin(); if (guard2 != null) return guard2;
         return View(new StaffViewModel { Role = RoleConstants.Staff });
     }
 
@@ -114,7 +127,8 @@ public class StaffController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(StaffViewModel model)
     {
-        var guard = RequireAdmin(); if (guard != null) return guard;
+        var guard = RequireNotStaff(); if (guard != null) return guard;
+        var guard2 = RequireAdmin(); if (guard2 != null) return guard2;
 
         // ── Validate Password: bắt buộc khi Create ────────────────────
         if (string.IsNullOrWhiteSpace(model.Password))
@@ -160,7 +174,8 @@ public class StaffController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit(string username)
     {
-        var guard = RequireAdmin(); if (guard != null) return guard;
+        var guard = RequireNotStaff(); if (guard != null) return guard;
+        var guard2 = RequireAdmin(); if (guard2 != null) return guard2;
 
         var account = await _authService.GetByUsernameAsync(username);
         if (account is null)
@@ -186,7 +201,8 @@ public class StaffController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(string username, StaffViewModel model)
     {
-        var guard = RequireAdmin(); if (guard != null) return guard;
+        var guard = RequireNotStaff(); if (guard != null) return guard;
+        var guard2 = RequireAdmin(); if (guard2 != null) return guard2;
 
         // ── Password không bắt buộc khi Edit ──────────────────────────
         // Nếu để trống → giữ nguyên mật khẩu cũ (không validate)
@@ -232,7 +248,8 @@ public class StaffController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(string username)
     {
-        var guard = RequireAdmin(); if (guard != null) return guard;
+        var guard = RequireNotStaff(); if (guard != null) return guard;
+        var guard2 = RequireAdmin(); if (guard2 != null) return guard2;
 
         var error = await _authService.DeleteAccountAsync(username);
 

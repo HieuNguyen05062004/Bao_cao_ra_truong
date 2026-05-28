@@ -42,10 +42,12 @@ public class AuthApiController : ControllerBase
         if (string.IsNullOrWhiteSpace(username))
             return Ok(new { isAuthenticated = false });
 
+        var role = HttpContext.Session.GetString("AdminRole") ?? "Admin";
         return Ok(new
         {
             isAuthenticated = true,
-            userType = HttpContext.Session.GetString("AdminRole") ?? "Admin",
+            role = role,
+            userType = role,
             userId = username,
             userName = HttpContext.Session.GetString("AdminName")
         });
@@ -56,6 +58,21 @@ public class AuthApiController : ControllerBase
     {
         HttpContext.Session.Clear();
         return Ok();
+    }
+
+    [HttpGet("password/{username}")]
+    public async Task<IActionResult> GetPassword(string username)
+    {
+        // Chỉ Admin mới được xem mật khẩu
+        var currentRole = HttpContext.Session.GetString("AdminRole");
+        if (currentRole != "Admin")
+            return Unauthorized(new { message = "Bạn không có quyền xem mật khẩu." });
+
+        var account = await _authService.GetByUsernameAsync(username);
+        if (account == null)
+            return NotFound(new { message = "Tài khoản không tồn tại." });
+
+        return Ok(new { password = account.Password, username = account.Username });
     }
 }
 

@@ -65,6 +65,13 @@ class AdminDashboard {
 
   async init() {
     if (!(await this.ensureAdminAuthenticated())) return;
+
+    // Kiểm tra phiên hết hạn mỗi 30 giây
+    this.setupSessionTimeoutCheck();
+
+    // Kiểm tra và ẩn link quản lý nhân viên nếu là Staff
+    await this.checkStaffPermissions();
+
     await this.fetchInitialData();
 
     // Tự động nhận diện trang để render dữ liệu phù hợp
@@ -91,6 +98,43 @@ class AdminDashboard {
     this.renderBorrowTicketDetails();
 
     console.log("SmartLib Admin initialized.");
+  }
+
+  setupSessionTimeoutCheck() {
+    setInterval(async () => {
+      try {
+        const response = await fetch(`${this.apiUrl}/auth/me`);
+        if (!response.ok || !window.location.pathname.toLowerCase().endsWith("/login.html")) {
+          const data = await response.json();
+          if (!data.isAuthenticated) {
+            this.showToast("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", "warning");
+            setTimeout(() => {
+              window.location.href = "login.html";
+            }, 2000);
+          }
+        }
+      } catch (error) {
+        console.error("Lỗi khi kiểm tra phiên:", error);
+      }
+    }, 30000); // Kiểm tra mỗi 30 giây
+  }
+
+  async checkStaffPermissions() {
+    try {
+      const response = await fetch(`${this.apiUrl}/auth/me`);
+      if (response.ok) {
+        const me = await response.json();
+        if (me.role === "Staff") {
+          // Ẩn link quản lý nhân viên
+          const staffLink = document.querySelector('a[href="ql-nhan-vien.html"]');
+          if (staffLink) {
+            staffLink.style.display = "none";
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi khi kiểm tra quyền:", error);
+    }
   }
 
   async fetchInitialData() {
@@ -590,6 +634,48 @@ class AdminDashboard {
           "vi-VN",
         );
       }
+
+      // Lấy mật khẩu từ API
+      this.loadStaffPassword(staff.email);
+
+      // Setup toggle password button
+      const toggleBtn = document.getElementById("toggle-password-btn");
+      if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+          const passwordInput = document.getElementById("detail-staff-password");
+          if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+          } else {
+            passwordInput.type = "password";
+            toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+          }
+        });
+      }
+    }
+  }
+
+  async loadStaffPassword(username) {
+    try {
+      const response = await fetch(`${this.apiUrl}/auth/password/${encodeURIComponent(username)}`);
+      if (response.ok) {
+        const data = await response.json();
+        const passwordInput = document.getElementById("detail-staff-password");
+        if (passwordInput) {
+          passwordInput.value = data.password;
+          passwordInput.type = "password"; // Mặc định ẩn mật khẩu
+        }
+      } else if (response.status === 401) {
+        const passwordInput = document.getElementById("detail-staff-password");
+        if (passwordInput) {
+          passwordInput.value = "Không có quyền xem";
+          passwordInput.disabled = true;
+          const toggleBtn = document.getElementById("toggle-password-btn");
+          if (toggleBtn) toggleBtn.style.display = "none";
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy mật khẩu:", error);
     }
   }
 

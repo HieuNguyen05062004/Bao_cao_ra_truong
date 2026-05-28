@@ -1,0 +1,10 @@
+.git
+.vs
+**/bin
+**/obj
+**/.vscode
+**/*.user
+**/*.suo
+**/*.cache
+**/node_modules
+publish

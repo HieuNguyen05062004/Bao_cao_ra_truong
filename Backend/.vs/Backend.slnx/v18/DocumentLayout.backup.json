@@ -3,14 +3,6 @@
   "WorkspaceRootPath": "D:\\Quan_Ly_Thu_Vien\\Backend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|d:\\quan_ly_thu_vien\\backend\\admin\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|solutionrelative:admin\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|d:\\quan_ly_thu_vien\\backend\\admin\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|solutionrelative:admin\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|d:\\quan_ly_thu_vien\\backend\\admin\\controllers\\adminapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|solutionrelative:admin\\controllers\\adminapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -25,10 +17,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{B61F11D7-3032-482C-B675-5911861A2C61}|Core.Shared\\Core.Shared.csproj|d:\\quan_ly_thu_vien\\backend\\core.shared\\entities\\book.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B61F11D7-3032-482C-B675-5911861A2C61}|Core.Shared\\Core.Shared.csproj|solutionrelative:core.shared\\entities\\book.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|d:\\quan_ly_thu_vien\\backend\\admin\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|solutionrelative:admin\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A315F99C-037E-687F-5376-8EFA338F3D2E}|Admin\\Admin.csproj|d:\\quan_ly_thu_vien\\backend\\admin\\views\\book\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -214,7 +202,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -230,44 +218,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "site.css",
-              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\wwwroot\\css\\site.css",
-              "RelativeDocumentMoniker": "Admin\\wwwroot\\css\\site.css",
-              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\wwwroot\\css\\site.css",
-              "RelativeToolTip": "Admin\\wwwroot\\css\\site.css",
-              "ViewState": "AgIAAB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-05-25T06:47:41.082Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "AdminApiController.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\AdminApiController.cs",
               "RelativeDocumentMoniker": "Admin\\Controllers\\AdminApiController.cs",
               "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\AdminApiController.cs",
               "RelativeToolTip": "Admin\\Controllers\\AdminApiController.cs",
-              "ViewState": "AgIAAKEBAAAAAAAAAAA6wAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-25T06:47:03.58Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Program.cs",
-              "RelativeDocumentMoniker": "Admin\\Program.cs",
-              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Program.cs",
-              "RelativeToolTip": "Admin\\Program.cs",
-              "ViewState": "AgIAAH0AAAAAAAAAAAAAAIAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-21T10:03:01.473Z",
+              "WhenOpened": "2026-05-25T06:47:03.58Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "BookRepository.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Repositories\\BookRepository.cs",
               "RelativeDocumentMoniker": "Core.Shared\\Repositories\\BookRepository.cs",
@@ -279,7 +243,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "BookService.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Services\\BookService.cs",
               "RelativeDocumentMoniker": "Core.Shared\\Services\\BookService.cs",
@@ -291,19 +255,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "_Layout.cshtml",
-              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Shared\\_Layout.cshtml",
-              "RelativeDocumentMoniker": "Admin\\Views\\Shared\\_Layout.cshtml",
-              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Shared\\_Layout.cshtml",
-              "RelativeToolTip": "Admin\\Views\\Shared\\_Layout.cshtml",
-              "ViewState": "AgIAABEAAAAAAAAAAAAUwDIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-05-24T08:53:40.37Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 5,
               "Title": "Delete.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Book\\Delete.cshtml",
               "RelativeDocumentMoniker": "Admin\\Views\\Book\\Delete.cshtml",
@@ -315,7 +267,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 3,
               "Title": "Book.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Entities\\Book.cs",
               "RelativeDocumentMoniker": "Core.Shared\\Entities\\Book.cs",
@@ -327,7 +279,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 6,
               "Title": "Details.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Book\\Details.cshtml",
               "RelativeDocumentMoniker": "Admin\\Views\\Book\\Details.cshtml",
@@ -339,7 +291,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 4,
               "Title": "Create.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Book\\Create.cshtml",
               "RelativeDocumentMoniker": "Admin\\Views\\Book\\Create.cshtml",
@@ -351,7 +303,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 7,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Book\\Edit.cshtml",
               "RelativeDocumentMoniker": "Admin\\Views\\Book\\Edit.cshtml",
@@ -363,7 +315,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 8,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Book\\Index.cshtml",
               "RelativeDocumentMoniker": "Admin\\Views\\Book\\Index.cshtml",
@@ -375,7 +327,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 9,
               "Title": "BookViewModel.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\ViewModels\\BookViewModel.cs",
               "RelativeDocumentMoniker": "Admin\\ViewModels\\BookViewModel.cs",
@@ -387,19 +339,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 10,
               "Title": "BookController.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\BookController.cs",
               "RelativeDocumentMoniker": "Admin\\Controllers\\BookController.cs",
               "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\BookController.cs",
               "RelativeToolTip": "Admin\\Controllers\\BookController.cs",
-              "ViewState": "AgIAAJ0BAAAAAAAAAAAuwLQBAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAJIBAAAAAAAAAEBdwLQBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-05-21T08:57:26.882Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 11,
               "Title": "BookController.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Controllers\\BookController.cs",
               "RelativeDocumentMoniker": "Client\\Controllers\\BookController.cs",
@@ -411,7 +363,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 12,
               "Title": "LibraryDbContext.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Data\\LibraryDbContext.cs",
               "RelativeDocumentMoniker": "Core.Shared\\Data\\LibraryDbContext.cs",
@@ -423,7 +375,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 13,
               "Title": "BorrowService.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Services\\BorrowService.cs",
               "RelativeDocumentMoniker": "Core.Shared\\Services\\BorrowService.cs",
@@ -435,7 +387,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 14,
               "Title": "BorrowRepository.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Repositories\\BorrowRepository.cs",
               "RelativeDocumentMoniker": "Core.Shared\\Repositories\\BorrowRepository.cs",
@@ -447,7 +399,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 15,
               "Title": "BorrowTicket.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Entities\\BorrowTicket.cs",
               "RelativeDocumentMoniker": "Core.Shared\\Entities\\BorrowTicket.cs",
@@ -459,7 +411,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 16,
               "Title": "BorrowController.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\BorrowController.cs",
               "RelativeDocumentMoniker": "Admin\\Controllers\\BorrowController.cs",
@@ -471,7 +423,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 18,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Reader\\Edit.cshtml",
               "RelativeDocumentMoniker": "Admin\\Views\\Reader\\Edit.cshtml",
@@ -483,19 +435,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 20,
               "Title": "StaffController.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\StaffController.cs",
               "RelativeDocumentMoniker": "Admin\\Controllers\\StaffController.cs",
               "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\StaffController.cs",
               "RelativeToolTip": "Admin\\Controllers\\StaffController.cs",
-              "ViewState": "AgIAAOQAAAAAAAAAAAAIwAUBAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAPQAAAAAAAAAAOBiwAQBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-05-21T10:05:28.528Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 19,
               "Title": "Create.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Reader\\Create.cshtml",
               "RelativeDocumentMoniker": "Admin\\Views\\Reader\\Create.cshtml",
@@ -507,7 +459,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 17,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Program.cs",
               "RelativeDocumentMoniker": "Client\\Program.cs",
@@ -519,19 +471,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 21,
               "Title": "ReaderController.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\ReaderController.cs",
               "RelativeDocumentMoniker": "Admin\\Controllers\\ReaderController.cs",
               "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\ReaderController.cs",
               "RelativeToolTip": "Admin\\Controllers\\ReaderController.cs",
-              "ViewState": "AgIAABIBAAAAAAAAAAAUwCsBAAABAAAAAAAAAA==",
+              "ViewState": "AgIAABoBAAAAAAAAAOBiwCoBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-05-21T09:38:01.554Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 22,
               "Title": "CategoryController.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\CategoryController.cs",
               "RelativeDocumentMoniker": "Admin\\Controllers\\CategoryController.cs",
@@ -543,7 +495,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 23,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Staff\\Edit.cshtml",
               "RelativeDocumentMoniker": "Admin\\Views\\Staff\\Edit.cshtml",
@@ -555,7 +507,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 24,
               "Title": "Create.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Staff\\Create.cshtml",
               "RelativeDocumentMoniker": "Admin\\Views\\Staff\\Create.cshtml",
@@ -567,7 +519,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 25,
               "Title": "CategoryViewModel.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\ViewModels\\CategoryViewModel.cs",
               "RelativeDocumentMoniker": "Admin\\ViewModels\\CategoryViewModel.cs",
@@ -579,7 +531,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 26,
               "Title": "StaffViewModel.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\ViewModels\\StaffViewModel.cs",
               "RelativeDocumentMoniker": "Admin\\ViewModels\\StaffViewModel.cs",
@@ -591,7 +543,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 27,
               "Title": "ReaderViewModel.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\ViewModels\\ReaderViewModel.cs",
               "RelativeDocumentMoniker": "Admin\\ViewModels\\ReaderViewModel.cs",
@@ -603,7 +555,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 29,
               "Title": "Create.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Category\\Create.cshtml",
               "RelativeDocumentMoniker": "Admin\\Views\\Category\\Create.cshtml",
@@ -615,7 +567,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 28,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Category\\Edit.cshtml",
               "RelativeDocumentMoniker": "Admin\\Views\\Category\\Edit.cshtml",
@@ -627,7 +579,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 30,
               "Title": "BookCategory.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Entities\\BookCategory.cs",
               "RelativeDocumentMoniker": "Core.Shared\\Entities\\BookCategory.cs",
@@ -639,7 +591,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 49,
+              "DocumentIndex": 46,
               "Title": "RegisterViewModel.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\ViewModels\\RegisterViewModel.cs",
               "RelativeDocumentMoniker": "Client\\ViewModels\\RegisterViewModel.cs",
@@ -651,7 +603,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 31,
               "Title": "Register.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Views\\Account\\Register.cshtml",
               "RelativeDocumentMoniker": "Client\\Views\\Account\\Register.cshtml",
@@ -663,7 +615,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 45,
+              "DocumentIndex": 42,
               "Title": "AuthService.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Services\\AuthService.cs",
               "RelativeDocumentMoniker": "Core.Shared\\Services\\AuthService.cs",
@@ -675,7 +627,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 44,
+              "DocumentIndex": 41,
               "Title": "AccountRepository.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Repositories\\AccountRepository.cs",
               "RelativeDocumentMoniker": "Core.Shared\\Repositories\\AccountRepository.cs",
@@ -687,7 +639,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 48,
+              "DocumentIndex": 45,
               "Title": "Login.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Account\\Login.cshtml",
               "RelativeDocumentMoniker": "Admin\\Views\\Account\\Login.cshtml",
@@ -699,7 +651,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 47,
+              "DocumentIndex": 44,
               "Title": "AccountController.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\AccountController.cs",
               "RelativeDocumentMoniker": "Admin\\Controllers\\AccountController.cs",
@@ -711,7 +663,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 46,
+              "DocumentIndex": 43,
               "Title": "LoginViewModel.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\ViewModels\\LoginViewModel.cs",
               "RelativeDocumentMoniker": "Admin\\ViewModels\\LoginViewModel.cs",
@@ -723,7 +675,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 32,
               "Title": "Details.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Views\\Book\\Details.cshtml",
               "RelativeDocumentMoniker": "Client\\Views\\Book\\Details.cshtml",
@@ -735,7 +687,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 43,
+              "DocumentIndex": 40,
               "Title": "BorrowDetail.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Views\\Borrow\\BorrowDetail.cshtml",
               "RelativeDocumentMoniker": "Client\\Views\\Borrow\\BorrowDetail.cshtml",
@@ -747,7 +699,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
+              "DocumentIndex": 39,
               "Title": "Details.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Views\\Reader\\Details.cshtml",
               "RelativeDocumentMoniker": "Admin\\Views\\Reader\\Details.cshtml",
@@ -759,7 +711,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 33,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Views\\Book\\Index.cshtml",
               "RelativeDocumentMoniker": "Client\\Views\\Book\\Index.cshtml",
@@ -771,7 +723,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
+              "DocumentIndex": 38,
               "Title": "BorrowHistory.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Views\\Borrow\\BorrowHistory.cshtml",
               "RelativeDocumentMoniker": "Client\\Views\\Borrow\\BorrowHistory.cshtml",
@@ -783,7 +735,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 37,
               "Title": "Details.cshtml",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Views\\Search\\Details.cshtml",
               "RelativeDocumentMoniker": "Client\\Views\\Search\\Details.cshtml",
@@ -795,7 +747,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 36,
               "Title": "SearchController.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Controllers\\SearchController.cs",
               "RelativeDocumentMoniker": "Client\\Controllers\\SearchController.cs",
@@ -807,7 +759,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 50,
+              "DocumentIndex": 47,
               "Title": "20260521083606_InitialCreate.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Migrations\\20260521083606_InitialCreate.cs",
               "RelativeDocumentMoniker": "Core.Shared\\Migrations\\20260521083606_InitialCreate.cs",
@@ -819,7 +771,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 34,
               "Title": "20260521082351_UpdateModelThuVien.cs",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Core.Shared\\Migrations\\20260521082351_UpdateModelThuVien.cs",
               "RelativeDocumentMoniker": "Core.Shared\\Migrations\\20260521082351_UpdateModelThuVien.cs",
@@ -831,7 +783,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 35,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\appsettings.json",
               "RelativeDocumentMoniker": "Client\\appsettings.json",

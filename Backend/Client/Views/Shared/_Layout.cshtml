@@ -2,9 +2,8 @@
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
     <title>@ViewData["Title"] - Thư Viện</title>
-    <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -18,106 +17,321 @@
             --c-muted:  #6b7280;
             --c-border: #e5e7ef;
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         html, body {
             background: var(--c-bg);
             color: var(--c-text);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
+
+        main {
+            flex: 1;
+        }
+
         /* ── Navbar ── */
         .navbar {
             background: #fff !important;
             border-bottom: 1px solid var(--c-border) !important;
-            padding: 12px 0;
+            padding: 12px 0 !important;
             box-shadow: 0 1px 4px rgba(0,0,0,.06);
         }
+
         .navbar-brand {
-            font-weight: 800; font-size: 1.15rem;
+            font-weight: 800;
+            font-size: 1.15rem;
             color: var(--c-text) !important;
-            display: flex; align-items: center; gap: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: auto;
         }
+
         .navbar-brand .brand-icon {
-            width: 30px; height: 30px; background: var(--c-accent);
-            border-radius: 8px; display: flex; align-items: center;
-            justify-content: center; font-size: .8rem; color: #fff;
+            width: 30px;
+            height: 30px;
+            background: var(--c-accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #fff;
         }
-        .nav-link { color: var(--c-muted) !important; font-size: .9rem; transition: color .2s; }
-        .nav-link:hover { color: var(--c-accent) !important; }
+
+        .nav-link {
+            color: var(--c-muted) !important;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: var(--c-accent) !important;
+        }
+
         .btn-nav-login {
-            border: 1px solid var(--c-border); color: var(--c-text) !important;
-            border-radius: 9px; padding: 6px 16px; font-size: .88rem;
-            background: transparent; transition: all .2s;
+            border: 1px solid var(--c-border);
+            color: var(--c-text) !important;
+            border-radius: 9px;
+            padding: 6px 16px;
+            font-size: 0.88rem;
+            background: transparent;
+            transition: all 0.2s;
         }
-        .btn-nav-login:hover { border-color: var(--c-accent); color: var(--c-accent) !important; }
+
+        .btn-nav-login:hover {
+            border-color: var(--c-accent);
+            color: var(--c-accent) !important;
+        }
+
         .btn-nav-register {
-            background: var(--c-accent); color: #fff !important;
-            border-radius: 9px; padding: 6px 16px; font-size: .88rem;
-            border: none; transition: opacity .2s;
+            background: var(--c-accent);
+            color: #fff !important;
+            border-radius: 9px;
+            padding: 6px 16px;
+            font-size: 0.88rem;
+            border: none;
+            transition: opacity 0.2s;
         }
-        .btn-nav-register:hover { opacity: .85; }
+
+        .btn-nav-register:hover {
+            opacity: 0.85;
+        }
+
         /* Avatar dropdown */
         .user-avatar {
-            width: 32px; height: 32px; border-radius: 50%;
-            object-fit: cover; border: 2px solid var(--c-accent);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--c-accent);
         }
+
         .dropdown-menu {
-            background: #fff; border: 1px solid var(--c-border);
-            border-radius: 12px; padding: 8px;
+            background: #fff;
+            border: 1px solid var(--c-border);
+            border-radius: 12px;
+            padding: 8px;
             box-shadow: 0 8px 24px rgba(0,0,0,.10);
         }
+
         .dropdown-item {
-            color: var(--c-muted); border-radius: 8px; font-size: .88rem;
-            padding: 8px 14px; transition: all .15s;
+            color: var(--c-muted);
+            border-radius: 8px;
+            font-size: 0.88rem;
+            padding: 8px 14px;
+            transition: all 0.15s;
         }
-        .dropdown-item:hover { background: var(--c-bg2); color: var(--c-text); }
-        .dropdown-divider { border-color: var(--c-border); }
+
+        .dropdown-item:hover {
+            background: var(--c-bg2);
+            color: var(--c-text);
+        }
+
+        .dropdown-divider {
+            border-color: var(--c-border);
+        }
+
         /* ── Alerts ── */
-        .alert { border-radius: 12px; border: none; font-size: .9rem; }
+        .alert {
+            border-radius: 12px;
+            border: none;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
         /* ── Footer ── */
         footer {
             background: var(--c-bg2) !important;
             border-top: 1px solid var(--c-border) !important;
-            color: var(--c-muted); padding: 20px 0; font-size: .85rem;
+            color: var(--c-muted);
+            padding: 20px 0;
+            font-size: 0.85rem;
+            margin-top: auto;
         }
-        footer a { color: var(--c-muted); }
-        footer a:hover { color: var(--c-accent); }
+
+        footer a {
+            color: var(--c-muted);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: var(--c-accent);
+        }
+
         /* ── Scrollbar ── */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--c-bg2); }
-        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--c-bg2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+
+        /* Mobile responsive */
+        @@media (max-width: 991px) {
+            .navbar {
+                padding: 10px 0 !important;
+            }
+
+            .navbar-brand {
+                font-size: 1rem;
+            }
+
+            .navbar-brand .brand-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 0.75rem;
+            }
+
+            .nav-link {
+                font-size: 0.85rem;
+                padding: 8px 12px !important;
+            }
+
+            .navbar-nav {
+                gap: 4px !important;
+            }
+
+            .btn-nav-login, .btn-nav-register {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .container {
+                padding: 0 12px;
+            }
+
+            .navbar {
+                padding: 8px 0 !important;
+            }
+
+            .navbar-brand {
+                font-size: 0.95rem;
+            }
+
+            .nav-link {
+                font-size: 0.8rem;
+            }
+
+            footer {
+                padding: 15px 0;
+            }
+
+            footer > div {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            html, body {
+                font-size: 14px;
+            }
+
+            .navbar {
+                padding: 6px 0 !important;
+            }
+
+            .navbar-brand {
+                font-size: 0.9rem;
+            }
+
+            .navbar-brand .brand-icon {
+                width: 24px;
+                height: 24px;
+            }
+
+            .nav-link {
+                font-size: 0.75rem;
+                padding: 6px 8px !important;
+            }
+
+            .navbar-nav {
+                gap: 2px !important;
+            }
+
+            .btn-nav-login, .btn-nav-register {
+                padding: 4px 10px;
+                font-size: 0.75rem;
+            }
+
+            .alert {
+                font-size: 0.8rem;
+                padding: 10px 12px;
+            }
+
+            .user-avatar {
+                width: 24px;
+                height: 24px;
+            }
+
+            .dropdown-item {
+                font-size: 0.8rem;
+                padding: 6px 12px;
+            }
+
+            footer {
+                padding: 10px 0;
+                font-size: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-dark">
-            <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container-fluid">
                 <!-- Brand -->
                 <a class="navbar-brand" asp-controller="Home" asp-action="Index">
                     <span class="brand-icon"><i class="fas fa-book-open"></i></span>
-                    Thư Viện
+                    <span class="d-none d-sm-inline">Thư Viện</span>
                 </a>
 
+                <!-- Toggler for mobile -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target=".navbar-collapse" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <!-- Collapsible content -->
+                <div class="navbar-collapse collapse">
                     <!-- Nav links -->
-                    <ul class="navbar-nav flex-grow-1 ms-4 gap-1">
+                    <ul class="navbar-nav flex-grow-1 gap-1 gap-lg-2">
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="Index">
-                                <i class="fas fa-home me-1"></i> Trang chủ
+                                <i class="fas fa-home"></i> <span class="d-lg-inline d-none">Trang chủ</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Search" asp-action="Index">
-                                <i class="fas fa-search me-1"></i> Tìm sách
+                                <i class="fas fa-search"></i> <span class="d-lg-inline d-none">Tìm sách</span>
                             </a>
                         </li>
                     </ul>
 
                     <!-- Auth -->
-                    <ul class="navbar-nav align-items-center gap-2">
+                    <ul class="navbar-nav align-items-center gap-2 gap-lg-1">
                         @{
                             var readerId   = Context.Session.GetString("ReaderId");
                             var readerName = Context.Session.GetString("ReaderName");
@@ -127,12 +341,12 @@
                         @if (string.IsNullOrEmpty(readerId))
                         {
                             <li class="nav-item">
-                                <a class="nav-link btn-nav-login" asp-controller="Account" asp-action="Login">
-                                    <i class="fas fa-sign-in-alt me-1"></i> Đăng nhập
+                                <a class="nav-link btn-nav-login d-inline-block" asp-controller="Account" asp-action="Login">
+                                    <i class="fas fa-sign-in-alt"></i> <span class="d-lg-inline d-none">Đăng nhập</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link btn-nav-register" asp-controller="Account" asp-action="Register">
+                                <a class="nav-link btn-nav-register d-inline-block" asp-controller="Account" asp-action="Register">
                                     Đăng ký
                                 </a>
                             </li>
@@ -148,11 +362,11 @@
                                     }
                                     else
                                     {
-                                        <span style="width:32px;height:32px;border-radius:50%;background:var(--c-accent);display:flex;align-items:center;justify-content:center;font-size:.8rem;color:#fff;">
+                                        <span style="width:32px;height:32px;border-radius:50%;background:var(--c-accent);display:flex;align-items:center;justify-content:center;font-size:.8rem;color:#fff;flex-shrink:0;">
                                             <i class="fas fa-user"></i>
                                         </span>
                                     }
-                                    <span style="color:var(--c-text);font-size:.9rem;">@readerName</span>
+                                    <span class="d-none d-lg-inline" style="color:var(--c-text);font-size:.9rem;">@readerName</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li>
@@ -167,9 +381,9 @@
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
-                                        <form asp-action="Logout" asp-controller="Account" method="post">
+                                        <form asp-action="Logout" asp-controller="Account" method="post" class="w-100">
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="dropdown-item text-danger">
+                                            <button type="submit" class="dropdown-item text-danger w-100 text-start">
                                                 <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
                                             </button>
                                         </form>
@@ -186,7 +400,7 @@
     <main role="main">
         @if (TempData["Success"] != null)
         {
-            <div class="container mt-3">
+            <div class="container-fluid mt-2 px-2">
                 <div class="alert alert-success alert-dismissible fade show">
                     <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -195,7 +409,7 @@
         }
         @if (TempData["Warning"] != null)
         {
-            <div class="container mt-3">
+            <div class="container-fluid mt-2 px-2">
                 <div class="alert alert-warning alert-dismissible fade show">
                     <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Warning"]
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -204,7 +418,7 @@
         }
         @if (TempData["Error"] != null)
         {
-            <div class="container mt-3">
+            <div class="container-fluid mt-2 px-2">
                 <div class="alert alert-danger alert-dismissible fade show">
                     <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -215,8 +429,8 @@
     </main>
 
     <footer>
-        <div class="container d-flex justify-content-between align-items-center">
-            <span>&copy; 2026 Thư Viện — Hệ thống quản lý thư viện thông minh</span>
+        <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <span>&copy; 2026 Thư Viện</span>
             <a asp-controller="Home" asp-action="Privacy">Chính sách bảo mật</a>
         </div>
     </footer>
@@ -225,5 +439,18 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+        });
+    </script>
 </body>
 </html>

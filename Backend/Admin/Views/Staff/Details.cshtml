@@ -1,43 +1,44 @@
-﻿@model Admin.ViewModels.StaffViewModel
+@model Admin.ViewModels.StaffViewModel
 @{
     ViewData["Title"] = "Chi tiết tài khoản";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="mb-0">👤 Chi tiết tài khoản: <strong>@Model.Username</strong></h4>
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+    <h4 class="mb-0 mb-md-2">👤 Chi tiết tài khoản: <strong>@Model.Username</strong></h4>
     <div class="d-flex gap-2">
-        <a asp-action="Edit" asp-route-username="@Model.Username" class="btn btn-warning">Sửa</a>
         <a asp-action="Index" class="btn btn-secondary">← Quay lại</a>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-3 text-center">
-        @if (!string.IsNullOrEmpty(Model.AvatarUrl))
-        {
-            <img src="@Model.AvatarUrl" alt="avatar"
-                 class="rounded-circle shadow"
-                 width="120" height="120"
-                 style="object-fit:cover" />
-        }
-        else
-        {
-            <div class="rounded-circle bg-secondary d-inline-flex align-items-center
-                justify-content-center shadow"
-                 style="width:120px;height:120px;font-size:48px;color:white">
-                @Model.FullName?.Substring(0, 1).ToUpper()
-            </div>
-        }
-
-        <div class="mt-3">
-            @if (Model.Role == "Admin")
+<div class="row g-3">
+    <div class="col-md-3">
+        <div class="text-center">
+            @if (!string.IsNullOrEmpty(Model.AvatarUrl))
             {
-                <span class="badge bg-danger fs-6">Admin</span>
+                <img src="@Model.AvatarUrl" alt="avatar"
+                     class="rounded-circle shadow"
+                     width="120" height="120"
+                     style="object-fit:cover" />
             }
             else
             {
-                <span class="badge bg-secondary fs-6">Staff</span>
+                <div class="rounded-circle bg-secondary d-inline-flex align-items-center
+                    justify-content-center shadow"
+                     style="width:120px;height:120px;font-size:48px;color:white">
+                    @Model.FullName?.Substring(0, 1).ToUpper()
+                </div>
             }
+
+            <div class="mt-3">
+                @if (Model.Role == "Admin")
+                {
+                    <span class="badge bg-danger fs-6">Admin</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary fs-6">Staff</span>
+                }
+            </div>
         </div>
     </div>
 
@@ -45,7 +46,7 @@
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-light fw-semibold">Thông tin tài khoản</div>
             <div class="card-body">
-                <table class="table table-borderless mb-0">
+                <table class="table table-borderless mb-0 table-responsive">
                     <tbody>
                         <tr>
                             <th width="180" class="text-muted">Tên đăng nhập</th>
@@ -60,6 +61,19 @@
                             <td>@Model.Email</td>
                         </tr>
                         <tr>
+                            <th class="text-muted">Mật khẩu</th>
+                            <td>
+                                <div class="d-flex gap-2 align-items-center flex-wrap">
+                                    <input type="password" id="staff-password" value="••••••••" readonly 
+                                        style="flex: 1; min-width: 200px; padding: 6px; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9; font-family: monospace;" />
+                                    <button type="button" id="toggle-password-btn" class="btn btn-sm btn-outline-secondary" 
+                                        style="padding: 6px 10px; cursor: pointer; border: 1px solid #ddd; border-radius: 4px;" title="Hiện/Ẩn mật khẩu">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
                             <th class="text-muted">Quyền hạn</th>
                             <td>@(Model.Role == "Admin" ? "Quản trị viên" : "Nhân viên")</td>
                         </tr>
@@ -72,10 +86,7 @@
             </div>
         </div>
 
-        <div class="d-flex gap-2 mt-3">
-            <a asp-action="Edit" asp-route-username="@Model.Username"
-               class="btn btn-warning">✏️ Chỉnh sửa</a>
-
+        <div class="d-flex gap-2 mt-3 flex-wrap">
             <form asp-action="Delete" asp-route-username="@Model.Username"
                   method="post" class="d-inline"
                   onsubmit="return confirm('Xác nhận xóa tài khoản @Model.Username?')">
@@ -85,3 +96,76 @@
         </div>
     </div>
 </div>
+
+<style>
+    @@media (max-width: 576px) {
+        .col-md-3, .col-md-9 {
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+        }
+
+        table.table {
+            font-size: 0.9rem;
+        }
+
+        th {
+            display: block;
+            width: 100%;
+        }
+
+        td {
+            display: block;
+            width: 100%;
+            padding-left: 0 !important;
+        }
+    }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const username = '@Model.Username';
+        const passwordInput = document.getElementById("staff-password");
+        const toggleBtn = document.getElementById("toggle-password-btn");
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener("click", function() {
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                } else {
+                    passwordInput.type = "password";
+                    toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+                }
+            });
+        }
+
+        // Lấy mật khẩu từ API
+        fetch(`/api/auth/password/${encodeURIComponent(username)}`)
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else if (response.status === 401) {
+                    throw new Error("Không có quyền");
+                } else {
+                    throw new Error("Không tìm thấy");
+                }
+            })
+            .then(data => {
+                if (passwordInput && data.password) {
+                    passwordInput.value = data.password;
+                    passwordInput.type = "password"; // Mặc định ẩn
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi khi lấy mật khẩu:", error);
+                if (passwordInput) {
+                    passwordInput.value = "Không thể tải";
+                    passwordInput.disabled = true;
+                }
+                if (toggleBtn) {
+                    toggleBtn.style.display = "none";
+                }
+            });
+    });
+</script>

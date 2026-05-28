@@ -5,6 +5,50 @@
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Client.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Backend\\Client\\Client.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Quan_Ly_Thu_Vien\\Fontend\\Admin\\ct-nhan-vien.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Fontend\\Admin\\ct-nhan-vien.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\StaffController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Backend\\Admin\\Controllers\\StaffController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Quan_Ly_Thu_Vien\\Fontend\\Admin\\app.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Fontend\\Admin\\app.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\AdminApiController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Backend\\Admin\\Controllers\\AdminApiController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Controllers\\ClientApiController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Backend\\Client\\Controllers\\ClientApiController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Quan_Ly_Thu_Vien\\Fontend\\Client\\app.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Fontend\\Client\\app.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Quan_Ly_Thu_Vien\\Fontend\\Admin\\styles.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Fontend\\Admin\\styles.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Views\\Account\\Profile.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Backend\\Client\\Views\\Account\\Profile.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Quan_Ly_Thu_Vien\\CHANGES_SUMMARY.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:CHANGES_SUMMARY.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Quan_Ly_Thu_Vien\\TESTING_GUIDE.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:TESTING_GUIDE.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Quan_Ly_Thu_Vien\\README_CHANGES.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:README_CHANGES.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,7 +58,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 7,
           "Children": [
             {
               "$type": "Bookmark",
@@ -30,6 +74,58 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "styles.css",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Admin\\styles.css",
+              "RelativeDocumentMoniker": "Fontend\\Admin\\styles.css",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Admin\\styles.css",
+              "RelativeToolTip": "Fontend\\Admin\\styles.css",
+              "ViewState": "AgIAAMgCAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-05-27T09:07:01.653Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "app.js",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Client\\app.js",
+              "RelativeDocumentMoniker": "Fontend\\Client\\app.js",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Client\\app.js",
+              "RelativeToolTip": "Fontend\\Client\\app.js",
+              "ViewState": "AgIAAAkAAAAAAAAAAEBVwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-05-27T09:06:40.14Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ClientApiController.cs",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Controllers\\ClientApiController.cs",
+              "RelativeDocumentMoniker": "Backend\\Client\\Controllers\\ClientApiController.cs",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Controllers\\ClientApiController.cs",
+              "RelativeToolTip": "Backend\\Client\\Controllers\\ClientApiController.cs",
+              "ViewState": "AgIAACoBAAAAAAAAAABRwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-27T09:06:19.112Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AdminApiController.cs",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\AdminApiController.cs",
+              "RelativeDocumentMoniker": "Backend\\Admin\\Controllers\\AdminApiController.cs",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\AdminApiController.cs",
+              "RelativeToolTip": "Backend\\Admin\\Controllers\\AdminApiController.cs",
+              "ViewState": "AgIAACsAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-27T09:05:26.491Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Client.csproj",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Client.csproj",
@@ -39,6 +135,97 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2026-05-06T16:39:30.058Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "README_CHANGES.md",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\README_CHANGES.md",
+              "RelativeDocumentMoniker": "README_CHANGES.md",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\README_CHANGES.md",
+              "RelativeToolTip": "README_CHANGES.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-05-27T09:10:18.856Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "TESTING_GUIDE.md",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\TESTING_GUIDE.md",
+              "RelativeDocumentMoniker": "TESTING_GUIDE.md",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\TESTING_GUIDE.md",
+              "RelativeToolTip": "TESTING_GUIDE.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAMMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-05-27T09:10:07.2Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "CHANGES_SUMMARY.md",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\CHANGES_SUMMARY.md",
+              "RelativeDocumentMoniker": "CHANGES_SUMMARY.md",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\CHANGES_SUMMARY.md",
+              "RelativeToolTip": "CHANGES_SUMMARY.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-05-27T09:09:40.94Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "app.js",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Admin\\app.js",
+              "RelativeDocumentMoniker": "Fontend\\Admin\\app.js",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Admin\\app.js",
+              "RelativeToolTip": "Fontend\\Admin\\app.js",
+              "ViewState": "AgIAAEUAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-05-27T09:05:12.242Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Profile.cshtml",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Views\\Account\\Profile.cshtml",
+              "RelativeDocumentMoniker": "Backend\\Client\\Views\\Account\\Profile.cshtml",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Views\\Account\\Profile.cshtml",
+              "RelativeToolTip": "Backend\\Client\\Views\\Account\\Profile.cshtml",
+              "ViewState": "AgIAAHYBAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-27T09:08:27.524Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "StaffController.cs",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\StaffController.cs",
+              "RelativeDocumentMoniker": "Backend\\Admin\\Controllers\\StaffController.cs",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\StaffController.cs",
+              "RelativeToolTip": "Backend\\Admin\\Controllers\\StaffController.cs",
+              "ViewState": "AgIAAPsAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-27T09:04:32.229Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ct-nhan-vien.html",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Admin\\ct-nhan-vien.html",
+              "RelativeDocumentMoniker": "Fontend\\Admin\\ct-nhan-vien.html",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Admin\\ct-nhan-vien.html",
+              "RelativeToolTip": "Fontend\\Admin\\ct-nhan-vien.html",
+              "ViewState": "AgIAAG4AAAAAAAAAAABhwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-05-27T09:04:15.335Z",
               "EditorCaption": ""
             }
           ]

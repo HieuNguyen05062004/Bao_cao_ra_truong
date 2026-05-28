@@ -286,6 +286,22 @@ public class AuthApiController : ControllerBase
         return Ok(new { isAuthenticated = false });
     }
 
+    [HttpGet("password/{readerId}")]
+    public async Task<IActionResult> GetPassword(string readerId)
+    {
+        var currentReaderId = HttpContext.Session.GetString("ReaderId");
+        // Chỉ Reader tương ứng mới được xem mật khẩu của chính mình
+        if (string.IsNullOrEmpty(currentReaderId) || currentReaderId != readerId)
+            return Unauthorized(new { message = "Bạn không có quyền xem mật khẩu này." });
+
+        var reader = await _readerService.GetByIdAsync(readerId);
+        if (reader == null)
+            return NotFound(new { message = "Bạn đọc không tồn tại." });
+
+        // Trả về password hash để hiển thị
+        return Ok(new { password = reader.PasswordHash ?? "Không có mật khẩu", readerId = reader.ReaderId });
+    }
+
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromForm] RegisterRequest request)
     {

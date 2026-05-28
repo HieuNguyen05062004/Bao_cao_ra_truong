@@ -110,6 +110,7 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<LibraryDbContext>();
+    context.Database.EnsureCreated();
     if (!context.Accounts.Any(a => a.Username == "admin"))
     {
         context.Accounts.Add(new Core.Shared.Entities.Account

@@ -124,8 +124,15 @@
                                 </div>
                             </div>
                             <div class="col-md-3 col-6">
-                                <div class="info-field-label">ĐỊA CHỈ</div>
-                                <div class="info-field-value">@(Model.Address ?? "—")</div>
+                                <div class="info-field-label">MẬT KHẨU</div>
+                                <div class="info-field-value d-flex gap-2 align-items-center">
+                                    <input type="password" id="reader-password" value="••••••••" readonly 
+                                        style="flex: 1; padding: 6px; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9; font-family: monospace;" />
+                                    <button type="button" id="toggle-password-btn" class="btn btn-sm btn-outline-secondary" 
+                                        style="padding: 6px 10px; cursor: pointer; border: 1px solid #ddd; border-radius: 4px;" title="Hiện/Ẩn mật khẩu">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="col-md-3 col-6">
                                 <div class="info-field-label">NGÀY SINH</div>
@@ -319,3 +326,51 @@
     .stat-orange .stat-label { color: #e65100; opacity: .7; }
     .stat-purple .stat-label { color: #6a1b9a; opacity: .7; }
 </style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const readerId = '@Model.ReaderId';
+        const passwordInput = document.getElementById("reader-password");
+        const toggleBtn = document.getElementById("toggle-password-btn");
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener("click", function() {
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                } else {
+                    passwordInput.type = "password";
+                    toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+                }
+            });
+        }
+
+        // Lấy mật khẩu từ API
+        fetch(`/api/auth/password/${encodeURIComponent(readerId)}`)
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else if (response.status === 401) {
+                    throw new Error("Không có quyền");
+                } else {
+                    throw new Error("Không tìm thấy");
+                }
+            })
+            .then(data => {
+                if (passwordInput && data.password) {
+                    passwordInput.value = data.password;
+                    passwordInput.type = "password"; // Mặc định ẩn
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi khi lấy mật khẩu:", error);
+                if (passwordInput) {
+                    passwordInput.value = "Không thể tải";
+                    passwordInput.disabled = true;
+                }
+                if (toggleBtn) {
+                    toggleBtn.style.display = "none";
+                }
+            });
+    });
+</script>
