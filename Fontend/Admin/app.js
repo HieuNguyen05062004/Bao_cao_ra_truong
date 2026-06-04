@@ -39,12 +39,6 @@ class AdminDashboard {
         link.setAttribute("href", "ql-danh-muc.html");
     });
 
-    document
-      .querySelectorAll('.sidebar-nav a[href="bao-cao.html"]')
-      .forEach((link) => {
-        link.remove();
-      });
-
     document.querySelectorAll(".sidebar-nav").forEach((nav) => {
       if (!nav.querySelector('a[href="ql-nhan-vien.html"]')) {
         const borrowLink = nav.querySelector('a[href="muon-tra.html"]');
@@ -297,10 +291,12 @@ class AdminDashboard {
     );
     if (!pagination) return;
 
-    if (totalItems === 0) {
-      pagination.innerHTML = `<span>Chưa có ${itemLabel} nào.</span>`;
+    if (totalItems <= this.pageSize) {
+      pagination.style.display = "none";
+      pagination.innerHTML = "";
       return;
     }
+    pagination.style.display = "flex";
 
     const start = startIndex + 1;
     const end = Math.min(startIndex + this.pageSize, totalItems);

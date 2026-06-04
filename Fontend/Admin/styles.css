@@ -58,14 +58,16 @@ body {
   color: var(--sidebar-text);
   display: flex;
   flex-direction: column;
-  position: sticky;
+  position: fixed;
+  left: 0;
   top: 0;
+  bottom: 0;
   height: 100vh;
   overflow-y: auto;
-  align-self: flex-start;
   transition: var(--transition);
   border-right: 1px solid rgba(255, 255, 255, 0.05);
   flex-shrink: 0;
+  z-index: 1000;
 }
 
 .sidebar-header {
@@ -185,6 +187,7 @@ body {
   display: flex;
   flex-direction: column;
   min-width: 0; /* Prevents flex items from breaking layout */
+  margin-left: 260px; /* Offset for fixed sidebar on desktop */
 }
 
 .top-header {
@@ -1009,6 +1012,7 @@ body {
 
   .main-content {
     width: 100%;
+    margin-left: 0;
   }
 
   .sidebar-toggle {
@@ -1209,6 +1213,7 @@ body {
 
   .main-content {
     width: 100%;
+    margin-left: 0;
   }
 }
 
