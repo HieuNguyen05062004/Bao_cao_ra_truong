@@ -12,7 +12,6 @@
   </head>
   <body>
     <div class="admin-container">
-      <!-- Sidebar -->
       <aside class="sidebar">
         <div class="sidebar-header">
           <i class="fas fa-book-reader"></i>
@@ -40,9 +39,6 @@
           <a href="muon-tra.html" class="nav-item">
             <i class="fas fa-exchange-alt"></i> Mượn & Trả
           </a>
-          <a href="bao-cao.html" class="nav-item">
-            <i class="fas fa-file-alt"></i> Báo cáo
-          </a>
         </nav>
         <div class="sidebar-user">
           <div class="user-profile">
@@ -55,9 +51,7 @@
         </div>
       </aside>
 
-      <!-- Main Content -->
       <main class="main-content">
-        <!-- Header -->
         <header class="top-header">
           <button class="sidebar-toggle" id="sidebar-toggle">
             <i class="fas fa-bars"></i>
@@ -74,45 +68,42 @@
           </div>
         </header>
 
-        <!-- Dashboard Body -->
         <div class="dashboard-body">
           <h1 class="page-title">Tổng quan hệ thống</h1>
 
-          <!-- Stats Grid -->
           <div class="stats-grid">
             <div class="stat-card">
               <div class="stat-icon blue"><i class="fas fa-book"></i></div>
               <div class="stat-info">
-                <span class="stat-label">Tổng số đầu sách</span>
-                <h2 class="stat-value" id="total-books">1,248</h2>
+                <span class="stat-label">Tổng sách</span>
+                <h2 class="stat-value" id="total-books">0</h2>
               </div>
             </div>
             <div class="stat-card">
-              <div class="stat-icon green"><i class="fas fa-bookmark"></i></div>
+              <div class="stat-icon green"><i class="fas fa-tags"></i></div>
               <div class="stat-info">
-                <span class="stat-label">Sách đang mượn</span>
-                <h2 class="stat-value" id="borrowed-books">156</h2>
+                <span class="stat-label">Tổng danh mục</span>
+                <h2 class="stat-value" id="total-categories">0</h2>
               </div>
             </div>
             <div class="stat-card">
               <div class="stat-icon orange"><i class="fas fa-users"></i></div>
               <div class="stat-info">
-                <span class="stat-label">Bạn đọc mới</span>
-                <h2 class="stat-value" id="new-readers">42</h2>
+                <span class="stat-label">Tổng bạn đọc</span>
+                <h2 class="stat-value" id="total-readers">0</h2>
               </div>
             </div>
             <div class="stat-card">
               <div class="stat-icon red">
-                <i class="fas fa-exclamation-triangle"></i>
+                <i class="fas fa-book-open-reader"></i>
               </div>
               <div class="stat-info">
-                <span class="stat-label">Quá hạn trả</span>
-                <h2 class="stat-value" id="overdue-books">12</h2>
+                <span class="stat-label">Tổng sách đã mượn</span>
+                <h2 class="stat-value" id="borrowed-books">0</h2>
               </div>
             </div>
           </div>
 
-          <!-- Recent Activity -->
           <div class="recent-section">
             <div class="card">
               <div class="card-header">

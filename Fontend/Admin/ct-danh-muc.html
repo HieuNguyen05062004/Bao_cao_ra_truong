@@ -12,34 +12,28 @@
   </head>
   <body>
     <div class="admin-container">
-      <!-- Sidebar -->
       <aside class="sidebar">
         <div class="sidebar-header">
           <i class="fas fa-book-reader"></i>
           <span>SmartLib Admin</span>
-          <button class="sidebar-toggle">
-            <i class="fas fa-bars"></i>
-          </button>
+          <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
         </div>
         <nav class="sidebar-nav">
-          <a href="index.html" class="nav-item">
-            <i class="fas fa-chart-line"></i> Dashboard
-          </a>
-          <a href="ql-sach.html" class="nav-item">
-            <i class="fas fa-book"></i> Quản lý sách
-          </a>
-          <a href="ql-danh-muc.html" class="nav-item active">
-            <i class="fas fa-list"></i> Thể loại
-          </a>
-          <a href="ql-ban-doc.html" class="nav-item">
-            <i class="fas fa-users"></i> Bạn đọc
-          </a>
-          <a href="muon-tra.html" class="nav-item">
-            <i class="fas fa-exchange-alt"></i> Mượn & Trả
-          </a>
-          <a href="bao-cao.html" class="nav-item">
-            <i class="fas fa-file-alt"></i> Báo cáo
-          </a>
+          <a href="index.html" class="nav-item"
+            ><i class="fas fa-chart-line"></i> Dashboard</a
+          >
+          <a href="ql-sach.html" class="nav-item"
+            ><i class="fas fa-book"></i> Quản lý sách</a
+          >
+          <a href="ql-danh-muc.html" class="nav-item active"
+            ><i class="fas fa-list"></i> Thể loại</a
+          >
+          <a href="ql-ban-doc.html" class="nav-item"
+            ><i class="fas fa-users"></i> Bạn đọc</a
+          >
+          <a href="muon-tra.html" class="nav-item"
+            ><i class="fas fa-exchange-alt"></i> Mượn & Trả</a
+          >
         </nav>
         <div class="sidebar-user">
           <div class="user-profile">
@@ -53,29 +47,39 @@
       </aside>
 
       <main class="main-content">
-        <!-- Header -->
         <header class="top-header">
+          <button class="sidebar-toggle" id="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
           <div class="header-search">
             <i class="fas fa-search"></i>
             <input type="text" placeholder="Tìm kiếm sách trong danh mục..." />
           </div>
-          <div class="header-user"></div>
+          <div class="header-user">
+            <a href="ql-danh-muc.html" class="btn btn-outline"
+              ><i class="fas fa-arrow-left"></i> Quay lại</a
+            >
+          </div>
         </header>
 
-        <div class="dashboard-body">
-          <div class="page-header">
-            <div class="breadcrumb">
-              <a href="ql-danh-muc.html" class="btn btn-sm btn-outline">
-                <i class="fas fa-arrow-left"></i> Quay lại
-              </a>
+        <div class="dashboard-body detail-page">
+          <div class="detail-hero">
+            <div class="detail-hero-title">
+              <span class="detail-hero-icon"><i class="fas fa-tags"></i></span>
+              <div>
+                <h1>Danh mục: <span id="detail-category-name">...</span></h1>
+                <p>
+                  Thông tin danh mục và danh sách đầu sách đang được phân loại.
+                </p>
+              </div>
+            </div>
+            <div class="detail-hero-actions">
+              <a href="ql-danh-muc.html" class="btn btn-outline"
+                ><i class="fas fa-arrow-left"></i> Danh sách</a
+              >
             </div>
           </div>
 
-          <h1 class="page-title">
-            Danh mục: <span id="detail-category-name">...</span>
-          </h1>
-
-          <!-- Category Info Summary -->
           <div class="stats-grid">
             <div class="stat-card">
               <div class="stat-icon blue"><i class="fas fa-hashtag"></i></div>
@@ -93,10 +97,9 @@
             </div>
           </div>
 
-          <!-- Books in Category Table -->
           <div class="card">
-            <div class="card-header">
-              <h3>Danh sách sách thuộc danh mục</h3>
+            <div class="detail-card-header">
+              <h3><i class="fas fa-book"></i> Danh sách sách thuộc danh mục</h3>
             </div>
             <div class="card-body">
               <table class="data-table">
@@ -109,9 +112,7 @@
                     <th>Thao tác</th>
                   </tr>
                 </thead>
-                <tbody id="category-books-list">
-                  <!-- Dữ liệu sẽ được đổ vào đây từ app.js khớp với BookSummaryViewModel -->
-                </tbody>
+                <tbody id="category-books-list"></tbody>
               </table>
             </div>
           </div>

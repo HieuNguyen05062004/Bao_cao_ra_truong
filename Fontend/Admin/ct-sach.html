@@ -16,9 +16,7 @@
         <div class="sidebar-header">
           <i class="fas fa-book-reader"></i>
           <span>SmartLib Admin</span>
-          <button class="sidebar-toggle">
-            <i class="fas fa-bars"></i>
-          </button>
+          <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
         </div>
         <nav class="sidebar-nav">
           <a href="index.html" class="nav-item"
@@ -33,12 +31,9 @@
           <a href="ql-ban-doc.html" class="nav-item"
             ><i class="fas fa-users"></i> Bạn đọc</a
           >
-          <a href="muon-tra.html" class="nav-item">
-            <i class="fas fa-exchange-alt"></i> Mượn & Trả
-          </a>
-          <a href="bao-cao.html" class="nav-item">
-            <i class="fas fa-file-alt"></i> Báo cáo
-          </a>
+          <a href="muon-tra.html" class="nav-item"
+            ><i class="fas fa-exchange-alt"></i> Mượn & Trả</a
+          >
         </nav>
         <div class="sidebar-user">
           <div class="user-profile">
@@ -50,6 +45,7 @@
           </div>
         </div>
       </aside>
+
       <main class="main-content">
         <header class="top-header">
           <div class="page-title">
@@ -61,66 +57,98 @@
             >
           </div>
         </header>
-        <div class="dashboard-body">
-          <div class="card">
+
+        <div class="dashboard-body detail-page">
+          <div class="detail-hero">
+            <div class="detail-hero-title">
+              <span class="detail-hero-icon"
+                ><i class="fas fa-book-open"></i
+              ></span>
+              <div>
+                <h1 id="detail-title">Chi tiết sách</h1>
+                <p>Thông tin đầu sách, phân loại, trạng thái kho và ảnh bìa.</p>
+              </div>
+            </div>
+            <div class="detail-hero-actions">
+              <a href="ql-sach.html" class="btn btn-outline"
+                ><i class="fas fa-arrow-left"></i> Danh sách</a
+              >
+              <a id="edit-link" href="#" class="btn btn-edit"
+                ><i class="fas fa-edit"></i> Chỉnh sửa</a
+              >
+            </div>
+          </div>
+
+          <div class="card detail-shell">
             <div class="card-body">
-              <div class="book-details-grid">
-                <div class="detail-img-container">
-                  <img
-                    id="detail-img"
-                    src=""
-                    alt="Book Cover"
-                    class="detail-img"
-                  />
+              <div class="detail-layout">
+                <div class="detail-media">
+                  <img id="detail-img" src="" alt="Ảnh bìa sách" />
+                  <span class="detail-media-caption">Ảnh bìa</span>
                 </div>
-                <div class="detail-info-container">
-                  <div class="detail-item">
-                    <label>Mã sách:</label><span id="detail-id"></span>
+                <div>
+                  <div class="detail-section-title">
+                    <i class="fas fa-circle-info"></i> Thông tin sách
                   </div>
-                  <div class="detail-item">
-                    <label>Tên sách:</label><span id="detail-title"></span>
-                  </div>
-                  <div class="detail-item">
-                    <label>Tác giả:</label><span id="detail-author"></span>
-                  </div>
-                  <div class="detail-item">
-                    <label>Nhà xuất bản:</label
-                    ><span id="detail-publisher"></span>
-                  </div>
-                  <div class="detail-item">
-                    <label>Năm xuất bản:</label><span id="detail-year"></span>
-                  </div>
-                  <div class="detail-item">
-                    <label>Thể loại:</label><span id="detail-category"></span>
-                  </div>
-                  <div class="detail-item">
-                    <label>Số lượng:</label><span id="detail-stock"></span>
-                  </div>
-                  <div class="detail-item">
-                    <label>Trạng thái:</label
-                    ><span id="detail-status" class="badge"></span>
+                  <div class="detail-info-grid">
+                    <div class="detail-field">
+                      <label><i class="fas fa-barcode"></i> Mã sách</label>
+                      <span id="detail-id">--</span>
+                    </div>
+                    <div class="detail-field">
+                      <label><i class="fas fa-signal"></i> Trạng thái</label>
+                      <span id="detail-status" class="badge">--</span>
+                    </div>
+                    <div class="detail-field">
+                      <label><i class="fas fa-user-pen"></i> Tác giả</label>
+                      <span id="detail-author">--</span>
+                    </div>
+                    <div class="detail-field">
+                      <label
+                        ><i class="fas fa-building"></i> Nhà xuất bản</label
+                      >
+                      <span id="detail-publisher">--</span>
+                    </div>
+                    <div class="detail-field">
+                      <label
+                        ><i class="fas fa-calendar-days"></i> Năm xuất
+                        bản</label
+                      >
+                      <span id="detail-year">--</span>
+                    </div>
+                    <div class="detail-field">
+                      <label
+                        ><i class="fas fa-boxes-stacked"></i> Số lượng</label
+                      >
+                      <span id="detail-stock">--</span>
+                    </div>
+                    <div class="detail-field full">
+                      <label><i class="fas fa-tags"></i> Thể loại</label>
+                      <span id="detail-category">--</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div
-              class="card-footer"
-              style="
-                padding: 20px;
-                border-top: 1px solid var(--border);
-                display: flex;
-                gap: 10px;
-                justify-content: flex-end;
-              "
-            >
-              <a id="edit-link" href="#" class="btn btn-edit">
-                <i class="fas fa-edit"></i> Chỉnh sửa
-              </a>
+            <div class="detail-actions-bar">
+              <a id="edit-link-footer" href="#" class="btn btn-edit"
+                ><i class="fas fa-edit"></i> Chỉnh sửa sách</a
+              >
             </div>
           </div>
         </div>
       </main>
     </div>
     <script src="app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const syncEditLink = () => {
+          const source = document.getElementById("edit-link");
+          const target = document.getElementById("edit-link-footer");
+          if (source && target) target.href = source.href;
+        };
+        setTimeout(syncEditLink, 400);
+      });
+    </script>
   </body>
 </html>

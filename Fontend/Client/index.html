@@ -35,15 +35,15 @@
           <li><a href="index.html" class="active">Trang chủ</a></li>
           <li><a href="kho-sach.html">Kho sách</a></li>
           <li><a href="lich-su-muon.html">Phiếu mượn</a></li>
+          <div class="user-menu">
+            <button class="btn btn-outline btn-sm">Đăng nhập</button>
+            <button class="btn btn-accent btn-sm">Đăng ký</button>
+          </div>
         </ul>
-        <div class="user-menu">
-          <button class="btn btn-outline btn-sm">Đăng nhập</button>
-          <button class="btn btn-accent btn-sm">Đăng ký</button>
-        </div>
       </nav>
     </header>
 
-    <!-- Hero Section với AI Search -->
+    <!-- Hero Section với Tích hợp AI tìm kiếm nâng cao -->
     <section class="hero">
       <div class="container hero-content">
         <h1>Khám phá tri thức cùng AI</h1>
@@ -63,9 +63,15 @@
             <input
               type="text"
               id="search-input"
-              placeholder="Hỏi AI: 'Tìm cho tôi sách về lập trình Python cho người mới'..."
+              placeholder="Tích hợp AI tìm kiếm nâng cao: 'Tìm sách lập trình Python cho người mới'..."
             />
-            <button class="btn btn-accent" id="search-btn">Tìm kiếm AI</button>
+            <button
+              class="btn btn-accent"
+              id="search-btn"
+              title="Tích hợp AI tìm kiếm nâng cao (advanced search)"
+            >
+              Tìm kiếm nâng cao
+            </button>
           </div>
         </div>
       </div>

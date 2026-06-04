@@ -4,10 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Thêm bạn đọc mới - SmartLibrary</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -19,140 +16,115 @@
           <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
         </div>
         <nav class="sidebar-nav">
-          <a href="index.html" class="nav-item"
-            ><i class="fas fa-chart-line"></i> Dashboard</a
-          >
-          <a href="ql-sach.html" class="nav-item"
-            ><i class="fas fa-book"></i> Quản lý sách</a
-          >
-          <a href="ql-danh-muc.html" class="nav-item"
-            ><i class="fas fa-list"></i> Thể loại</a
-          >
-          <a href="ql-ban-doc.html" class="nav-item active"
-            ><i class="fas fa-users"></i> Bạn đọc</a
-          >
-          <a href="muon-tra.html" class="nav-item"
-            ><i class="fas fa-exchange-alt"></i> Mượn & Trả</a
-          >
+          <a href="index.html" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
+          <a href="ql-sach.html" class="nav-item"><i class="fas fa-book"></i> Quản lý sách</a>
+          <a href="ql-danh-muc.html" class="nav-item"><i class="fas fa-list"></i> Thể loại</a>
+          <a href="ql-ban-doc.html" class="nav-item active"><i class="fas fa-users"></i> Bạn đọc</a>
+          <a href="muon-tra.html" class="nav-item"><i class="fas fa-exchange-alt"></i> Mượn & Trả</a>
         </nav>
       </aside>
 
       <main class="main-content">
         <header class="top-header">
-          <div class="page-title">
-            <i class="fas fa-user-plus"></i> Thêm bạn đọc mới
-          </div>
+          <div class="page-title"><i class="fas fa-user-plus"></i> Thêm bạn đọc mới</div>
           <div class="header-user">
-            <a href="ql-ban-doc.html" class="btn btn-outline"
-              ><i class="fas fa-arrow-left"></i> Quay lại</a
-            >
+            <a href="ql-ban-doc.html" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Quay lại</a>
           </div>
         </header>
 
-        <div class="dashboard-body">
-          <div class="card">
+        <div class="dashboard-body form-page">
+          <div class="card form-shell">
+            <div class="form-hero">
+              <div class="form-hero-title">
+                <span class="form-hero-icon"><i class="fas fa-user-plus"></i></span>
+                <div>
+                  <h1>Thêm bạn đọc mới</h1>
+                  <p>Tạo hồ sơ bạn đọc để cấp quyền mượn sách và theo dõi lịch sử.</p>
+                </div>
+              </div>
+              <span class="form-badge"><i class="fas fa-id-card"></i> Mã bạn đọc là định danh chính</span>
+            </div>
             <div class="card-body">
               <form id="reader-form">
                 <input type="hidden" id="edit-reader-flag" value="" />
-                <div class="form-row">
-                  <div class="form-group">
-                    <label>Mã bạn đọc</label>
-                    <input
-                      type="text"
-                      id="form-reader-id"
-                      required
-                      placeholder="VD: BD001"
-                    />
+
+                <section class="form-section">
+                  <div class="section-title"><i class="fas fa-address-card"></i> Thông tin định danh</div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="field-label"><i class="fas fa-id-badge"></i> Mã bạn đọc</label>
+                      <input type="text" id="form-reader-id" required placeholder="VD: BD001" />
+                    </div>
+                    <div class="form-group">
+                      <label class="field-label"><i class="fas fa-user"></i> Họ tên</label>
+                      <input type="text" id="form-reader-name" required placeholder="Nhập họ tên..." />
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="field-label"><i class="fas fa-venus-mars"></i> Giới tính</label>
+                      <select id="form-reader-gender">
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                        <option value="Khác">Khác</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label class="field-label"><i class="fas fa-cake-candles"></i> Ngày sinh</label>
+                      <input type="date" id="form-reader-dob" required />
+                    </div>
+                  </div>
+                </section>
+
+                <section class="form-section">
+                  <div class="section-title"><i class="fas fa-envelope-open-text"></i> Liên hệ và tài khoản</div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="field-label"><i class="fas fa-envelope"></i> Email</label>
+                      <input type="email" id="form-reader-email" required placeholder="example@gmail.com" />
+                    </div>
+                    <div class="form-group">
+                      <label class="field-label"><i class="fas fa-phone"></i> Số điện thoại</label>
+                      <input type="text" id="form-reader-phone" required placeholder="09xxxxxxx" />
+                    </div>
+                  </div>
+                  <div class="form-group" id="password-group">
+                    <label class="field-label"><i class="fas fa-lock"></i> Mật khẩu đăng nhập</label>
+                    <input type="password" id="form-reader-password" placeholder="Mật khẩu..." />
                   </div>
                   <div class="form-group">
-                    <label>Họ tên</label>
-                    <input
-                      type="text"
-                      id="form-reader-name"
-                      required
-                      placeholder="Nhập họ tên..."
-                    />
+                    <label class="field-label"><i class="fas fa-location-dot"></i> Địa chỉ</label>
+                    <input type="text" id="form-reader-address" placeholder="Địa chỉ cư trú..." />
                   </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-group">
-                    <label>Email</label>
-                    <input
-                      type="email"
-                      id="form-reader-email"
-                      required
-                      placeholder="example@gmail.com"
-                    />
+                </section>
+
+                <section class="form-section">
+                  <div class="section-title"><i class="fas fa-user-check"></i> Trạng thái và ảnh</div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="field-label"><i class="fas fa-toggle-on"></i> Trạng thái</label>
+                      <select id="form-reader-status">
+                        <option value="Hoạt động">Hoạt động</option>
+                        <option value="Đang khóa">Đang khóa</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label class="field-label"><i class="fas fa-image"></i> Ảnh đại diện</label>
+                      <div class="file-input-card">
+                        <input type="file" id="form-reader-img" accept="image/*" />
+                      </div>
+                      <div id="reader-image-preview" class="image-preview">
+                        <span>Ảnh đại diện hiện tại</span>
+                        <img alt="Ảnh đại diện hiện tại" style="display: none" />
+                      </div>
+                    </div>
                   </div>
-                  <div class="form-group">
-                    <label>Số điện thoại</label>
-                    <input
-                      type="text"
-                      id="form-reader-phone"
-                      required
-                      placeholder="09xxxxxxx"
-                    />
-                  </div>
-                </div>
-                <div class="form-group" id="password-group">
-                  <label>Mật khẩu đăng nhập</label>
-                  <input
-                    type="password"
-                    id="form-reader-password"
-                    placeholder="Mật khẩu..."
-                  />
-                </div>
-                <div class="form-group">
-                  <label>Địa chỉ</label>
-                  <input
-                    type="text"
-                    id="form-reader-address"
-                    placeholder="Địa chỉ cư trú..."
-                  />
-                </div>
-                <div class="form-row">
-                  <div class="form-group">
-                    <label>Giới tính</label>
-                    <select id="form-reader-gender">
-                      <option value="Nam">Nam</option>
-                      <option value="Nữ">Nữ</option>
-                      <option value="Khác">Khác</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label>Ngày sinh</label>
-                    <input type="date" id="form-reader-dob" required />
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-group">
-                    <label>Trạng thái</label>
-                    <select id="form-reader-status">
-                      <option value="Hoạt động">Hoạt động</option>
-                      <option value="Đang khóa">Đang khóa</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label>Ảnh đại diện</label>
-                    <input type="file" id="form-reader-img" accept="image/*" />
-                  </div>
-                </div>
-                <div
-                  class="form-actions"
-                  style="
-                    display: flex;
-                    gap: 10px;
-                    justify-content: flex-end;
-                    margin-top: 20px;
-                  "
-                >
-                  <a href="ql-ban-doc.html" class="btn btn-outline">Hủy bỏ</a>
-                  <button
-                    type="submit"
-                    class="btn btn-primary"
-                    id="reader-submit-button"
-                  >
-                    Thêm bạn đọc
+                </section>
+
+                <div class="form-actions">
+                  <a href="ql-ban-doc.html" class="btn btn-outline"><i class="fas fa-xmark"></i> Hủy bỏ</a>
+                  <button type="submit" class="btn btn-primary" id="reader-submit-button">
+                    <i class="fas fa-floppy-disk"></i> Thêm bạn đọc
                   </button>
                 </div>
               </form>

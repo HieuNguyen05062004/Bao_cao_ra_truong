@@ -11,6 +11,13 @@ class AdminDashboard {
   constructor() {
     // Địa chỉ gốc của API Backend (ASP.NET Core)
     this.apiUrl = "/api";
+    this.pageSize = 6;
+    this.paginationState = {
+      books: 1,
+      readers: 1,
+      categories: 1,
+      staffs: 1,
+    };
 
     // Sidebar link update logic
     this.updateSidebarLinks();
@@ -31,6 +38,12 @@ class AdminDashboard {
       if (href === "the-loai.html")
         link.setAttribute("href", "ql-danh-muc.html");
     });
+
+    document
+      .querySelectorAll('.sidebar-nav a[href="bao-cao.html"]')
+      .forEach((link) => {
+        link.remove();
+      });
 
     document.querySelectorAll(".sidebar-nav").forEach((nav) => {
       if (!nav.querySelector('a[href="ql-nhan-vien.html"]')) {
@@ -75,6 +88,7 @@ class AdminDashboard {
     await this.fetchInitialData();
 
     // Tự động nhận diện trang để render dữ liệu phù hợp
+    if (document.querySelector(".stats-grid")) this.renderDashboardStats();
     if (document.getElementById("recent-borrows")) this.renderRecentActivity();
     if (document.getElementById("book-list")) this.renderBooks();
     if (document.getElementById("reader-list")) this.renderReaders();
@@ -104,10 +118,16 @@ class AdminDashboard {
     setInterval(async () => {
       try {
         const response = await fetch(`${this.apiUrl}/auth/me`);
-        if (!response.ok || !window.location.pathname.toLowerCase().endsWith("/login.html")) {
+        if (
+          !response.ok ||
+          !window.location.pathname.toLowerCase().endsWith("/login.html")
+        ) {
           const data = await response.json();
           if (!data.isAuthenticated) {
-            this.showToast("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", "warning");
+            this.showToast(
+              "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+              "warning",
+            );
             setTimeout(() => {
               window.location.href = "login.html";
             }, 2000);
@@ -126,7 +146,9 @@ class AdminDashboard {
         const me = await response.json();
         if (me.role === "Staff") {
           // Ẩn link quản lý nhân viên
-          const staffLink = document.querySelector('a[href="ql-nhan-vien.html"]');
+          const staffLink = document.querySelector(
+            'a[href="ql-nhan-vien.html"]',
+          );
           if (staffLink) {
             staffLink.style.display = "none";
           }
@@ -215,16 +237,135 @@ class AdminDashboard {
     });
   }
 
-  populateCategorySelects() {
-    document.querySelectorAll("#form-category, #category-fields-container select").forEach((select) => {
-      const selected = select.value;
-      select.innerHTML =
-        '<option value="">-- Chọn thể loại --</option>' +
-        this.categories
-          .map((cat) => `<option value="${cat.name}">${cat.name}</option>`)
-          .join("");
-      select.value = selected;
+  getVisiblePageNumbers(totalPages, currentPage) {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    const pages = [1];
+    let start = Math.max(2, currentPage - 1);
+    let end = Math.min(totalPages - 1, currentPage + 1);
+
+    if (currentPage <= 3) {
+      start = 2;
+      end = 4;
+    }
+
+    if (currentPage >= totalPages - 2) {
+      start = totalPages - 3;
+      end = totalPages - 1;
+    }
+
+    if (start > 2) pages.push("...");
+    for (let page = start; page <= end; page += 1) pages.push(page);
+    if (end < totalPages - 1) pages.push("...");
+    pages.push(totalPages);
+
+    return pages;
+  }
+
+  renderPaginatedTable({
+    tableId,
+    paginationKey,
+    items,
+    renderRow,
+    emptyMessage,
+    emptyColSpan,
+    itemLabel,
+    onPageChange,
+  }) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+
+    const totalItems = items.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / this.pageSize));
+    const currentPage = Math.min(
+      Math.max(this.paginationState[paginationKey] || 1, 1),
+      totalPages,
+    );
+    this.paginationState[paginationKey] = currentPage;
+
+    const startIndex = (currentPage - 1) * this.pageSize;
+    const pageItems = items.slice(startIndex, startIndex + this.pageSize);
+
+    table.innerHTML = pageItems.length
+      ? pageItems.map(renderRow).join("")
+      : `<tr><td colspan="${emptyColSpan}" class="text-center">${emptyMessage}</td></tr>`;
+
+    const pagination = document.querySelector(
+      `[data-pagination-for="${paginationKey}"]`,
+    );
+    if (!pagination) return;
+
+    if (totalItems === 0) {
+      pagination.innerHTML = `<span>Chưa có ${itemLabel} nào.</span>`;
+      return;
+    }
+
+    const start = startIndex + 1;
+    const end = Math.min(startIndex + this.pageSize, totalItems);
+    const pageButtons = this.getVisiblePageNumbers(totalPages, currentPage)
+      .map((page) => {
+        if (page === "...") {
+          return '<span class="pagination-ellipsis">...</span>';
+        }
+
+        const isActive = page === currentPage;
+        return `
+          <button type="button" class="btn btn-sm btn-outline${isActive ? " active" : ""}" data-page="${page}" ${isActive ? 'aria-current="page"' : ""}>
+            ${page}
+          </button>
+        `;
+      })
+      .join("");
+
+    pagination.innerHTML = `
+      <span>Hiển thị ${start}-${end} trên ${totalItems} ${itemLabel}</span>
+      <div class="pages">
+        <button type="button" class="btn btn-sm btn-outline" data-page-action="prev" ${currentPage === 1 ? "disabled" : ""}>
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        ${pageButtons}
+        <button type="button" class="btn btn-sm btn-outline" data-page-action="next" ${currentPage === totalPages ? "disabled" : ""}>
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    `;
+
+    pagination.querySelectorAll("[data-page]").forEach((button) => {
+      button.addEventListener("click", () => {
+        this.paginationState[paginationKey] = Number(button.dataset.page);
+        onPageChange?.();
+      });
     });
+
+    pagination.querySelectorAll("[data-page-action]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const action = button.dataset.pageAction;
+        const current = this.paginationState[paginationKey] || 1;
+        if (action === "prev" && current > 1) {
+          this.paginationState[paginationKey] = current - 1;
+        }
+        if (action === "next" && current < totalPages) {
+          this.paginationState[paginationKey] = current + 1;
+        }
+        onPageChange?.();
+      });
+    });
+  }
+
+  populateCategorySelects() {
+    document
+      .querySelectorAll("#form-category, #category-fields-container select")
+      .forEach((select) => {
+        const selected = select.value;
+        select.innerHTML =
+          '<option value="">-- Chọn thể loại --</option>' +
+          this.categories
+            .map((cat) => `<option value="${cat.name}">${cat.name}</option>`)
+            .join("");
+        select.value = selected;
+      });
   }
 
   // --- Validation Helpers ---
@@ -303,7 +444,8 @@ class AdminDashboard {
       ["form-staff-password", "Hiện mật khẩu"],
     ].forEach(([inputId, label]) => {
       const input = document.getElementById(inputId);
-      if (!input || document.querySelector(`[data-toggle-for="${inputId}"]`)) return;
+      if (!input || document.querySelector(`[data-toggle-for="${inputId}"]`))
+        return;
 
       const toggle = document.createElement("label");
       toggle.className = "password-toggle";
@@ -458,7 +600,8 @@ class AdminDashboard {
       const email = rFields.email.value.trim().toLowerCase();
       const currentId = document.getElementById("form-reader-id")?.value;
       const duplicate = this.readers.some(
-        (r) => (r.email || "").trim().toLowerCase() === email && r.id !== currentId,
+        (r) =>
+          (r.email || "").trim().toLowerCase() === email && r.id !== currentId,
       );
       if (duplicate) {
         this.showError(rFields.email, "Gmail không được để trùng.");
@@ -518,7 +661,10 @@ class AdminDashboard {
 
     if (fields.password) {
       const passVal = fields.password.value.trim();
-      if ((!isEdit && passVal === "") || (passVal !== "" && !PASS_REGEX.test(passVal))) {
+      if (
+        (!isEdit && passVal === "") ||
+        (passVal !== "" && !PASS_REGEX.test(passVal))
+      ) {
         this.showError(
           fields.password,
           "Mật khẩu phải dài hơn 8 ký tự, bao gồm chữ hoa, số và ký tự đặc biệt.",
@@ -642,7 +788,9 @@ class AdminDashboard {
       const toggleBtn = document.getElementById("toggle-password-btn");
       if (toggleBtn) {
         toggleBtn.addEventListener("click", () => {
-          const passwordInput = document.getElementById("detail-staff-password");
+          const passwordInput = document.getElementById(
+            "detail-staff-password",
+          );
           if (passwordInput.type === "password") {
             passwordInput.type = "text";
             toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
@@ -657,7 +805,9 @@ class AdminDashboard {
 
   async loadStaffPassword(username) {
     try {
-      const response = await fetch(`${this.apiUrl}/auth/password/${encodeURIComponent(username)}`);
+      const response = await fetch(
+        `${this.apiUrl}/auth/password/${encodeURIComponent(username)}`,
+      );
       if (response.ok) {
         const data = await response.json();
         const passwordInput = document.getElementById("detail-staff-password");
@@ -708,13 +858,35 @@ class AdminDashboard {
       .join("");
   }
 
-  renderBooks() {
-    const bookTable = document.getElementById("book-list");
-    if (!bookTable) return;
+  renderDashboardStats() {
+    const setValue = (id, value) => {
+      const element = document.getElementById(id);
+      if (element)
+        element.textContent = Number(value || 0).toLocaleString("vi-VN");
+    };
 
-    bookTable.innerHTML = this.books
-      .map(
-        (book) => `
+    const borrowedStatuses = new Set(["Đã duyệt", "Đang mượn", "Đã trả"]);
+    const totalBorrowedBooks = this.borrowTickets.reduce((total, ticket) => {
+      if (!borrowedStatuses.has(ticket.status)) return total;
+      return total + (Array.isArray(ticket.books) ? ticket.books.length : 0);
+    }, 0);
+
+    setValue("total-books", this.books.length);
+    setValue("total-categories", this.categories.length);
+    setValue("total-readers", this.readers.length);
+    setValue("borrowed-books", totalBorrowedBooks);
+  }
+
+  renderBooks() {
+    this.renderPaginatedTable({
+      tableId: "book-list",
+      paginationKey: "books",
+      items: this.books,
+      itemLabel: "sách",
+      emptyMessage: "Không có sách nào.",
+      emptyColSpan: 8,
+      onPageChange: () => this.renderBooks(),
+      renderRow: (book) => `
       <tr>
         <td><strong>${book.id}</strong></td>
         <td><img src="${book.img}" class="table-img" alt="cover"></td>
@@ -742,17 +914,19 @@ class AdminDashboard {
         </td>
       </tr>
     `,
-      )
-      .join("");
+    });
   }
 
   renderReaders() {
-    const readerTable = document.getElementById("reader-list");
-    if (!readerTable) return;
-
-    readerTable.innerHTML = this.readers
-      .map(
-        (reader) => `
+    this.renderPaginatedTable({
+      tableId: "reader-list",
+      paginationKey: "readers",
+      items: this.readers,
+      itemLabel: "bạn đọc",
+      emptyMessage: "Không có bạn đọc nào.",
+      emptyColSpan: 8,
+      onPageChange: () => this.renderReaders(),
+      renderRow: (reader) => `
       <tr>
         <td><strong>${reader.id}</strong></td>
         <td>${reader.name}</td>
@@ -776,17 +950,19 @@ class AdminDashboard {
         </td>
       </tr>
     `,
-      )
-      .join("");
+    });
   }
 
   renderStaffs() {
-    const staffTable = document.getElementById("staff-list");
-    if (!staffTable) return;
-
-    staffTable.innerHTML = this.staffs
-      .map(
-        (s) => `
+    this.renderPaginatedTable({
+      tableId: "staff-list",
+      paginationKey: "staffs",
+      items: this.staffs,
+      itemLabel: "nhân viên",
+      emptyMessage: "Không có nhân viên nào.",
+      emptyColSpan: 6,
+      onPageChange: () => this.renderStaffs(),
+      renderRow: (s) => `
       <tr>
         <td><img src="${s.img}" class="table-img" style="border-radius: 50%" alt="avatar"></td>
         <td>${s.name}</td>
@@ -804,8 +980,7 @@ class AdminDashboard {
         </td>
       </tr>
     `,
-      )
-      .join("");
+    });
   }
 
   // --- Logic cho các trang Form (Thêm/Sửa) ---
@@ -834,8 +1009,12 @@ class AdminDashboard {
     // 2. Bạn đọc
     const readerForm = document.getElementById("reader-form");
     if (readerForm) {
-      const readerIdGroup = document.getElementById("form-reader-id")?.closest(".form-group");
-      const readerStatusGroup = document.getElementById("form-reader-status")?.closest(".form-group");
+      const readerIdGroup = document
+        .getElementById("form-reader-id")
+        ?.closest(".form-group");
+      const readerStatusGroup = document
+        .getElementById("form-reader-status")
+        ?.closest(".form-group");
       if (readerIdGroup) readerIdGroup.style.display = "none";
       if (readerStatusGroup) readerStatusGroup.style.display = "none";
       document.getElementById("form-reader-id")?.removeAttribute("required");
@@ -963,15 +1142,21 @@ class AdminDashboard {
       "Xác nhận xóa",
       `Bạn có chắc muốn xóa nhân viên <strong>${staff.name}</strong>?`,
       async () => {
-        const response = await fetch(`${this.apiUrl}/Staff/Delete/${encodeURIComponent(id)}`, {
-          method: "DELETE",
-        });
+        const response = await fetch(
+          `${this.apiUrl}/Staff/Delete/${encodeURIComponent(id)}`,
+          {
+            method: "DELETE",
+          },
+        );
         if (response.ok) {
           this.staffs = this.staffs.filter((s) => String(s.id) !== id);
           this.renderStaffs();
           this.showToast("Đã xóa nhân viên", "success");
           if (window.location.pathname.includes("Delete-nhanvien.html")) {
-            setTimeout(() => (window.location.href = "ql-nhan-vien.html"), 1000);
+            setTimeout(
+              () => (window.location.href = "ql-nhan-vien.html"),
+              1000,
+            );
           }
         } else {
           const error = await response.json().catch(() => ({}));
@@ -982,12 +1167,15 @@ class AdminDashboard {
   }
 
   renderCategories() {
-    const categoryTable = document.getElementById("category-list");
-    if (!categoryTable) return;
-
-    categoryTable.innerHTML = this.categories
-      .map(
-        (cat) => `
+    this.renderPaginatedTable({
+      tableId: "category-list",
+      paginationKey: "categories",
+      items: this.categories,
+      itemLabel: "danh mục",
+      emptyMessage: "Không có danh mục nào.",
+      emptyColSpan: 4,
+      onPageChange: () => this.renderCategories(),
+      renderRow: (cat) => `
       <tr>
         <td><strong>#${cat.id}</strong></td>
         <td>${cat.name}</td>
@@ -1007,19 +1195,20 @@ class AdminDashboard {
         </td>
       </tr>
     `,
-      )
-      .join("");
+    });
   }
 
   async handleCategoryFormSubmit(e) {
     e.preventDefault();
-    const id = parseInt(document.getElementById("edit-category-id")?.value || "0");
+    const id = parseInt(
+      document.getElementById("edit-category-id")?.value || "0",
+    );
     const name = document.getElementById("form-category-name").value.trim();
     const isAdding = !id;
 
     this.openConfirmationModal(
-      isAdding ? "XÃ¡c nháº­n thÃªm danh má»¥c" : "XÃ¡c nháº­n cáº­p nháº­t",
-      `Báº¡n cÃ³ muá»‘n lÆ°u danh má»¥c <strong>${name}</strong> khÃ´ng?`,
+      isAdding ? "Xác nhận thêm danh mục" : "Xác nhận cập nhật",
+      `Bạn có muốn lưu danh mục <strong>${name}</strong> không?`,
       async () => {
         const response = await fetch(
           isAdding
@@ -1035,13 +1224,13 @@ class AdminDashboard {
         if (response.ok) {
           this.showToast(
             isAdding
-              ? "ThÃªm danh má»¥c thÃ nh cÃ´ng"
-              : "Cáº­p nháº­t danh má»¥c thÃ nh cÃ´ng",
+              ? "Thêm danh mục thành công"
+              : "Cập nhật danh mục thành công",
           );
           setTimeout(() => (window.location.href = "ql-danh-muc.html"), 1000);
         } else {
           const error = await response.json().catch(() => ({}));
-          this.showToast(error.message || "KhÃ´ng thá»ƒ lÆ°u danh má»¥c", "error");
+          this.showToast(error.message || "Không thể lưu danh mục", "error");
         }
       },
     );
@@ -1095,7 +1284,7 @@ class AdminDashboard {
                 <i class="fas fa-eye"></i>
               </a>
               ${
-                t.status === "Đã trả" || t.status === "Bị từ chối" || t.status === "ÄÃ£ tráº£" || t.status === "Bá»‹ tá»« chá»‘i"
+                t.status === "Đã trả" || t.status === "Bị từ chối"
                   ? `<button class="btn btn-sm btn-delete" title="Xóa" onclick="app.deleteBorrowTicket(${t.id})"><i class="fas fa-trash"></i></button>`
                   : ""
               }
@@ -1176,7 +1365,7 @@ class AdminDashboard {
     } else if (ticket.status === "Đang mượn") {
       actionHtml = `<button class="btn btn-success" onclick="app.updateTicketStatus(${ticket.id}, 'Đã trả')">Xác nhận trả sách</button>`;
     }
-    if (ticket.status === "Đã trả" || ticket.status === "Bị từ chối" || ticket.status === "ÄÃ£ tráº£" || ticket.status === "Bá»‹ tá»« chá»‘i") {
+    if (ticket.status === "Đã trả" || ticket.status === "Bị từ chối") {
       actionHtml += ` <button class="btn btn-danger" onclick="app.deleteBorrowTicket(${ticket.id})">Xóa phiếu</button>`;
     }
     actionsContainer.innerHTML = actionHtml;
@@ -1218,7 +1407,10 @@ class AdminDashboard {
         });
         if (!response.ok) {
           const error = await response.json().catch(() => ({}));
-          this.showToast(error.message || "Không thể cập nhật trạng thái", "error");
+          this.showToast(
+            error.message || "Không thể cập nhật trạng thái",
+            "error",
+          );
           return;
         }
 
@@ -1605,9 +1797,12 @@ class AdminDashboard {
       "Xác nhận xóa bạn đọc",
       `Bạn có chắc chắn muốn xóa bạn đọc <strong>${id}</strong>?`,
       async () => {
-        const response = await fetch(`${this.apiUrl}/Reader/Delete/${encodeURIComponent(id)}`, {
-          method: "DELETE",
-        });
+        const response = await fetch(
+          `${this.apiUrl}/Reader/Delete/${encodeURIComponent(id)}`,
+          {
+            method: "DELETE",
+          },
+        );
         if (response.ok) {
           this.readers = this.readers.filter((r) => r.id !== id);
           this.renderReaders();
@@ -1719,7 +1914,8 @@ class AdminDashboard {
   async handleReaderFormSubmit(e) {
     e.preventDefault();
     const isEdit = document.getElementById("edit-reader-flag").value === "edit";
-    const readerIdInput = document.getElementById("form-reader-id")?.value || "";
+    const readerIdInput =
+      document.getElementById("form-reader-id")?.value || "";
     const formImgInput = document.getElementById("form-reader-img");
     let imageUrl = "https://ui-avatars.com/api/?name=User&background=random";
 
@@ -1760,7 +1956,9 @@ class AdminDashboard {
       `Bạn có muốn lưu thông tin bạn đọc <strong>${readerData.name}</strong> không?`,
       async () => {
         const response = await fetch(
-          isAdding ? `${this.apiUrl}/Reader/Create` : `${this.apiUrl}/Reader/Update`,
+          isAdding
+            ? `${this.apiUrl}/Reader/Create`
+            : `${this.apiUrl}/Reader/Update`,
           {
             method: isAdding ? "POST" : "PUT",
             headers: { "Content-Type": "application/json" },
@@ -1769,7 +1967,7 @@ class AdminDashboard {
         );
         if (!response.ok) {
           const error = await response.json().catch(() => ({}));
-          this.showToast(error.message || "KhÃ´ng thá»ƒ lÆ°u báº¡n Ä‘á»c", "error");
+          this.showToast(error.message || "Không thể lưu bạn đọc", "error");
           return;
         }
 

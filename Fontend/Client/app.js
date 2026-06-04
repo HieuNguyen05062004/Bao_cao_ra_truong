@@ -423,14 +423,23 @@ class SmartLibraryApp {
         document.getElementById("modal-reader-id").value = me.userId || "";
         document.getElementById("modal-reader-name").value = me.userName || "";
 
-        // Thiết lập ngày mặc định (Ngày mượn là hôm nay, ngày trả là 7 ngày sau)
-        const today = new Date().toISOString().split("T")[0];
+        // Thiết lập thời gian mặc định: hiện tại và 7 ngày sau.
+        const toDateTimeLocal = (date) => {
+          const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+          return localDate.toISOString().slice(0, 16);
+        };
+        const now = new Date();
         const nextWeek = new Date();
         nextWeek.setDate(nextWeek.getDate() + 7);
-        const dueDate = nextWeek.toISOString().split("T")[0];
+        const currentTime = toDateTimeLocal(now);
+        const dueDate = toDateTimeLocal(nextWeek);
 
-        document.getElementById("modal-borrow-date").value = today;
-        document.getElementById("modal-due-date").value = dueDate;
+        const borrowDateInput = document.getElementById("modal-borrow-date");
+        const dueDateInput = document.getElementById("modal-due-date");
+        borrowDateInput.min = currentTime;
+        dueDateInput.min = currentTime;
+        borrowDateInput.value = currentTime;
+        dueDateInput.value = dueDate;
 
         modal.classList.add("active");
       });
@@ -445,6 +454,36 @@ class SmartLibraryApp {
       confirmBtn.addEventListener("click", async () => {
         const borrowDate = document.getElementById("modal-borrow-date").value;
         const dueDate = document.getElementById("modal-due-date").value;
+        const now = new Date();
+        now.setSeconds(0, 0);
+
+        if (!borrowDate) {
+          this.showToast("Vui lòng chọn ngày mượn.", "danger");
+          return;
+        }
+
+        if (!dueDate) {
+          this.showToast("Vui lòng chọn ngày trả.", "danger");
+          return;
+        }
+
+        const borrowDateValue = new Date(borrowDate);
+        const dueDateValue = new Date(dueDate);
+
+        if (borrowDateValue < now) {
+          this.showToast("Ngày mượn không được nhỏ hơn thời gian hiện tại.", "danger");
+          return;
+        }
+
+        if (dueDateValue < now) {
+          this.showToast("Ngày trả không được nhỏ hơn thời gian hiện tại.", "danger");
+          return;
+        }
+
+        if (dueDateValue < borrowDateValue) {
+          this.showToast("Ngày trả phải lớn hơn hoặc bằng ngày mượn.", "danger");
+          return;
+        }
 
         const response = await fetch(`${this.apiUrl}/borrow/request`, {
           method: "POST",
@@ -510,13 +549,13 @@ class SmartLibraryApp {
           modeToggle.innerHTML = '<i class="fas fa-magic"></i>';
           modeToggle.title = "Chuyển sang Tìm kiếm Cơ bản";
           searchInput.placeholder =
-            "Hỏi AI: 'Tìm cho tôi sách về lập trình Python cho người mới'...";
-          searchBtn.innerText = "Tìm kiếm AI";
+            "Tích hợp AI tìm kiếm nâng cao: 'Tìm sách lập trình Python cho người mới'...";
+          searchBtn.innerText = "Tìm kiếm nâng cao";
           searchBtn.className = "btn btn-accent";
         } else {
           searchBox.classList.add("basic-mode");
           modeToggle.innerHTML = '<i class="fas fa-search"></i>';
-          modeToggle.title = "Chuyển sang Tìm kiếm AI";
+          modeToggle.title = "Chuyển sang Tích hợp AI tìm kiếm nâng cao";
           searchInput.placeholder = "Tìm theo tên sách, tác giả...";
           searchBtn.innerText = "Tìm kiếm";
           searchBtn.className = "btn btn-primary";

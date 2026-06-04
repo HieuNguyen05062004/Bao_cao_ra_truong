@@ -37,9 +37,6 @@
           <a href="muon-tra.html" class="nav-item"
             ><i class="fas fa-exchange-alt"></i> Mượn & Trả</a
           >
-          <a href="bao-cao.html" class="nav-item"
-            ><i class="fas fa-file-alt"></i> Báo cáo</a
-          >
         </nav>
         <div class="sidebar-user">
           <div class="user-profile">
@@ -57,77 +54,99 @@
           <button class="sidebar-toggle" id="sidebar-toggle">
             <i class="fas fa-bars"></i>
           </button>
-          <div class="header-breadcrumb">
-            <span>Admin</span> / <span>Thông tin tài khoản</span>
+          <div class="page-title">
+            <i class="fas fa-user-shield"></i> Chi tiết nhân viên
           </div>
           <div class="header-user">
-            <a href="ql-nhan-vien.html" class="btn btn-outline">
-              <i class="fas fa-arrow-left"></i> Quay lại danh sách
-            </a>
+            <a href="ql-nhan-vien.html" class="btn btn-outline"
+              ><i class="fas fa-arrow-left"></i> Quay lại</a
+            >
           </div>
         </header>
 
-        <div class="dashboard-body">
-          <div class="page-header">
-            <h1 class="page-title" id="display-header-title">
-              👤 Chi tiết nhân viên
-            </h1>
+        <div class="dashboard-body detail-page">
+          <div class="detail-hero">
+            <div class="detail-hero-title">
+              <span class="detail-hero-icon"
+                ><i class="fas fa-user-gear"></i
+              ></span>
+              <div>
+                <h1 id="display-header-title">Chi tiết nhân viên</h1>
+                <p>Thông tin tài khoản nội bộ, quyền hạn và ngày tạo hồ sơ.</p>
+              </div>
+            </div>
+            <div class="detail-hero-actions">
+              <a href="ql-nhan-vien.html" class="btn btn-outline"
+                ><i class="fas fa-arrow-left"></i> Danh sách</a
+              >
+            </div>
           </div>
 
-          <div class="card">
-            <div class="card-header">
-              <h3>Thông tin tài khoản</h3>
-            </div>
+          <div class="card detail-shell">
             <div class="card-body">
-              <div class="book-details-grid">
-                <div class="detail-img-container text-center">
+              <div class="detail-layout">
+                <div class="detail-media">
                   <img
                     id="staff-detail-img"
                     src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff"
-                    alt="Avatar"
-                    class="detail-img"
-                    style="
-                      border-radius: 50%;
-                      width: 180px;
-                      height: 180px;
-                      object-fit: cover;
-                    "
+                    alt="Ảnh nhân viên"
+                    class="avatar"
                   />
+                  <span class="detail-media-caption">Ảnh đại diện</span>
                 </div>
-                <div class="detail-info-container">
-                  <div class="detail-item">
-                    <label>Họ và tên</label>
-                    <span id="detail-staff-name">Quản trị viên</span>
+                <div>
+                  <div class="detail-section-title">
+                    <i class="fas fa-circle-info"></i> Thông tin tài khoản
                   </div>
-                  <div class="detail-item">
-                    <label>Email</label>
-                    <span id="detail-staff-email">admin@thuvien.com</span>
-                  </div>
-                  <div class="detail-item">
-                    <label>Mật khẩu</label>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                      <input type="password" id="detail-staff-password" value="••••••••" readonly 
-                        style="flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: #f9f9f9;" />
-                      <button type="button" id="toggle-password-btn" class="btn btn-sm btn-outline" 
-                        style="padding: 8px 12px; cursor: pointer;">
-                        <i class="fas fa-eye"></i>
-                      </button>
+                  <div class="detail-info-grid">
+                    <div class="detail-field">
+                      <label
+                        ><i class="fas fa-id-badge"></i> Mã nhân viên</label
+                      >
+                      <span id="detail-staff-id">--</span>
                     </div>
-                  </div>
-                  <div class="detail-item">
-                    <label>Quyền hạn</label>
-                    <span id="detail-staff-role" class="badge badge-primary"
-                      >Quản trị viên</span
-                    >
-                  </div>
-                  <div class="detail-item">
-                    <label>Ngày tạo</label>
-                    <span id="detail-staff-created">21/05/2026 15:38</span>
+                    <div class="detail-field">
+                      <label><i class="fas fa-user-gear"></i> Quyền hạn</label>
+                      <span id="detail-staff-role" class="badge badge-primary"
+                        >--</span
+                      >
+                    </div>
+                    <div class="detail-field">
+                      <label><i class="fas fa-user"></i> Họ và tên</label>
+                      <span id="detail-staff-name">--</span>
+                    </div>
+                    <div class="detail-field">
+                      <label><i class="fas fa-envelope"></i> Email</label>
+                      <span id="detail-staff-email">--</span>
+                    </div>
+                    <div class="detail-field full">
+                      <label><i class="fas fa-lock"></i> Mật khẩu</label>
+                      <div class="detail-password-row">
+                        <input
+                          type="password"
+                          id="detail-staff-password"
+                          value="••••••••"
+                          readonly
+                        />
+                        <button
+                          type="button"
+                          id="toggle-password-btn"
+                          class="btn btn-sm btn-outline"
+                        >
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="detail-field full">
+                      <label
+                        ><i class="fas fa-calendar-plus"></i> Ngày tạo</label
+                      >
+                      <span id="detail-staff-created">--</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </main>

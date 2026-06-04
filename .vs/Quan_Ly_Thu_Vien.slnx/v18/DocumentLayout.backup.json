@@ -58,7 +58,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -71,58 +71,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:32:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "styles.css",
-              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Admin\\styles.css",
-              "RelativeDocumentMoniker": "Fontend\\Admin\\styles.css",
-              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Admin\\styles.css",
-              "RelativeToolTip": "Fontend\\Admin\\styles.css",
-              "ViewState": "AgIAAMgCAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-05-27T09:07:01.653Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "app.js",
-              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Client\\app.js",
-              "RelativeDocumentMoniker": "Fontend\\Client\\app.js",
-              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Client\\app.js",
-              "RelativeToolTip": "Fontend\\Client\\app.js",
-              "ViewState": "AgIAAAkAAAAAAAAAAEBVwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-05-27T09:06:40.14Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "ClientApiController.cs",
-              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Controllers\\ClientApiController.cs",
-              "RelativeDocumentMoniker": "Backend\\Client\\Controllers\\ClientApiController.cs",
-              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Controllers\\ClientApiController.cs",
-              "RelativeToolTip": "Backend\\Client\\Controllers\\ClientApiController.cs",
-              "ViewState": "AgIAACoBAAAAAAAAAABRwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-27T09:06:19.112Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "AdminApiController.cs",
-              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\AdminApiController.cs",
-              "RelativeDocumentMoniker": "Backend\\Admin\\Controllers\\AdminApiController.cs",
-              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\AdminApiController.cs",
-              "RelativeToolTip": "Backend\\Admin\\Controllers\\AdminApiController.cs",
-              "ViewState": "AgIAACsAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-27T09:05:26.491Z",
-              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -139,6 +87,54 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "app.js",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Client\\app.js",
+              "RelativeDocumentMoniker": "Fontend\\Client\\app.js",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Client\\app.js",
+              "RelativeToolTip": "Fontend\\Client\\app.js",
+              "ViewState": "AgIAAAkAAAAAAAAAAEBVwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-05-27T09:06:40.14Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "styles.css",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Admin\\styles.css",
+              "RelativeDocumentMoniker": "Fontend\\Admin\\styles.css",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Fontend\\Admin\\styles.css",
+              "RelativeToolTip": "Fontend\\Admin\\styles.css",
+              "ViewState": "AgIAAMgCAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-05-27T09:07:01.653Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ClientApiController.cs",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Controllers\\ClientApiController.cs",
+              "RelativeDocumentMoniker": "Backend\\Client\\Controllers\\ClientApiController.cs",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Client\\Controllers\\ClientApiController.cs",
+              "RelativeToolTip": "Backend\\Client\\Controllers\\ClientApiController.cs",
+              "ViewState": "AgIAACoBAAAAAAAAAABRwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-27T09:06:19.112Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AdminApiController.cs",
+              "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\AdminApiController.cs",
+              "RelativeDocumentMoniker": "Backend\\Admin\\Controllers\\AdminApiController.cs",
+              "ToolTip": "D:\\Quan_Ly_Thu_Vien\\Backend\\Admin\\Controllers\\AdminApiController.cs",
+              "RelativeToolTip": "Backend\\Admin\\Controllers\\AdminApiController.cs",
+              "ViewState": "AgIAACsAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-27T09:05:26.491Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 11,
               "Title": "README_CHANGES.md",
               "DocumentMoniker": "D:\\Quan_Ly_Thu_Vien\\README_CHANGES.md",
@@ -147,8 +143,7 @@
               "RelativeToolTip": "README_CHANGES.md",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAEQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2026-05-27T09:10:18.856Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-27T09:10:18.856Z"
             },
             {
               "$type": "Document",
@@ -160,8 +155,7 @@
               "RelativeToolTip": "TESTING_GUIDE.md",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAMMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2026-05-27T09:10:07.2Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-27T09:10:07.2Z"
             },
             {
               "$type": "Document",
@@ -173,8 +167,7 @@
               "RelativeToolTip": "CHANGES_SUMMARY.md",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2026-05-27T09:09:40.94Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-27T09:09:40.94Z"
             },
             {
               "$type": "Document",
@@ -186,8 +179,7 @@
               "RelativeToolTip": "Fontend\\Admin\\app.js",
               "ViewState": "AgIAAEUAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-05-27T09:05:12.242Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-27T09:05:12.242Z"
             },
             {
               "$type": "Document",
@@ -199,8 +191,7 @@
               "RelativeToolTip": "Backend\\Client\\Views\\Account\\Profile.cshtml",
               "ViewState": "AgIAAHYBAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-05-27T09:08:27.524Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-27T09:08:27.524Z"
             },
             {
               "$type": "Document",
@@ -212,8 +203,7 @@
               "RelativeToolTip": "Backend\\Admin\\Controllers\\StaffController.cs",
               "ViewState": "AgIAAPsAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-27T09:04:32.229Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-27T09:04:32.229Z"
             },
             {
               "$type": "Document",
@@ -225,8 +215,7 @@
               "RelativeToolTip": "Fontend\\Admin\\ct-nhan-vien.html",
               "ViewState": "AgIAAG4AAAAAAAAAAABhwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2026-05-27T09:04:15.335Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-27T09:04:15.335Z"
             }
           ]
         }
