@@ -2,6 +2,9 @@
 using Core.Shared.Interfaces;
 using Core.Shared.Repositories;
 using Core.Shared.Utilities;
+using System.Globalization;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Core.Shared.Services;
 
@@ -26,7 +29,94 @@ public class BookService : IBookService
     public async Task<List<Book>> SearchBooksAsync(string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return await _repository.GetAllAsync();
-        return await _repository.SearchAsync(searchTerm.Trim());
+
+        var books = await _repository.GetAllAsync();
+        return SearchInMemory(books, searchTerm.Trim());
+    }
+
+    private static List<Book> SearchInMemory(IEnumerable<Book> books, string searchTerm)
+    {
+        var normalizedSearch = NormalizeForSearch(searchTerm);
+        var tokens = ExtractSearchTokens(normalizedSearch);
+
+        if (tokens.Count == 0)
+            return books.OrderBy(b => b.Title).ToList();
+
+        return books
+            .Select(book => new
+            {
+                Book = book,
+                Score = CalculateSearchScore(book, normalizedSearch, tokens)
+            })
+            .Where(item => item.Score > 0)
+            .OrderByDescending(item => item.Score)
+            .ThenBy(item => item.Book.Title)
+            .Select(item => item.Book)
+            .ToList();
+    }
+
+    private static int CalculateSearchScore(Book book, string normalizedSearch, List<string> tokens)
+    {
+        var title = NormalizeForSearch(book.Title);
+        var author = NormalizeForSearch(book.Author);
+        var publisher = NormalizeForSearch(book.Publisher);
+        var description = NormalizeForSearch(book.Description);
+        var bookId = NormalizeForSearch(book.BookId);
+        var categories = NormalizeForSearch(string.Join(" ", book.BookCategories
+            .Select(bc => bc.Category?.CategoryName)
+            .Where(name => !string.IsNullOrWhiteSpace(name))));
+        var combined = $"{title} {author} {publisher} {description} {bookId} {categories}";
+
+        var matchedTokens = tokens.Count(token => combined.Contains(token));
+        if (matchedTokens == 0)
+            return 0;
+
+        var score = matchedTokens * 10;
+        if (matchedTokens == tokens.Count) score += 25;
+        if (!string.IsNullOrWhiteSpace(normalizedSearch) && title.Contains(normalizedSearch)) score += 60;
+        if (!string.IsNullOrWhiteSpace(normalizedSearch) && author.Contains(normalizedSearch)) score += 45;
+        if (tokens.Any(token => title.Contains(token))) score += 30;
+        if (tokens.Any(token => author.Contains(token))) score += 20;
+        if (tokens.Any(token => categories.Contains(token))) score += 15;
+        if (tokens.Any(token => bookId.Contains(token))) score += 15;
+        if (tokens.Any(token => publisher.Contains(token))) score += 8;
+        if (tokens.Any(token => description.Contains(token))) score += 5;
+
+        return score;
+    }
+
+    private static List<string> ExtractSearchTokens(string normalizedSearch)
+    {
+        var stopWords = new HashSet<string>
+        {
+            "tim", "kiem", "sach", "cuon", "quyen", "cho", "toi", "minh", "can",
+            "muon", "doc", "ve", "thuoc", "the", "loai", "tac", "gia", "cua",
+            "nhung", "cac", "mot", "nguoi", "moi", "bat", "dau", "co", "khong",
+            "hay", "gioi", "thieu", "ai"
+        };
+
+        return Regex.Matches(normalizedSearch, @"[a-z0-9]+")
+            .Select(match => match.Value)
+            .Where(token => token.Length > 1 && !stopWords.Contains(token))
+            .Distinct()
+            .ToList();
+    }
+
+    private static string NormalizeForSearch(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return string.Empty;
+
+        var normalized = value.ToLowerInvariant().Normalize(NormalizationForm.FormD);
+        var builder = new StringBuilder(normalized.Length);
+
+        foreach (var character in normalized)
+        {
+            var category = CharUnicodeInfo.GetUnicodeCategory(character);
+            if (category != UnicodeCategory.NonSpacingMark)
+                builder.Append(character == 'đ' ? 'd' : character);
+        }
+
+        return Regex.Replace(builder.ToString().Normalize(NormalizationForm.FormC), @"\s+", " ").Trim();
     }
 
     public async Task<List<Book>> GetBooksByCategoryAsync(int categoryId)

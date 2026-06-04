@@ -48,14 +48,23 @@ public class BorrowService : IBorrowService
         DateTime borrowDate,
         DateTime dueDate)
     {
+        var now = DateTime.Now;
+        var currentTime = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0);
+
         if (string.IsNullOrWhiteSpace(readerId))
             return (false, "Vui lòng chọn bạn đọc.", 0);
 
         if (!bookIds.Any())
             return (false, "Vui lòng chọn ít nhất một cuốn sách.", 0);
 
-        if (borrowDate >= dueDate)
-            return (false, "Ngày mượn phải trước ngày trả dự kiến.", 0);
+        if (borrowDate < currentTime)
+            return (false, "Ngày mượn không được nhỏ hơn thời gian hiện tại.", 0);
+
+        if (dueDate < currentTime)
+            return (false, "Ngày trả không được nhỏ hơn thời gian hiện tại.", 0);
+
+        if (dueDate < borrowDate)
+            return (false, "Ngày trả phải lớn hơn hoặc bằng ngày mượn.", 0);
 
         var books = await _repo.GetBooksByIdsAsync(bookIds);
 

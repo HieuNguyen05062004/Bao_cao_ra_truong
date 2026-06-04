@@ -38,7 +38,7 @@ builder.Services.AddScoped<IReaderService, ReaderService>();
 builder.Services.AddScoped<IUnifiedAuthService, UnifiedAuthService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 
-// ── AI Search ────────────────────────────────────────────────────────────────
+// ── Tích hợp AI tìm kiếm nâng cao ────────────────────────────────────────────
 // Dùng typed HttpClient — DI tự inject HttpClient vào constructor AiSearchService
 builder.Services.AddHttpClient<AiSearchService>();
 builder.Services.AddScoped<IAiSearchService, AiSearchService>();

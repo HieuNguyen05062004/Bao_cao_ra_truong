@@ -42,6 +42,7 @@ public class BooksApiController : ControllerBase
             return Ok(Array.Empty<object>());
 
         var keyword = q.Trim();
+        var isAiMode = mode.Equals("ai", StringComparison.OrdinalIgnoreCase);
         if (mode.Equals("ai", StringComparison.OrdinalIgnoreCase))
         {
             try
@@ -57,6 +58,9 @@ public class BooksApiController : ControllerBase
         }
 
         var books = await _bookService.SearchBooksAsync(keyword);
+        if (isAiMode && books.Count == 0 && !keyword.Equals(q.Trim(), StringComparison.OrdinalIgnoreCase))
+            books = await _bookService.SearchBooksAsync(q.Trim());
+
         return Ok(books.Select(ToDto));
     }
 
@@ -167,13 +171,17 @@ public class BorrowApiController : ControllerBase
         if (string.IsNullOrWhiteSpace(readerId))
             return Unauthorized(new { message = "Vui long dang nhap de muon sach." });
 
-        var borrowDate = request.BorrowDate ?? DateTime.Today;
-        var dueDate = request.DueDate ?? DateTime.Today.AddDays(7);
+        if (!request.BorrowDate.HasValue)
+            return BadRequest(new { message = "Vui lòng chọn ngày mượn." });
+
+        if (!request.DueDate.HasValue)
+            return BadRequest(new { message = "Vui lòng chọn ngày trả." });
+
         var (success, message, ticketId) = await _borrowService.CreateBorrowRequestAsync(
             readerId,
             request.BookIds ?? new List<string>(),
-            borrowDate,
-            dueDate);
+            request.BorrowDate.Value,
+            request.DueDate.Value);
 
         return success ? Ok(new { message, ticketId }) : BadRequest(new { message });
     }

@@ -69,8 +69,8 @@ public class BorrowController : ClientBaseController
             ReaderName = HttpContext.Session.GetReaderName()!,
             SelectedBookIds = selectedBookIds,
             SelectedBookTitles = books.Select(b => b.Title).ToList(),
-            BorrowDate = DateTime.Today,
-            DueDate = DateTime.Today.AddDays(7)
+            BorrowDate = DateTime.Now,
+            DueDate = DateTime.Now.AddDays(7)
         };
 
         return View(model);
@@ -97,16 +97,36 @@ public class BorrowController : ClientBaseController
             return RedirectToAction("Login", "Account");
         }
 
-        // Validate ngày — cho phép ngày hôm nay
-        if (model.DueDate <= model.BorrowDate)
+        var now = DateTime.Now;
+        var currentTime = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0);
+
+        if (model.BorrowDate == default)
         {
-            TempData["ErrorMessage"] = "Ngày trả dự kiến phải sau ngày mượn.";
+            TempData["ErrorMessage"] = "Vui lòng chọn ngày mượn.";
             return View("CreateBorrowRequest", model);
         }
 
-        if (model.BorrowDate < DateTime.Today)
+        if (model.DueDate == default)
         {
-            TempData["ErrorMessage"] = "Ngày mượn không được là ngày trong quá khứ.";
+            TempData["ErrorMessage"] = "Vui lòng chọn ngày trả.";
+            return View("CreateBorrowRequest", model);
+        }
+
+        if (model.BorrowDate < currentTime)
+        {
+            TempData["ErrorMessage"] = "Ngày mượn không được nhỏ hơn thời gian hiện tại.";
+            return View("CreateBorrowRequest", model);
+        }
+
+        if (model.DueDate < currentTime)
+        {
+            TempData["ErrorMessage"] = "Ngày trả không được nhỏ hơn thời gian hiện tại.";
+            return View("CreateBorrowRequest", model);
+        }
+
+        if (model.DueDate < model.BorrowDate)
+        {
+            TempData["ErrorMessage"] = "Ngày trả phải lớn hơn hoặc bằng ngày mượn.";
             return View("CreateBorrowRequest", model);
         }
 

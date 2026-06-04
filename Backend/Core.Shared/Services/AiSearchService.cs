@@ -86,7 +86,7 @@ public class AiSearchService : IAiSearchService
         catch (TaskCanceledException ex)
         {
             _logger.LogError(ex, "Timeout khi gọi Gemini API");
-            return Fallback(naturalLanguageQuery, "Tìm kiếm AI tạm thời không khả dụng (timeout).");
+            return Fallback(naturalLanguageQuery, "Tích hợp AI tìm kiếm nâng cao tạm thời không khả dụng (timeout).");
         }
         catch (Exception ex)
         {

@@ -41,14 +41,14 @@ public class BookListViewModel
     /// <summary>Có trang sau không.</summary>
     public bool HasNext => CurrentPage < TotalPages;
 
-    // ── AI Search (giữ tương thích với AiSearch action cũ) ───────────────────
+    // ── Tích hợp AI tìm kiếm nâng cao (giữ tương thích với AiSearch action cũ)
 
     /// <summary>Câu AI đã diễn giải (hiển thị badge xanh trên view).</summary>
     public string? AiInterpretedQuery { get; set; }
 
-    /// <summary>Câu gốc người dùng nhập vào ô AI search.</summary>
+    /// <summary>Câu gốc người dùng nhập vào ô tìm kiếm nâng cao.</summary>
     public string? OriginalAiQuery { get; set; }
 
-    /// <summary>True khi kết quả đến từ AI search, false khi tìm kiếm thường.</summary>
+    /// <summary>True khi kết quả đến từ tìm kiếm nâng cao, false khi tìm kiếm thường.</summary>
     public bool IsAiSearch { get; set; } = false;
 }

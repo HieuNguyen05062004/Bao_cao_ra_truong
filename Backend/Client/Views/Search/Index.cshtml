@@ -35,8 +35,8 @@
                 </button>
                 <button class="stab @(Model.IsAiSearch ? "active" : "")"
                         id="tab-ai" onclick="switchTab('ai')">
-                    <i class="fas fa-robot"></i> AI Search
-                    <span class="badge-beta">Beta</span>
+                    <i class="fas fa-robot"></i> Tích hợp AI tìm kiếm nâng cao
+                    <span class="badge-beta">Advanced search</span>
                 </button>
             </div>
 
@@ -58,7 +58,7 @@
                 <button type="submit" class="cat-search-btn">Tìm kiếm</button>
             </form>
 
-            <!-- Form AI search — POST -->
+            <!-- Form tích hợp AI tìm kiếm nâng cao — POST -->
             <form id="form-ai" method="post"
                   asp-action="AiSearch" asp-controller="Search"
                   class="cat-search-form @(!Model.IsAiSearch ? "d-none" : "")">
@@ -68,7 +68,7 @@
                        placeholder="VD: sách lập trình Python cho người mới..."
                        class="cat-search-input" autocomplete="off" />
                 <button type="submit" class="cat-search-btn ai-btn">
-                    <i class="fas fa-magic me-1"></i>Tìm với AI
+                    <i class="fas fa-magic me-1"></i>Tìm kiếm nâng cao
                 </button>
             </form>
         </div>

@@ -7,7 +7,7 @@ namespace Client.Controllers;
 
 /// <summary>
 /// Controller tìm kiếm sách cho bạn đọc.
-/// Hỗ trợ 2 mode: tìm kiếm thường (GET Index) và tìm kiếm AI (POST AiSearch).
+/// Hỗ trợ 2 mode: tìm kiếm thường (GET Index) và tích hợp AI tìm kiếm nâng cao (POST AiSearch).
 /// </summary>
 public class SearchController : Controller
 {
@@ -84,7 +84,7 @@ public class SearchController : Controller
         }
     }
 
-    // ── Tìm kiếm AI ──────────────────────────────────────────────────────────
+    // ── Tích hợp AI tìm kiếm nâng cao ────────────────────────────────────────
 
     /// <summary>
     /// Nhận câu tự nhiên từ form AI, gọi Claude phân tích,
