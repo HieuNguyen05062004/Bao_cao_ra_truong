@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Thêm nhân viên mới - SmartLibrary</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -16,20 +19,36 @@
           <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
         </div>
         <nav class="sidebar-nav">
-          <a href="index.html" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
-          <a href="ql-sach.html" class="nav-item"><i class="fas fa-book"></i> Quản lý sách</a>
-          <a href="ql-danh-muc.html" class="nav-item"><i class="fas fa-list"></i> Thể loại</a>
-          <a href="ql-ban-doc.html" class="nav-item"><i class="fas fa-users"></i> Bạn đọc</a>
-          <a href="ql-nhan-vien.html" class="nav-item active"><i class="fas fa-user-shield"></i> Nhân viên</a>
-          <a href="muon-tra.html" class="nav-item"><i class="fas fa-exchange-alt"></i> Mượn & Trả</a>
+          <a href="index.html" class="nav-item"
+            ><i class="fas fa-chart-line"></i> Dashboard</a
+          >
+          <a href="ql-sach.html" class="nav-item"
+            ><i class="fas fa-book"></i> Quản lý sách</a
+          >
+          <a href="ql-danh-muc.html" class="nav-item"
+            ><i class="fas fa-list"></i> Thể loại</a
+          >
+          <a href="ql-ban-doc.html" class="nav-item"
+            ><i class="fas fa-users"></i> Bạn đọc</a
+          >
+          <a href="ql-nhan-vien.html" class="nav-item active"
+            ><i class="fas fa-user-shield"></i> Nhân viên</a
+          >
+          <a href="muon-tra.html" class="nav-item"
+            ><i class="fas fa-exchange-alt"></i> Mượn & Trả</a
+          >
         </nav>
       </aside>
 
       <main class="main-content">
         <header class="top-header">
-          <div class="page-title"><i class="fas fa-user-plus"></i> Thêm nhân viên mới</div>
+          <div class="page-title">
+            <i class="fas fa-user-plus"></i> Thêm nhân viên mới
+          </div>
           <div class="header-user">
-            <a href="ql-nhan-vien.html" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Quay lại</a>
+            <a href="ql-nhan-vien.html" class="btn btn-outline"
+              ><i class="fas fa-arrow-left"></i> Quay lại</a
+            >
           </div>
         </header>
 
@@ -37,41 +56,75 @@
           <div class="card form-shell">
             <div class="form-hero">
               <div class="form-hero-title">
-                <span class="form-hero-icon"><i class="fas fa-user-shield"></i></span>
+                <span class="form-hero-icon"
+                  ><i class="fas fa-user-shield"></i
+                ></span>
                 <div>
                   <h1>Thêm nhân viên mới</h1>
-                  <p>Tạo tài khoản nội bộ và phân quyền truy cập hệ thống quản trị.</p>
+                  <p>
+                    Tạo tài khoản nội bộ và phân quyền truy cập hệ thống quản
+                    trị.
+                  </p>
                 </div>
               </div>
-              <span class="form-badge"><i class="fas fa-key"></i> Cần mật khẩu ban đầu</span>
+              <span class="form-badge"
+                ><i class="fas fa-key"></i> Cần mật khẩu ban đầu</span
+              >
             </div>
             <div class="card-body">
               <form id="staff-form">
                 <input type="hidden" id="edit-staff-id" />
 
                 <section class="form-section">
-                  <div class="section-title"><i class="fas fa-address-card"></i> Hồ sơ nhân viên</div>
+                  <div class="section-title">
+                    <i class="fas fa-address-card"></i> Hồ sơ nhân viên
+                  </div>
                   <div class="form-row">
                     <div class="form-group">
-                      <label class="field-label"><i class="fas fa-user"></i> Họ và tên</label>
-                      <input type="text" id="form-staff-name" placeholder="Nhập tên đầy đủ..." required />
+                      <label class="field-label"
+                        ><i class="fas fa-user"></i> Họ và tên</label
+                      >
+                      <input
+                        type="text"
+                        id="form-staff-name"
+                        placeholder="Nhập tên đầy đủ..."
+                        required
+                      />
                     </div>
                     <div class="form-group">
-                      <label class="field-label"><i class="fas fa-envelope"></i> Email</label>
-                      <input type="email" id="form-staff-email" placeholder="example@gmail.com" required />
+                      <label class="field-label"
+                        ><i class="fas fa-envelope"></i> Email</label
+                      >
+                      <input
+                        type="email"
+                        id="form-staff-email"
+                        placeholder="example@gmail.com"
+                        required
+                      />
                     </div>
                   </div>
                 </section>
 
                 <section class="form-section">
-                  <div class="section-title"><i class="fas fa-shield-halved"></i> Tài khoản và quyền hạn</div>
+                  <div class="section-title">
+                    <i class="fas fa-shield-halved"></i> Tài khoản và quyền hạn
+                  </div>
                   <div class="form-row">
                     <div class="form-group">
-                      <label class="field-label"><i class="fas fa-lock"></i> Mật khẩu</label>
-                      <input type="password" id="form-staff-password" placeholder="********" required />
+                      <label class="field-label"
+                        ><i class="fas fa-lock"></i> Mật khẩu</label
+                      >
+                      <input
+                        type="password"
+                        id="form-staff-password"
+                        placeholder="********"
+                        required
+                      />
                     </div>
                     <div class="form-group">
-                      <label class="field-label"><i class="fas fa-user-gear"></i> Quyền hạn</label>
+                      <label class="field-label"
+                        ><i class="fas fa-user-gear"></i> Quyền hạn</label
+                      >
                       <select id="form-staff-role" required>
                         <option value="">-- Chọn quyền --</option>
                         <option value="Admin">Quản trị viên (Admin)</option>
@@ -80,7 +133,9 @@
                     </div>
                   </div>
                   <div class="form-group">
-                    <label class="field-label"><i class="fas fa-image"></i> Ảnh đại diện</label>
+                    <label class="field-label"
+                      ><i class="fas fa-image"></i> Ảnh đại diện</label
+                    >
                     <div class="file-input-card">
                       <input type="file" id="form-staff-img" accept="image/*" />
                     </div>
@@ -92,7 +147,9 @@
                 </section>
 
                 <div class="form-actions">
-                  <a href="ql-nhan-vien.html" class="btn btn-outline"><i class="fas fa-xmark"></i> Hủy bỏ</a>
+                  <a href="ql-nhan-vien.html" class="btn btn-outline"
+                    ><i class="fas fa-xmark"></i> Hủy bỏ</a
+                  >
                   <button type="submit" class="btn btn-primary">
                     <i class="fas fa-floppy-disk"></i> Thêm nhân viên
                   </button>
@@ -104,19 +161,7 @@
       </main>
     </div>
 
-    <div id="confirm-modal" class="modal-overlay">
-      <div class="modal-container modal-sm">
-        <div class="modal-header">
-          <h2 id="confirm-modal-title">Xác nhận</h2>
-          <button class="close-modal-btn">&times;</button>
-        </div>
-        <div class="modal-body text-center"><p id="confirm-modal-message"></p></div>
-        <div class="modal-footer">
-          <button class="btn btn-outline close-modal-btn">Hủy</button>
-          <button class="btn btn-primary" id="confirm-action-btn">Đồng ý</button>
-        </div>
-      </div>
-    </div>
+    <div id="confirm-modal" class="modal-overlay"></div>
     <div id="toast-container" class="toast-container"></div>
     <script src="app.js"></script>
   </body>

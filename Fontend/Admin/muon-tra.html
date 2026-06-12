@@ -112,47 +112,7 @@
       </main>
     </div>
 
-    <!-- Modal Xác nhận (Dùng chung) -->
-    <div class="modal-overlay" id="confirm-modal">
-      <div class="modal-container modal-sm">
-        <div class="modal-header">
-          <h2 id="confirm-modal-title">Xác nhận</h2>
-          <button class="close-modal-btn" data-modal-target="confirm-modal">
-            &times;
-          </button>
-        </div>
-        <div class="modal-body text-center">
-          <div class="modal-icon-wrapper">
-            <i class="fas fa-exclamation-triangle"></i>
-          </div>
-          <p id="confirm-modal-message"></p>
-          <div
-            id="reject-reason-container"
-            style="display: none; margin-top: 15px; text-align: left"
-          >
-            <label class="form-label">Lý do từ chối:</label>
-            <textarea
-              id="reject-reason"
-              class="form-group"
-              style="width: 100%; min-height: 80px; padding: 10px"
-              placeholder="Nhập lý do..."
-            ></textarea>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-outline close-modal-btn"
-            data-modal-target="confirm-modal"
-          >
-            Hủy
-          </button>
-          <button type="button" class="btn btn-primary" id="confirm-action-btn">
-            Xác nhận
-          </button>
-        </div>
-      </div>
-    </div>
+    <div id="confirm-modal" class="modal-overlay"></div>
 
     <!-- Toast Container -->
     <div id="toast-container" class="toast-container"></div>

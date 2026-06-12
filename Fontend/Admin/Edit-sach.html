@@ -19,19 +19,33 @@
           <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
         </div>
         <nav class="sidebar-nav">
-          <a href="index.html" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
-          <a href="ql-sach.html" class="nav-item active"><i class="fas fa-book"></i> Quản lý sách</a>
-          <a href="ql-danh-muc.html" class="nav-item"><i class="fas fa-list"></i> Thể loại</a>
-          <a href="ql-ban-doc.html" class="nav-item"><i class="fas fa-users"></i> Bạn đọc</a>
-          <a href="muon-tra.html" class="nav-item"><i class="fas fa-exchange-alt"></i> Mượn & Trả</a>
+          <a href="index.html" class="nav-item"
+            ><i class="fas fa-chart-line"></i> Dashboard</a
+          >
+          <a href="ql-sach.html" class="nav-item active"
+            ><i class="fas fa-book"></i> Quản lý sách</a
+          >
+          <a href="ql-danh-muc.html" class="nav-item"
+            ><i class="fas fa-list"></i> Thể loại</a
+          >
+          <a href="ql-ban-doc.html" class="nav-item"
+            ><i class="fas fa-users"></i> Bạn đọc</a
+          >
+          <a href="muon-tra.html" class="nav-item"
+            ><i class="fas fa-exchange-alt"></i> Mượn & Trả</a
+          >
         </nav>
       </aside>
 
       <main class="main-content">
         <header class="top-header">
-          <div class="page-title"><i class="fas fa-edit"></i> Chỉnh sửa thông tin sách</div>
+          <div class="page-title">
+            <i class="fas fa-edit"></i> Chỉnh sửa thông tin sách
+          </div>
           <div class="header-user">
-            <a href="ql-sach.html" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Quay lại</a>
+            <a href="ql-sach.html" class="btn btn-outline"
+              ><i class="fas fa-arrow-left"></i> Quay lại</a
+            >
           </div>
         </header>
 
@@ -39,13 +53,20 @@
           <div class="card form-shell">
             <div class="form-hero">
               <div class="form-hero-title">
-                <span class="form-hero-icon"><i class="fas fa-pen-to-square"></i></span>
+                <span class="form-hero-icon"
+                  ><i class="fas fa-pen-to-square"></i
+                ></span>
                 <div>
                   <h1>Chỉnh sửa sách</h1>
-                  <p>Cập nhật thông tin đầu sách, thể loại, tồn kho và ảnh bìa.</p>
+                  <p>
+                    Cập nhật thông tin đầu sách, thể loại, tồn kho và ảnh bìa.
+                  </p>
                 </div>
               </div>
-              <span class="form-badge"><i class="fas fa-shield-halved"></i> Dữ liệu được kiểm tra trước khi lưu</span>
+              <span class="form-badge"
+                ><i class="fas fa-shield-halved"></i> Dữ liệu được kiểm tra
+                trước khi lưu</span
+              >
             </div>
 
             <div class="card-body">
@@ -53,20 +74,43 @@
                 <input type="hidden" id="edit-id" />
 
                 <section class="form-section">
-                  <div class="section-title"><i class="fas fa-book-open"></i> Thông tin sách</div>
+                  <div class="section-title">
+                    <i class="fas fa-book-open"></i> Thông tin sách
+                  </div>
                   <div class="form-group">
-                    <label class="field-label"><i class="fas fa-heading"></i> Tên sách</label>
-                    <input type="text" id="form-title" required placeholder="Nhập tên sách..." />
+                    <label class="field-label"
+                      ><i class="fas fa-heading"></i> Tên sách</label
+                    >
+                    <input
+                      type="text"
+                      id="form-title"
+                      required
+                      placeholder="Nhập tên sách..."
+                    />
                   </div>
                   <div class="form-row">
                     <div class="form-group">
-                      <label class="field-label"><i class="fas fa-user-pen"></i> Tác giả</label>
-                      <input type="text" id="form-author" required placeholder="Tên tác giả" />
+                      <label class="field-label"
+                        ><i class="fas fa-user-pen"></i> Tác giả</label
+                      >
+                      <input
+                        type="text"
+                        id="form-author"
+                        required
+                        placeholder="Tên tác giả"
+                      />
                     </div>
                     <div class="form-group">
                       <div class="category-toolbar">
-                        <label class="field-label"><i class="fas fa-tags"></i> Thể loại</label>
-                        <button type="button" class="btn btn-sm btn-outline" id="add-category-field" title="Thêm thể loại">
+                        <label class="field-label"
+                          ><i class="fas fa-tags"></i> Thể loại</label
+                        >
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline"
+                          id="add-category-field"
+                          title="Thêm thể loại"
+                        >
                           <i class="fas fa-plus"></i>
                         </button>
                       </div>
@@ -81,25 +125,46 @@
                   </div>
                   <div class="form-row">
                     <div class="form-group">
-                      <label class="field-label"><i class="fas fa-building"></i> Nhà xuất bản</label>
-                      <input type="text" id="form-publisher" placeholder="Tên nhà xuất bản" />
+                      <label class="field-label"
+                        ><i class="fas fa-building"></i> Nhà xuất bản</label
+                      >
+                      <input
+                        type="text"
+                        id="form-publisher"
+                        placeholder="Tên nhà xuất bản"
+                      />
                     </div>
                     <div class="form-group">
-                      <label class="field-label"><i class="fas fa-calendar-days"></i> Năm xuất bản</label>
-                      <input type="number" id="form-publish-year" min="1000" max="2100" placeholder="Năm" />
+                      <label class="field-label"
+                        ><i class="fas fa-calendar-days"></i> Năm xuất
+                        bản</label
+                      >
+                      <input
+                        type="number"
+                        id="form-publish-year"
+                        min="1000"
+                        max="2100"
+                        placeholder="Năm"
+                      />
                     </div>
                   </div>
                 </section>
 
                 <section class="form-section">
-                  <div class="section-title"><i class="fas fa-layer-group"></i> Kho và mô tả</div>
+                  <div class="section-title">
+                    <i class="fas fa-layer-group"></i> Kho và mô tả
+                  </div>
                   <div class="form-row">
                     <div class="form-group">
-                      <label class="field-label"><i class="fas fa-boxes-stacked"></i> Số lượng</label>
+                      <label class="field-label"
+                        ><i class="fas fa-boxes-stacked"></i> Số lượng</label
+                      >
                       <input type="number" id="form-stock" min="0" required />
                     </div>
                     <div class="form-group">
-                      <label class="field-label"><i class="fas fa-image"></i> Thay đổi ảnh bìa</label>
+                      <label class="field-label"
+                        ><i class="fas fa-image"></i> Thay đổi ảnh bìa</label
+                      >
                       <div class="file-input-card">
                         <input type="file" id="form-img" accept="image/*" />
                       </div>
@@ -110,14 +175,26 @@
                     </div>
                   </div>
                   <div class="form-group">
-                    <label class="field-label"><i class="fas fa-align-left"></i> Mô tả sách</label>
-                    <textarea id="form-description" rows="5" placeholder="Mô tả nội dung..."></textarea>
+                    <label class="field-label"
+                      ><i class="fas fa-align-left"></i> Mô tả sách</label
+                    >
+                    <textarea
+                      id="form-description"
+                      rows="5"
+                      placeholder="Mô tả nội dung..."
+                    ></textarea>
                   </div>
                 </section>
 
                 <div class="form-actions">
-                  <a href="ql-sach.html" class="btn btn-outline"><i class="fas fa-xmark"></i> Hủy bỏ</a>
-                  <button type="submit" class="btn btn-primary" id="submit-button">
+                  <a href="ql-sach.html" class="btn btn-outline"
+                    ><i class="fas fa-xmark"></i> Hủy bỏ</a
+                  >
+                  <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="submit-button"
+                  >
                     <i class="fas fa-floppy-disk"></i> Lưu thay đổi
                   </button>
                 </div>
@@ -128,22 +205,7 @@
       </main>
     </div>
 
-    <div id="confirm-modal" class="modal-overlay">
-      <div class="modal-container modal-sm">
-        <div class="modal-header">
-          <h2 id="confirm-modal-title">Xác nhận</h2>
-          <button class="close-modal-btn">&times;</button>
-        </div>
-        <div class="modal-body text-center">
-          <p id="confirm-modal-message"></p>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-outline close-modal-btn">Hủy</button>
-          <button class="btn btn-primary" id="confirm-action-btn">Xác nhận</button>
-        </div>
-      </div>
-    </div>
-
+    <div id="confirm-modal" class="modal-overlay"></div>
     <div id="toast-container" class="toast-container"></div>
     <script src="app.js"></script>
   </body>

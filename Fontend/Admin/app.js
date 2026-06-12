@@ -1715,6 +1715,11 @@ class AdminDashboard {
   }
 
   openConfirmationModal(title, message, onConfirmCallback) {
+    if (window.location.pathname.includes("/Delete-")) {
+      onConfirmCallback();
+      return;
+    }
+
     const confirmModal = document.getElementById("confirm-modal");
     if (!confirmModal) {
       onConfirmCallback();
