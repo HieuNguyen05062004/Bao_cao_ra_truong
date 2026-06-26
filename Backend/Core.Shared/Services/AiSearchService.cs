@@ -7,9 +7,9 @@ using System.Text.Json;
 namespace Core.Shared.Services;
 
 /// <summary>
-/// Gọi Google Gemini API để phân tích câu tìm kiếm tự nhiên.
-/// Đăng ký DI: services.AddHttpClient&lt;AiSearchService&gt;() + AddScoped&lt;IAiSearchService, AiSearchService&gt;()
-/// Config cần: Gemini:ApiKey trong appsettings.json
+/// Gọi OpenAI ChatGPT API để phân tích câu tìm kiếm tự nhiên.
+/// Đăng ký DI: services.AddHttpClient<AiSearchService>() + AddScoped<IAiSearchService, AiSearchService>()
+/// Config cần: OpenAI:ApiKey trong appsettings.json
 /// </summary>
 public class AiSearchService : IAiSearchService
 {
@@ -17,9 +17,7 @@ public class AiSearchService : IAiSearchService
     private readonly IConfiguration _config;
     private readonly ILogger<AiSearchService> _logger;
 
-    // Dùng gemini-flash-latest như trong URL Google cung cấp
-    private const string GeminiBaseUrl =
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
+    private const string OpenAiBaseUrl = "https://api.openai.com/v1/chat/completions";
 
     public AiSearchService(
         HttpClient httpClient,
@@ -36,33 +34,38 @@ public class AiSearchService : IAiSearchService
         if (string.IsNullOrWhiteSpace(naturalLanguageQuery))
             return Fallback(naturalLanguageQuery, "Câu tìm kiếm không được để trống.");
 
-        var apiKey = _config["Gemini:ApiKey"];
+        var apiKey = _config["OpenAI:ApiKey"]
+            ?? _config["OPENAI_API_KEY"]
+            ?? Environment.GetEnvironmentVariable("OpenAI__ApiKey")
+            ?? Environment.GetEnvironmentVariable("OPENAI_API_KEY");
         if (string.IsNullOrWhiteSpace(apiKey))
         {
-            _logger.LogWarning("Gemini:ApiKey chưa được cấu hình. Sử dụng tìm kiếm thông thường.");
+            _logger.LogWarning("OpenAI:ApiKey chưa được cấu hình. Sử dụng tìm kiếm thông thường.");
             return Fallback(naturalLanguageQuery);
         }
 
         try
         {
-            // Gemini nhận key qua query string, không dùng header Authorization
-            var url = $"{GeminiBaseUrl}?key={apiKey}";
+            var model = _config["OpenAI:Model"]
+                ?? Environment.GetEnvironmentVariable("OpenAI__Model")
+                ?? "gpt-4o-mini";
 
             var requestBody = new
             {
-                contents = new[]
+                model,
+                messages = new[]
                 {
                     new
                     {
-                        parts = new[]
-                        {
-                            new { text = BuildPrompt(naturalLanguageQuery) }
-                        }
+                        role = "user",
+                        content = BuildPrompt(naturalLanguageQuery)
                     }
-                }
+                },
+                temperature = 0.0
             };
 
-            var request = new HttpRequestMessage(HttpMethod.Post, url);
+            var request = new HttpRequestMessage(HttpMethod.Post, OpenAiBaseUrl);
+            request.Headers.Add("Authorization", $"Bearer {apiKey}");
             request.Content = JsonContent.Create(requestBody);
 
             var response = await _httpClient.SendAsync(request);
@@ -70,8 +73,7 @@ public class AiSearchService : IAiSearchService
             if (!response.IsSuccessStatusCode)
             {
                 var errorBody = await response.Content.ReadAsStringAsync();
-                _logger.LogWarning("Gemini API trả lỗi {StatusCode}: {Body}",
-                    response.StatusCode, errorBody);
+                _logger.LogWarning("OpenAI API trả lỗi {StatusCode}: {Body}", response.StatusCode, errorBody);
                 return Fallback(naturalLanguageQuery);
             }
 
@@ -80,17 +82,17 @@ public class AiSearchService : IAiSearchService
         }
         catch (HttpRequestException ex)
         {
-            _logger.LogError(ex, "Lỗi kết nối Gemini API");
+            _logger.LogError(ex, "Lỗi kết nối OpenAI API");
             return Fallback(naturalLanguageQuery);
         }
         catch (TaskCanceledException ex)
         {
-            _logger.LogError(ex, "Timeout khi gọi Gemini API");
+            _logger.LogError(ex, "Timeout khi gọi OpenAI API");
             return Fallback(naturalLanguageQuery, "Tích hợp AI tìm kiếm nâng cao tạm thời không khả dụng (timeout).");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Lỗi không xác định khi gọi Gemini API");
+            _logger.LogError(ex, "Lỗi không xác định khi gọi OpenAI API");
             return Fallback(naturalLanguageQuery);
         }
     }
@@ -100,22 +102,26 @@ public class AiSearchService : IAiSearchService
     private static string BuildPrompt(string query) => $$"""
         Bạn là trợ lý tìm kiếm sách trong thư viện. Người dùng nhập: "{{query}}"
 
-        Hãy phân tích và trả về JSON sau (chỉ JSON, không có backtick, không giải thích):
+        Hãy phân tích và mở rộng ý định tìm kiếm của người dùng. Nếu người dùng nhập một khái niệm (như "làm giàu", "kiếm tiền", "hạnh phúc"), hãy chuyển nó thành các thể loại sách và từ khóa liên quan thường có trong thư viện (ví dụ: Kinh tế, Phát triển bản thân, Kỹ năng sống, Tài chính). Trả về định dạng JSON sau (chỉ JSON, không có backtick, không giải thích):
         {
-          "keyword": "từ khóa ngắn gọn nhất để tìm trong tên sách hoặc tác giả",
+          "keyword": "từ khóa chính hoặc danh sách từ khóa cách nhau bởi dấu phẩy (bao gồm cả các từ khóa mở rộng về chủ đề)",
           "interpretedQuery": "một câu ngắn mô tả ý định tìm kiếm bằng tiếng Việt"
         }
 
         Ví dụ:
+        - Input: "sách làm giàu"
+          Output: {"keyword":"làm giàu, kinh tế, kinh doanh, phát triển bản thân, tài chính","interpretedQuery":"Sách về chủ đề làm giàu, kinh tế và phát triển bản thân"}
         - Input: "tôi muốn đọc sách về lập trình Python cơ bản"
-          Output: {"keyword":"Python lập trình","interpretedQuery":"Sách lập trình Python cho người mới bắt đầu"}
+          Output: {"keyword":"Python, lập trình, công nghệ thông tin","interpretedQuery":"Sách lập trình Python cho người mới bắt đầu"}
+        - Input: "sách công nghệ thông tin, chính trị và kinh tế"
+          Output: {"keyword":"công nghệ thông tin, chính trị, kinh tế","interpretedQuery":"Sách thuộc các chủ đề Công nghệ thông tin, Chính trị và Kinh tế"}
         - Input: "sách của Nguyễn Nhật Ánh"
           Output: {"keyword":"Nguyễn Nhật Ánh","interpretedQuery":"Sách của tác giả Nguyễn Nhật Ánh"}
         """;
 
     /// <summary>
-    /// Gemini response structure:
-    /// candidates[0].content.parts[0].text  →  chuỗi JSON cần parse tiếp
+    /// OpenAI response structure:
+    /// choices[0].message.content  → chuỗi JSON cần parse tiếp
     /// </summary>
     private AiSearchResult ParseApiResponse(string responseBody, string originalQuery)
     {
@@ -123,14 +129,23 @@ public class AiSearchService : IAiSearchService
         {
             using var doc = JsonDocument.Parse(responseBody);
 
-            var text = doc.RootElement
-                .GetProperty("candidates")[0]
-                .GetProperty("content")
-                .GetProperty("parts")[0]
-                .GetProperty("text")
-                .GetString() ?? string.Empty;
+            if (!doc.RootElement.TryGetProperty("choices", out var choices) ||
+                choices.ValueKind != JsonValueKind.Array ||
+                choices.GetArrayLength() == 0)
+            {
+                _logger.LogWarning("OpenAI response không có choices hợp lệ. Raw: {Body}", responseBody);
+                return Fallback(originalQuery);
+            }
 
-            // Làm sạch markdown fence nếu Gemini vô tình thêm vào
+            var firstChoice = choices[0];
+            if (!firstChoice.TryGetProperty("message", out var message) ||
+                !message.TryGetProperty("content", out var contentElement))
+            {
+                _logger.LogWarning("OpenAI response không có message.content hợp lệ. Raw: {Body}", responseBody);
+                return Fallback(originalQuery);
+            }
+
+            var text = contentElement.GetString() ?? string.Empty;
             var cleanJson = text
                 .Replace("```json", "")
                 .Replace("```", "")
@@ -156,7 +171,7 @@ public class AiSearchService : IAiSearchService
         }
         catch (JsonException ex)
         {
-            _logger.LogWarning(ex, "Không parse được JSON từ Gemini. Raw: {Body}", responseBody);
+            _logger.LogWarning(ex, "Không parse được JSON từ OpenAI. Raw: {Body}", responseBody);
             return Fallback(originalQuery);
         }
     }

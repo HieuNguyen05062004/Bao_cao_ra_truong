@@ -28,6 +28,7 @@ class AdminDashboard {
     this.categories = [];
     this.staffs = [];
     this.borrowTickets = [];
+    this.currentAdmin = null;
   }
 
   updateSidebarLinks() {
@@ -60,7 +61,10 @@ class AdminDashboard {
       const response = await fetch(`${this.apiUrl}/auth/me`);
       if (response.ok) {
         const me = await response.json();
-        if (me.isAuthenticated) return true;
+        if (me.isAuthenticated) {
+          this.currentAdmin = me;
+          return true;
+        }
       }
     } catch {
       // Redirect below.
@@ -72,6 +76,7 @@ class AdminDashboard {
 
   async init() {
     if (!(await this.ensureAdminAuthenticated())) return;
+    this.renderAdminUserMenu();
 
     // Kiểm tra phiên hết hạn mỗi 30 giây
     this.setupSessionTimeoutCheck();
@@ -135,9 +140,8 @@ class AdminDashboard {
 
   async checkStaffPermissions() {
     try {
-      const response = await fetch(`${this.apiUrl}/auth/me`);
-      if (response.ok) {
-        const me = await response.json();
+      const me = this.currentAdmin;
+      if (me) {
         if (me.role === "Staff") {
           // Ẩn link quản lý nhân viên
           const staffLink = document.querySelector(
@@ -151,6 +155,72 @@ class AdminDashboard {
     } catch (error) {
       console.error("Lỗi khi kiểm tra quyền:", error);
     }
+  }
+
+  renderAdminUserMenu() {
+    const sidebars = document.querySelectorAll(".sidebar");
+    if (!sidebars.length) return;
+
+    const me = this.currentAdmin || {};
+    const displayName = me.userName || me.userId || "Tài khoản";
+    const roleLabel = me.role === "Staff" ? "Thủ thư" : "Quản trị viên";
+    const avatarName = encodeURIComponent(displayName);
+    const safeDisplayName = this.escapeHtml(displayName);
+    const safeRoleLabel = this.escapeHtml(roleLabel);
+    const safeUserId = this.escapeHtml(me.userId || "");
+
+    sidebars.forEach((sidebar) => {
+      let sidebarUser = sidebar.querySelector(".sidebar-user");
+      if (!sidebarUser) {
+        sidebarUser = document.createElement("div");
+        sidebarUser.className = "sidebar-user";
+        sidebar.appendChild(sidebarUser);
+      }
+
+      sidebarUser.innerHTML = `
+        <div class="user-profile">
+          <img
+            src="https://ui-avatars.com/api/?name=${avatarName}&background=0D8ABC&color=fff"
+            alt="Avatar"
+          />
+          <div class="user-info">
+            <span class="user-name" title="${safeUserId}">${safeDisplayName}</span>
+            <span class="user-role">${safeRoleLabel}</span>
+          </div>
+        </div>
+        <button class="sidebar-logout-btn" type="button">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Đăng xuất</span>
+        </button>
+      `;
+
+      sidebarUser
+        .querySelector(".sidebar-logout-btn")
+        ?.addEventListener("click", () => this.logoutAdmin());
+    });
+  }
+
+  async logoutAdmin() {
+    try {
+      await fetch(`${this.apiUrl}/auth/logout`, { method: "POST" });
+    } catch (error) {
+      console.error("Lỗi khi đăng xuất:", error);
+    } finally {
+      window.location.href = "login.html";
+    }
+  }
+
+  escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (char) => {
+      const entities = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;",
+      };
+      return entities[char];
+    });
   }
 
   async fetchInitialData() {
@@ -1990,12 +2060,93 @@ class AdminDashboard {
     );
   }
 
+  normalizeSearchText(value) {
+    return String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  handleAdminBookSearch(query) {
+    const normalizedQuery = this.normalizeSearchText(query);
+
+    if (!normalizedQuery) {
+      this.showToast("Vui lòng nhập từ khóa tìm kiếm.", "warning");
+      return;
+    }
+
+    const matchedBooks = this.books.filter((book) => {
+      const haystack = [
+        book.id,
+        book.title,
+        book.author,
+        book.publisher,
+        book.description,
+        book.category,
+      ]
+        .filter(Boolean)
+        .map((value) => this.normalizeSearchText(value))
+        .join(" ");
+
+      return haystack.includes(normalizedQuery);
+    });
+
+    if (!matchedBooks.length) {
+      this.showToast(`Không tìm thấy sách phù hợp: ${query}`, "warning");
+      return;
+    }
+
+    this.showToast(`Tìm thấy ${matchedBooks.length} sách phù hợp`, "success");
+
+    if (document.getElementById("book-list")) {
+      this.renderPaginatedTable({
+        tableId: "book-list",
+        paginationKey: "books",
+        items: matchedBooks,
+        itemLabel: "sách",
+        emptyMessage: "Không có sách nào.",
+        emptyColSpan: 8,
+        onPageChange: () => this.renderBooks(),
+        renderRow: (book) => `
+      <tr>
+        <td><strong>${book.id}</strong></td>
+        <td><img src="${book.img}" class="table-img" alt="cover"></td>
+        <td>${book.title}</td>
+        <td>${book.author}</td>
+        <td>${book.category}</td>
+        <td>${book.stock}</td>
+        <td>
+          <span class="badge ${book.stock > 0 ? "badge-success" : "badge-danger"}">
+            ${book.status}
+          </span>
+        </td>
+        <td>
+          <div class="actions">
+            <a href="ct-sach.html?id=${book.id}" class="btn btn-sm btn-view" title="Xem chi tiết">
+              <i class="fas fa-eye"></i>
+            </a>
+            <a href="Edit-sach.html?id=${book.id}" class="btn btn-sm btn-edit" title="Sửa">
+              <i class="fas fa-edit"></i>
+            </a>
+            <a href="Delete-sach.html?id=${book.id}" class="btn btn-sm btn-delete" title="Xóa">
+              <i class="fas fa-trash"></i>
+            </a>
+          </div>
+        </td>
+      </tr>
+    `,
+      });
+    }
+  }
+
   setupEventListeners() {
     const searchInput = document.querySelector(".header-search input");
     searchInput?.addEventListener("keyup", (e) => {
       if (e.key === "Enter") {
-        const query = e.target.value;
-        this.showToast(`Đang tìm kiếm: ${query}`, "warning");
+        const query = e.target.value.trim();
+        this.handleAdminBookSearch(query);
       }
     });
 

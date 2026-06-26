@@ -22,9 +22,7 @@
             <span>SmartLibrary AI</span>
           </a>
         </div>
-        <button id="mobile-menu-btn" class="menu-toggle">
-          <i class="fas fa-bars"></i>
-        </button>
+
         <ul class="nav-links" id="nav-menu">
           <li class="nav-mobile-brand">
             <a href="index.html">
@@ -35,11 +33,22 @@
           <li><a href="index.html" class="active">Trang chủ</a></li>
           <li><a href="kho-sach.html">Kho sách</a></li>
           <li><a href="lich-su-muon.html">Phiếu mượn</a></li>
-          <div class="user-menu">
-            <button class="btn btn-outline btn-sm">Đăng nhập</button>
-            <button class="btn btn-accent btn-sm">Đăng ký</button>
-          </div>
+          <!-- Mobile User Menu -->
+          <li class="mobile-sidebar-actions">
+            <div class="user-menu mobile-sidebar-user"></div>
+          </li>
         </ul>
+
+        <!-- Desktop User Menu -->
+        <div class="user-menu desktop-user-menu"></div>
+
+        <button
+          id="mobile-menu-btn"
+          class="menu-toggle"
+          aria-label="Toggle Menu"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
       </nav>
     </header>
 
@@ -60,11 +69,7 @@
             >
               <i class="fas fa-magic"></i>
             </button>
-            <input
-              type="text"
-              id="search-input"
-              placeholder="Tích hợp AI tìm kiếm nâng cao: 'Tìm sách lập trình Python cho người mới'..."
-            />
+            <input type="text" id="search-input" />
             <button
               class="btn btn-accent"
               id="search-btn"

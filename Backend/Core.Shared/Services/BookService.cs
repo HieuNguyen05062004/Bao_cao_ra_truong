@@ -37,67 +37,145 @@ public class BookService : IBookService
     private static List<Book> SearchInMemory(IEnumerable<Book> books, string searchTerm)
     {
         var normalizedSearch = NormalizeForSearch(searchTerm);
+        // Tách các cụm từ theo dấu phẩy (nếu AI trả về nhiều chủ đề)
+        var phrases = searchTerm.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(p => NormalizeForSearch(p.Trim()))
+            .Where(p => !string.IsNullOrWhiteSpace(p))
+            .ToList();
+
         var tokens = ExtractSearchTokens(normalizedSearch);
 
-        if (tokens.Count == 0)
+        if (string.IsNullOrWhiteSpace(normalizedSearch))
             return books.OrderBy(b => b.Title).ToList();
 
-        return books
+        var scoredBooks = books
             .Select(book => new
             {
                 Book = book,
-                Score = CalculateSearchScore(book, normalizedSearch, tokens)
+                Score = CalculateSearchScore(book, normalizedSearch, phrases, tokens)
             })
-            .Where(item => item.Score > 0)
+            .Where(item => item.Score >= 15) // Ngưỡng điểm tối thiểu để giảm nhiễu
             .OrderByDescending(item => item.Score)
             .ThenBy(item => item.Book.Title)
             .Select(item => item.Book)
             .ToList();
+
+        if (scoredBooks.Count > 0)
+            return scoredBooks;
+
+        // Fallback: nếu AI/truy vấn trả về cụm từ ít token hoặc quá chung,
+        // vẫn thử khớp theo cụm từ đầy đủ trên các trường chính thay vì trả về tất cả sách.
+        return books
+            .Where(book =>
+            {
+                var title = NormalizeForSearch(book.Title);
+                var author = NormalizeForSearch(book.Author);
+                var publisher = NormalizeForSearch(book.Publisher);
+                var description = NormalizeForSearch(book.Description);
+                var bookId = NormalizeForSearch(book.BookId);
+                var categories = NormalizeForSearch(string.Join(" ", book.BookCategories
+                    .Select(bc => bc.Category?.CategoryName)
+                    .Where(name => !string.IsNullOrWhiteSpace(name))));
+
+                return title.Contains(normalizedSearch)
+                    || author.Contains(normalizedSearch)
+                    || publisher.Contains(normalizedSearch)
+                    || description.Contains(normalizedSearch)
+                    || bookId.Contains(normalizedSearch)
+                    || categories.Contains(normalizedSearch);
+            })
+            .OrderByDescending(b => NormalizeForSearch(b.Title).Contains(normalizedSearch))
+            .ThenBy(b => b.Title)
+            .ToList();
     }
 
-    private static int CalculateSearchScore(Book book, string normalizedSearch, List<string> tokens)
+    private static int CalculateSearchScore(Book book, string normalizedSearch, List<string> phrases, List<string> tokens)
     {
         var title = NormalizeForSearch(book.Title);
         var author = NormalizeForSearch(book.Author);
         var publisher = NormalizeForSearch(book.Publisher);
         var description = NormalizeForSearch(book.Description);
         var bookId = NormalizeForSearch(book.BookId);
-        var categories = NormalizeForSearch(string.Join(" ", book.BookCategories
+        var categoryNames = book.BookCategories
             .Select(bc => bc.Category?.CategoryName)
-            .Where(name => !string.IsNullOrWhiteSpace(name))));
-        var combined = $"{title} {author} {publisher} {description} {bookId} {categories}";
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Select(NormalizeForSearch)
+            .ToList();
+        var allCategoriesStr = string.Join(" ", categoryNames);
 
-        var matchedTokens = tokens.Count(token => combined.Contains(token));
-        if (matchedTokens == 0)
-            return 0;
+        int score = 0;
 
-        var score = matchedTokens * 10;
-        if (matchedTokens == tokens.Count) score += 25;
-        if (!string.IsNullOrWhiteSpace(normalizedSearch) && title.Contains(normalizedSearch)) score += 60;
-        if (!string.IsNullOrWhiteSpace(normalizedSearch) && author.Contains(normalizedSearch)) score += 45;
-        if (tokens.Any(token => title.Contains(token))) score += 30;
-        if (tokens.Any(token => author.Contains(token))) score += 20;
-        if (tokens.Any(token => categories.Contains(token))) score += 15;
-        if (tokens.Any(token => bookId.Contains(token))) score += 15;
-        if (tokens.Any(token => publisher.Contains(token))) score += 8;
-        if (tokens.Any(token => description.Contains(token))) score += 5;
+        // 1. Khớp cụm từ (Phrases) - Rất quan trọng để giảm nhiễu
+        foreach (var phrase in phrases)
+        {
+            bool matched = false;
+            // Khớp chính xác danh mục là điểm cao nhất
+            if (categoryNames.Any(c => c == phrase || c.Contains(phrase)))
+            {
+                score += 100;
+                matched = true;
+            }
+
+            if (title.Contains(phrase)) { score += 80; matched = true; }
+            if (author.Contains(phrase)) { score += 50; matched = true; }
+            if (description.Contains(phrase)) { score += 30; matched = true; }
+            if (publisher.Contains(phrase)) { score += 20; matched = true; }
+            
+            // Nếu khớp cả cụm từ dài (như "công nghệ thông tin")
+            if (matched && phrase.Split(' ').Length > 1) score += 40;
+        }
+
+        // 2. Khớp token lẻ (Dùng whole-word matching)
+        var matchedTokens = tokens.Count(token =>
+               ContainsWholeWord(title, token)
+            || ContainsWholeWord(author, token)
+            || ContainsWholeWord(allCategoriesStr, token)
+            || ContainsWholeWord(description, token));
+
+        if (matchedTokens > 0)
+        {
+            score += matchedTokens * 5;
+            if (matchedTokens == tokens.Count) score += 20;
+        }
+
+        // 3. Exact match cho toàn bộ chuỗi search
+        if (!string.IsNullOrWhiteSpace(normalizedSearch))
+        {
+            if (title == normalizedSearch) score += 200;
+            else if (title.Contains(normalizedSearch)) score += 50;
+        }
 
         return score;
     }
 
+    /// <summary>
+    /// Kiểm tra token xuất hiện như một từ nguyên (không phải một phần của từ khác).
+    /// Ví dụ: "an" không khớp với "ban", "can", chỉ khớp với từ "an" đứng độc lập.
+    /// </summary>
+    private static bool ContainsWholeWord(string text, string token)
+    {
+        if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(token))
+            return false;
+
+        return Regex.IsMatch(text, $@"(?<![a-z0-9]){Regex.Escape(token)}(?![a-z0-9])");
+    }
+
     private static List<string> ExtractSearchTokens(string normalizedSearch)
     {
+        // Stop words: các từ phổ biến không mang ý nghĩa tìm kiếm
         var stopWords = new HashSet<string>
         {
             "tim", "kiem", "sach", "cuon", "quyen", "cho", "toi", "minh", "can",
             "muon", "doc", "ve", "thuoc", "the", "loai", "tac", "gia", "cua",
             "nhung", "cac", "mot", "nguoi", "moi", "bat", "dau", "co", "khong",
-            "hay", "gioi", "thieu", "ai"
+            "hay", "gioi", "thieu", "ai",
+            "an", "ma", "la", "va", "da", "de", "bi", "bo", "ca",
+            "tu", "di", "gi", "no", "ta", "em", "ha"
         };
 
         return Regex.Matches(normalizedSearch, @"[a-z0-9]+")
             .Select(match => match.Value)
-            .Where(token => token.Length > 1 && !stopWords.Contains(token))
+            .Where(token => token.Length >= 2 && !stopWords.Contains(token))
             .Distinct()
             .ToList();
     }

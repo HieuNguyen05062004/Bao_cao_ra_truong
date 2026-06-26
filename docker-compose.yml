@@ -10,7 +10,11 @@ services:
     volumes:
       - sqlserver-data:/var/opt/mssql
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -C -Q \"SELECT 1\" || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          '/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$${MSSQL_SA_PASSWORD}" -C -Q "SELECT 1" || exit 1',
+        ]
       interval: 10s
       timeout: 5s
       retries: 12
@@ -25,6 +29,7 @@ services:
       UploadRoot: "/app/uploads"
       ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=ThuVien;User Id=sa;Password=${MSSQL_SA_PASSWORD:-ThuVien@12345};TrustServerCertificate=True;"
       Gemini__ApiKey: "${GEMINI_API_KEY:-}"
+      OpenAI__ApiKey: "${OPENAI_API_KEY:-}"
     ports:
       - "${CLIENT_PORT:-8080}:8080"
     volumes:

@@ -20,9 +20,7 @@
             <span>SmartLibrary AI</span>
           </a>
         </div>
-        <button id="mobile-menu-btn" class="menu-toggle">
-          <i class="fas fa-bars"></i>
-        </button>
+
         <ul class="nav-links" id="nav-menu">
           <li class="nav-mobile-brand">
             <a href="index.html">
@@ -33,11 +31,22 @@
           <li><a href="index.html">Trang chủ</a></li>
           <li><a href="kho-sach.html" class="active">Kho sách</a></li>
           <li><a href="lich-su-muon.html">Phiếu mượn</a></li>
+          <!-- Mobile User Menu -->
+          <li class="mobile-sidebar-actions">
+            <div class="user-menu mobile-sidebar-user"></div>
+          </li>
         </ul>
-        <div class="user-menu">
-          <button class="btn btn-outline btn-sm">Đăng nhập</button>
-          <button class="btn btn-accent btn-sm">Đăng ký</button>
-        </div>
+
+        <!-- Desktop User Menu -->
+        <div class="user-menu desktop-user-menu"></div>
+
+        <button
+          id="mobile-menu-btn"
+          class="menu-toggle"
+          aria-label="Toggle Menu"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
       </nav>
     </header>
 
@@ -53,11 +62,7 @@
             >
               <i class="fas fa-magic"></i>
             </button>
-            <input
-              type="text"
-              id="search-input"
-              placeholder="Tích hợp AI tìm kiếm nâng cao: 'Tìm sách lập trình Python'..."
-            />
+            <input type="text" id="search-input" />
             <button
               class="btn btn-accent"
               id="search-btn"
@@ -73,22 +78,9 @@
     <!-- Main Content with Sidebar -->
     <main class="container main-layout mt-xl">
       <aside class="sidebar">
-        <div class="filter-section">
-          <h3 class="filter-title">
-            <i class="fas fa-filter"></i> Bộ lọc danh mục
-          </h3>
-          <ul class="category-list" id="category-filter-list">
-            <li>
-              <label class="filter-item">
-                <input type="checkbox" name="category" value="all" checked />
-                <span>Tất cả thể loại</span>
-              </label>
-            </li>
-            <!-- Danh mục sẽ được load từ app.js -->
-            <li class="loading-text">Đang tải danh mục...</li>
-          </ul>
-        </div>
+        <!-- Filter theo Danh mục -->
 
+        <!-- Filter theo Sắp xếp -->
         <div class="filter-section mt-lg">
           <h3 class="filter-title">
             <i class="fas fa-sort-amount-down"></i> Sắp xếp
@@ -102,6 +94,24 @@
       </aside>
 
       <section class="main-content">
+        <!-- AI Insight Box (Hidden by default) -->
+        <div
+          id="ai-insight-box"
+          class="ai-insight-card mb-lg"
+          style="display: none"
+        >
+          <div class="ai-insight-header">
+            <i class="fas fa-robot"></i>
+            <span>AI đã phân tích câu hỏi của bạn</span>
+          </div>
+          <div class="ai-insight-body">
+            <p id="ai-interpreted-query" class="ai-interpreted-text"></p>
+            <div class="ai-keyword-tag mt-sm">
+              Từ khóa tìm kiếm: <strong id="ai-search-keyword"></strong>
+            </div>
+          </div>
+        </div>
+
         <div class="section-header">
           <h2 class="section-title">Tất cả sách</h2>
           <span class="results-count" id="results-count">Đang tải...</span>

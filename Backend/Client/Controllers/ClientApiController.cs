@@ -96,14 +96,47 @@ public class BooksApiController : ControllerBase
         return book == null ? NotFound() : Ok(ToDto(book));
     }
 
-    [HttpGet("categories")]
-    public async Task<IActionResult> Categories()
-    {
-        var categories = await _categoryService.GetAllCategoriesAsync();
-        return Ok(categories.Select(c => new { id = c.CategoryId, name = c.CategoryName }));
-    }
+     [HttpGet("categories")]
+     public async Task<IActionResult> Categories()
+     {
+         var categories = await _categoryService.GetAllCategoriesAsync();
+         return Ok(categories.Select(c => new { id = c.CategoryId, name = c.CategoryName }));
+     }
 
-    private static object ToDto(Book book)
+     [HttpGet("ai-search")]
+     public async Task<IActionResult> AiSearch([FromQuery] string q = "")
+     {
+         if (string.IsNullOrWhiteSpace(q))
+             return Ok(Array.Empty<object>());
+
+         try
+         {
+             var aiResult = await _aiSearchService.ParseSearchQueryAsync(q.Trim());
+             var keyword = !string.IsNullOrWhiteSpace(aiResult.Keyword) ? aiResult.Keyword : q.Trim();
+             var books = await _bookService.SearchBooksAsync(keyword);
+             
+             return Ok(new
+             {
+                 success = true,
+                 aiQuery = q,
+                 interpretedQuery = aiResult.InterpretedQuery,
+                 keyword = keyword,
+                 books = books.Select(ToDto)
+             });
+         }
+         catch (Exception ex)
+         {
+             return Ok(new
+             {
+                 success = false,
+                 aiQuery = q,
+                 error = ex.Message,
+                 books = new List<object>()
+             });
+         }
+     }
+
+     private static object ToDto(Book book)
     {
         var categoryNames = book.BookCategories?
             .Select(bc => bc.Category?.CategoryName)

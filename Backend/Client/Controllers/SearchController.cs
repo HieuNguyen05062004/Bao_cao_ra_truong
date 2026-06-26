@@ -90,8 +90,8 @@ public class SearchController : Controller
     /// Nhận câu tự nhiên từ form AI, gọi Claude phân tích,
     /// rồi dùng keyword trả về để tìm trong database.
     /// </summary>
+    [HttpGet]
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> AiSearch(string aiQuery)
     {
         if (string.IsNullOrWhiteSpace(aiQuery))

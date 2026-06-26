@@ -20,9 +20,7 @@
             <span>SmartLibrary AI</span>
           </a>
         </div>
-        <button id="mobile-menu-btn" class="menu-toggle">
-          <i class="fas fa-bars"></i>
-        </button>
+
         <ul class="nav-links" id="nav-menu">
           <li class="nav-mobile-brand">
             <a href="index.html">
@@ -33,11 +31,22 @@
           <li><a href="index.html">Trang chủ</a></li>
           <li><a href="kho-sach.html">Kho sách</a></li>
           <li><a href="lich-su-muon.html">Phiếu mượn</a></li>
+          <!-- Mobile User Menu -->
+          <li class="mobile-sidebar-actions">
+            <div class="user-menu mobile-sidebar-user"></div>
+          </li>
         </ul>
-        <div class="user-menu">
-          <button class="btn btn-outline btn-sm">Đăng nhập</button>
-          <button class="btn btn-accent btn-sm">Đăng ký</button>
-        </div>
+
+        <!-- Desktop User Menu -->
+        <div class="user-menu desktop-user-menu"></div>
+
+        <button
+          id="mobile-menu-btn"
+          class="menu-toggle"
+          aria-label="Toggle Menu"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
       </nav>
     </header>
 

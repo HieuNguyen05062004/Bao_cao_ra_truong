@@ -7,6 +7,7 @@ class SmartLibraryApp {
   init() {
     console.log("SmartLibrary AI App initialized...");
     this.createToastContainer();
+    this.normalizeClientNavigation();
     this.renderAuthState();
 
     // Kiểm tra phiên hết hạn mỗi 30 giây
@@ -36,8 +37,15 @@ class SmartLibraryApp {
         const response = await fetch(`${this.apiUrl}/auth/me`);
         if (response.ok) {
           const data = await response.json();
-          if (!data.isAuthenticated && !window.location.pathname.includes("index.html") && !window.location.pathname.includes("kho-sach")) {
-            this.showToast("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", "warning");
+          if (
+            !data.isAuthenticated &&
+            !window.location.pathname.includes("index.html") &&
+            !window.location.pathname.includes("kho-sach")
+          ) {
+            this.showToast(
+              "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+              "warning",
+            );
             setTimeout(() => {
               window.location.href = "index.html";
             }, 2000);
@@ -101,7 +109,7 @@ class SmartLibraryApp {
   }
 
   async renderAuthState() {
-    const menus = document.querySelectorAll(".user-menu");
+    const menus = document.querySelectorAll(".user-menu, .mobile-sidebar-user");
     if (!menus.length) return;
 
     let me = { isAuthenticated: false };
@@ -122,9 +130,11 @@ class SmartLibraryApp {
             <i class="fas fa-sign-out-alt"></i> Đăng xuất
           </button>
         `;
-        menu.querySelector("[data-logout]")?.addEventListener("click", async () => {
-          await fetch(`${this.apiUrl}/auth/logout`, { method: "POST" });
-          window.location.href = "index.html";
+        menu.querySelectorAll("[data-logout]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            await fetch(`${this.apiUrl}/auth/logout`, { method: "POST" });
+            window.location.href = "index.html";
+          });
         });
       } else {
         menu.innerHTML = `
@@ -225,15 +235,21 @@ class SmartLibraryApp {
       `Bạn có chắc chắn muốn xóa và hủy yêu cầu mượn sách <strong>${id}</strong> không? Hành động này không thể hoàn tác.`,
       async () => {
         const rawId = String(id).replace("TKT-", "");
-        const response = await fetch(`${this.apiUrl}/borrow/${parseInt(rawId)}`, {
-          method: "DELETE",
-        });
+        const response = await fetch(
+          `${this.apiUrl}/borrow/${parseInt(rawId)}`,
+          {
+            method: "DELETE",
+          },
+        );
         if (response.ok) {
           this.showToast(`Đã xóa yêu cầu mượn sách ${id} thành công!`);
           this.loadBorrowHistoryPage();
         } else {
           const error = await response.json().catch(() => ({}));
-          this.showToast(error.message || "Không thể xóa phiếu mượn.", "danger");
+          this.showToast(
+            error.message || "Không thể xóa phiếu mượn.",
+            "danger",
+          );
         }
       },
     );
@@ -286,8 +302,9 @@ class SmartLibraryApp {
     document.getElementById("display-borrow-date").innerText =
       ticket.date || "";
     document.getElementById("display-due-date").innerText = ticket.due || "";
-    document.getElementById("display-return-date").innerText =
-      ticket.returnDate ? new Date(ticket.returnDate).toLocaleDateString("vi-VN") : "Chưa trả";
+    document.getElementById("display-return-date").innerText = ticket.returnDate
+      ? new Date(ticket.returnDate).toLocaleDateString("vi-VN")
+      : "Chưa trả";
 
     // Hiển thị danh sách sách
     const bookTable = document.getElementById("ticket-books-table");
@@ -307,17 +324,47 @@ class SmartLibraryApp {
     const params = new URLSearchParams(window.location.search);
     const keyword = params.get("q") || "";
     const mode = params.get("mode") || "basic";
-    const [categories, books] = await Promise.all([
-      fetch(`${this.apiUrl}/books/categories`).then((res) =>
-        res.ok ? res.json() : [],
-      ),
-      fetch(
+
+    // Lấy danh mục
+    const categoriesResponse = await fetch(`${this.apiUrl}/books/categories`);
+    const categories = categoriesResponse.ok
+      ? await categoriesResponse.json()
+      : [];
+
+    // Xử lý dữ liệu sách
+    let books = [];
+    const aiDataStr = sessionStorage.getItem("aiSearchResults");
+    const aiInsightBox = document.getElementById("ai-insight-box");
+
+    if (mode === "ai" && aiDataStr) {
+      // Nếu là AI search và có dữ liệu trong session, dùng luôn dữ liệu này
+      const aiData = JSON.parse(aiDataStr);
+      books = aiData.books || [];
+
+      if (aiInsightBox) {
+        document.getElementById("ai-interpreted-query").innerText =
+          aiData.interpretedQuery || "";
+        document.getElementById("ai-search-keyword").innerText =
+          aiData.keyword || "Không xác định";
+        aiInsightBox.style.display = "block";
+      }
+
+      // Đã dùng xong, xóa để các lần tải lại trang sau không bị dính
+      sessionStorage.removeItem("aiSearchResults");
+    } else {
+      // Tìm kiếm bình thường hoặc tải tất cả sách
+      if (aiInsightBox) aiInsightBox.style.display = "none";
+
+      const booksResponse = await fetch(
         keyword
           ? `${this.apiUrl}/books/search?q=${encodeURIComponent(keyword)}&mode=${encodeURIComponent(mode)}`
           : `${this.apiUrl}/books`,
-      ).then((res) => (res.ok ? res.json() : [])),
-    ]);
+      );
+      books = booksResponse.ok ? await booksResponse.json() : [];
+    }
+
     this.allBooks = books;
+
     const categoryContainer = document.getElementById("category-filter-list");
     if (categoryContainer) {
       categoryContainer.innerHTML =
@@ -344,12 +391,15 @@ class SmartLibraryApp {
         checked.includes("all") || checked.length === 0
           ? [...this.allBooks]
           : this.allBooks.filter((book) =>
-              (book.categoryIds || []).some((id) => checked.includes(String(id))),
+              (book.categoryIds || []).some((id) =>
+                checked.includes(String(id)),
+              ),
             );
 
       filtered.sort((a, b) => {
         if (sort === "az") return a.title.localeCompare(b.title, "vi");
-        if (sort === "trending") return (b.borrowCount || 0) - (a.borrowCount || 0);
+        if (sort === "trending")
+          return (b.borrowCount || 0) - (a.borrowCount || 0);
         return (b.publishYear || 0) - (a.publishYear || 0);
       });
 
@@ -365,13 +415,17 @@ class SmartLibraryApp {
             .querySelectorAll('input[name="category"]:not([value="all"])')
             .forEach((item) => (item.checked = false));
         } else if (input.checked) {
-          const all = document.querySelector('input[name="category"][value="all"]');
+          const all = document.querySelector(
+            'input[name="category"][value="all"]',
+          );
           if (all) all.checked = false;
         }
         renderFiltered();
       });
     });
-    document.getElementById("sort-books")?.addEventListener("change", renderFiltered);
+    document
+      .getElementById("sort-books")
+      ?.addEventListener("change", renderFiltered);
     renderFiltered();
   }
 
@@ -412,10 +466,17 @@ class SmartLibraryApp {
 
     if (openModalBtn && modal) {
       openModalBtn.addEventListener("click", async () => {
-        const meResponse = await fetch(`${this.apiUrl}/auth/me`).catch(() => null);
-        const me = meResponse?.ok ? await meResponse.json() : { isAuthenticated: false };
+        const meResponse = await fetch(`${this.apiUrl}/auth/me`).catch(
+          () => null,
+        );
+        const me = meResponse?.ok
+          ? await meResponse.json()
+          : { isAuthenticated: false };
         if (!me.isAuthenticated || me.userType !== "Reader") {
-          this.showToast("Vui lòng đăng nhập để gửi yêu cầu mượn sách.", "danger");
+          this.showToast(
+            "Vui lòng đăng nhập để gửi yêu cầu mượn sách.",
+            "danger",
+          );
           return;
         }
         // Tự động điền tên sách vào modal
@@ -425,7 +486,9 @@ class SmartLibraryApp {
 
         // Thiết lập thời gian mặc định: hiện tại và 7 ngày sau.
         const toDateTimeLocal = (date) => {
-          const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+          const localDate = new Date(
+            date.getTime() - date.getTimezoneOffset() * 60000,
+          );
           return localDate.toISOString().slice(0, 16);
         };
         const now = new Date();
@@ -471,17 +534,26 @@ class SmartLibraryApp {
         const dueDateValue = new Date(dueDate);
 
         if (borrowDateValue < now) {
-          this.showToast("Ngày mượn không được nhỏ hơn thời gian hiện tại.", "danger");
+          this.showToast(
+            "Ngày mượn không được nhỏ hơn thời gian hiện tại.",
+            "danger",
+          );
           return;
         }
 
         if (dueDateValue < now) {
-          this.showToast("Ngày trả không được nhỏ hơn thời gian hiện tại.", "danger");
+          this.showToast(
+            "Ngày trả không được nhỏ hơn thời gian hiện tại.",
+            "danger",
+          );
           return;
         }
 
         if (dueDateValue < borrowDateValue) {
-          this.showToast("Ngày trả phải lớn hơn hoặc bằng ngày mượn.", "danger");
+          this.showToast(
+            "Ngày trả phải lớn hơn hoặc bằng ngày mượn.",
+            "danger",
+          );
           return;
         }
 
@@ -499,10 +571,16 @@ class SmartLibraryApp {
           this.showToast(`Đã gửi yêu cầu mượn sách "${bookTitle}" thành công!`);
           closeModal();
         } else if (response.status === 401) {
-          this.showToast("Vui lòng đăng nhập để gửi yêu cầu mượn sách.", "danger");
+          this.showToast(
+            "Vui lòng đăng nhập để gửi yêu cầu mượn sách.",
+            "danger",
+          );
         } else {
           const error = await response.json().catch(() => ({}));
-          this.showToast(error.message || "Không thể gửi yêu cầu mượn.", "danger");
+          this.showToast(
+            error.message || "Không thể gửi yêu cầu mượn.",
+            "danger",
+          );
         }
       });
     }
@@ -548,8 +626,7 @@ class SmartLibraryApp {
           searchBox.classList.remove("basic-mode");
           modeToggle.innerHTML = '<i class="fas fa-magic"></i>';
           modeToggle.title = "Chuyển sang Tìm kiếm Cơ bản";
-          searchInput.placeholder =
-            "Tích hợp AI tìm kiếm nâng cao: 'Tìm sách lập trình Python cho người mới'...";
+
           searchBtn.innerText = "Tìm kiếm nâng cao";
           searchBtn.className = "btn btn-accent";
         } else {
@@ -564,10 +641,31 @@ class SmartLibraryApp {
     }
 
     if (searchBtn) {
-      searchBtn.addEventListener("click", () => {
-        const query = searchInput.value;
-        if (query) {
-          window.location.href = `kho-sach.html?q=${encodeURIComponent(query)}&mode=${isAiMode ? "ai" : "basic"}`;
+      searchBtn.addEventListener("click", async () => {
+        const query = searchInput.value.trim();
+        if (!query) return;
+
+        if (isAiMode) {
+          try {
+            const response = await fetch(
+              `/api/books/ai-search?q=${encodeURIComponent(query)}`,
+            );
+            const data = await response.json();
+            if (data.success && data.books && data.books.length > 0) {
+              // Lưu toàn bộ kết quả, bao gồm cả danh sách sách đã lọc
+              sessionStorage.setItem("aiSearchResults", JSON.stringify(data));
+              // Chuyển trang mà không cần query string, vì dữ liệu đã có trong session
+              window.location.href = `kho-sach.html?mode=ai`;
+            } else {
+              // Nếu AI không tìm được, thử tìm thường
+              window.location.href = `kho-sach.html?q=${encodeURIComponent(query)}&mode=basic`;
+            }
+          } catch (error) {
+            console.error("AI Search error:", error);
+            window.location.href = `kho-sach.html?q=${encodeURIComponent(query)}&mode=basic`;
+          }
+        } else {
+          window.location.href = `kho-sach.html?q=${encodeURIComponent(query)}&mode=basic`;
         }
       });
     }
@@ -581,14 +679,90 @@ class SmartLibraryApp {
     const navMenu = document.getElementById("nav-menu");
 
     if (mobileMenuBtn && navMenu) {
+      // Toggle menu khi click button
       mobileMenuBtn.addEventListener("click", () => {
-        navMenu.classList.toggle("active");
-        // Đổi biểu tượng bars <-> times
+        const isActive = navMenu.classList.toggle("active");
+        mobileMenuBtn.setAttribute("aria-expanded", isActive.toString());
+
+        // Đổi icon giữa bars và times
         const icon = mobileMenuBtn.querySelector("i");
-        icon.classList.toggle("fa-bars");
-        icon.classList.toggle("fa-times");
+        if (icon) {
+          if (isActive) {
+            icon.classList.remove("fa-bars");
+            icon.classList.add("fa-times");
+          } else {
+            icon.classList.remove("fa-times");
+            icon.classList.add("fa-bars");
+          }
+        }
+      });
+
+      // Đóng menu khi click vào link
+      navMenu.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
+          navMenu.classList.remove("active");
+          mobileMenuBtn.setAttribute("aria-expanded", "false");
+
+          // Đổi icon về bars
+          const icon = mobileMenuBtn.querySelector("i");
+          if (icon) {
+            icon.classList.remove("fa-times");
+            icon.classList.add("fa-bars");
+          }
+        });
+      });
+
+      // Đóng menu khi click vào backdrop
+      navMenu.addEventListener("click", (e) => {
+        // Chỉ đóng khi click vào backdrop (::before pseudo-element area)
+        // hoặc chính thẻ ul (không phải children)
+        if (e.target === navMenu) {
+          navMenu.classList.remove("active");
+          mobileMenuBtn.setAttribute("aria-expanded", "false");
+
+          // Đổi icon về bars
+          const icon = mobileMenuBtn.querySelector("i");
+          if (icon) {
+            icon.classList.remove("fa-times");
+            icon.classList.add("fa-bars");
+          }
+        }
       });
     }
+  }
+
+  normalizeClientNavigation() {
+    document.querySelectorAll(".nav-bar").forEach((navBar) => {
+      const navMenu = navBar.querySelector(".nav-links");
+      if (!navMenu) return;
+
+      let desktopUserMenu = Array.from(navBar.children).find((child) =>
+        child.classList?.contains("user-menu"),
+      );
+      const menuUserMenu = Array.from(navMenu.children).find((child) =>
+        child.classList?.contains("user-menu"),
+      );
+
+      if (!desktopUserMenu && menuUserMenu) {
+        desktopUserMenu = menuUserMenu;
+        desktopUserMenu.classList.add("desktop-user-menu");
+        navBar.appendChild(desktopUserMenu);
+      } else if (desktopUserMenu) {
+        desktopUserMenu.classList.add("desktop-user-menu");
+      }
+
+      if (!navMenu.querySelector(".mobile-sidebar-actions")) {
+        const mobileActions = document.createElement("li");
+        mobileActions.className = "mobile-sidebar-actions";
+        mobileActions.innerHTML = `
+          <div class="user-menu mobile-sidebar-user">
+            <button class="btn btn-outline btn-sm">Đăng nhập</button>
+            <button class="btn btn-accent btn-sm">Đăng ký</button>
+          </div>
+        `;
+        navMenu.appendChild(mobileActions);
+      }
+    });
   }
 }
 
